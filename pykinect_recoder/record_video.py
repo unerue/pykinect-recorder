@@ -4,13 +4,12 @@ import cv2
 import datetime
 from pathlib import Path
 from typing import Optional, Tuple
+
 import numpy as np
-
-import pyk4a
+from numpy.typing import NDArray
 from pyk4a import PyK4A, PyK4ARecord
-
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QImage, QPixmap, QFont
+from PySide6.QtGui import QImage
 
 
 class RecordVideo(QThread):
@@ -36,10 +35,10 @@ class RecordVideo(QThread):
 
     def colorize(
         self,
-        image: np.ndarray,
+        image: NDArray,
         clipping_range: Tuple[Optional[int], Optional[int]] = (None, None),
         colormap: int = cv2.COLORMAP_HSV,
-    ) -> np.ndarray:
+    ) -> NDArray:
         if clipping_range[0] or clipping_range[1]:
             img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
         else:
