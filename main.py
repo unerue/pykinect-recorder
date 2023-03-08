@@ -2,7 +2,7 @@ import sys
 import pyk4a
 import qdarktheme
 from PySide6.QtWidgets import QApplication
-from pykinect_recoder.main_window import MainWindow
+from pykinect_recorder.main_window import MainWindow
 
 
 CONFIG = pyk4a.Config(

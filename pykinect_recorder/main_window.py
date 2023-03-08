@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QMainWindow, 
     QPushButton, QVBoxLayout, QWidget, QDialog, 
 )
-from pykinect_recoder.record_video import RecordVideo
+from .record_video import RecordVideo
 
 
 class MainWindow(QMainWindow):
