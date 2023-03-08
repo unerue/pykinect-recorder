@@ -1,15 +1,22 @@
+import logging
 import sys
 import time
-import logging
+
 import numpy as np
 
 from pyk4a import PyK4A
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QImage, QPixmap, QFont
+from PySide6.QtGui import QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QMainWindow, 
-    QPushButton, QVBoxLayout, QWidget, QDialog, 
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
+
 from .record_video import RecordVideo
 
 
@@ -34,8 +41,8 @@ class MainWindow(QMainWindow):
 
             e_message = QLabel("카메라에 문제가 있습니다. 재연결을 시도해주세요.")
             e_message.setAlignment(Qt.AlignCenter)
-            e_message.setFont(QFont('Arial', 15))
-            
+            e_message.setFont(QFont("Arial", 15))
+
             modal_layout.addWidget(e_message)
             modal.setLayout(modal_layout)
             modal.setWindowTitle("Error Message")
@@ -77,7 +84,7 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             self.logger.debug(e)
-        
+
         finally:
             self.logger.debug("카메라 연결 테스트를 종료합니다.")
             return initial_flag
@@ -87,17 +94,20 @@ class MainWindow(QMainWindow):
         width = 180 + 1280
         self.setFixedSize(width, 720)
 
-        self.time_label = QLabel('You and me 내 맘이 보이지? 한참을 쳐다봐, 가까이 다가가 you see (ey-yeah) You see, ey, ey, ey, ey', self)
+        self.time_label = QLabel(
+            "You and me 내 맘이 보이지? 한참을 쳐다봐, 가까이 다가가 you see (ey-yeah) You see, ey, ey, ey, ey",
+            self,
+        )
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.time_label.setFont(QFont('Arial', 15))
+        self.time_label.setFont(QFont("Arial", 15))
         self.time_label.setFixedHeight(50)
-        
-        self.rgb_label = QLabel('RGB 영상', self)
-        self.rgb_label.setStyleSheet('background-color: black;')
+
+        self.rgb_label = QLabel("RGB 영상", self)
+        self.rgb_label.setStyleSheet("background-color: black;")
         self.rgb_label.setFixedSize(640, 480)
 
-        self.depth_label = QLabel('깊이 영상', self)
-        self.depth_label.setStyleSheet('background-color: black;')
+        self.depth_label = QLabel("깊이 영상", self)
+        self.depth_label.setStyleSheet("background-color: black;")
         self.depth_label.setFixedSize(400, 360)
 
         images_layout = QHBoxLayout()
@@ -128,12 +138,12 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(preview_layout)
 
         file_list = QVBoxLayout()
-        widget_name = QLabel('녹화된 영상 목록')
+        widget_name = QLabel("녹화된 영상 목록")
         widget_name.setFixedHeight(30)
         file_list.addWidget(widget_name)
         file_widget = QWidget()
         file_widget.setFixedWidth(360)
-        file_widget.setStyleSheet('background-color: black;')
+        file_widget.setStyleSheet("background-color: black;")
         file_list.addWidget(file_widget)
 
         button3 = QPushButton("파일 업로드")
@@ -175,7 +185,7 @@ class MainWindow(QMainWindow):
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
         self.rgb_label.setPixmap(QPixmap.fromImage(image))
-    
+
     @Slot(QImage)
     def setDepthImage(self, image: QImage):
         self.depth_label.setPixmap(QPixmap.fromImage(image))

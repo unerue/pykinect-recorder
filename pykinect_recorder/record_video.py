@@ -1,9 +1,10 @@
+import datetime
 import os
 import sys
-import cv2
-import datetime
 from pathlib import Path
 from typing import Optional, Tuple
+
+import cv2
 
 import numpy as np
 from numpy.typing import NDArray
@@ -23,13 +24,13 @@ class RecordVideo(QThread):
         self.set_filename()
 
     def set_filename(self) -> None:
-        base_path = os.path.join(Path.home(), 'Videos')
+        base_path = os.path.join(Path.home(), "Videos")
 
         filename = datetime.datetime.now()
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
 
-        self.filename_video = os.path.join(base_path, f'{filename}.mkv')
-        self.filename_audio = os.path.join(base_path, f'{filename}.wav')
+        self.filename_video = os.path.join(base_path, f"{filename}.mkv")
+        self.filename_audio = os.path.join(base_path, f"{filename}.wav")
         if sys.flags.debug:
             print(base_path, self.filename_video, self.filename_audio)
 
@@ -51,9 +52,7 @@ class RecordVideo(QThread):
         azure_device = PyK4A(config=self.config, device_id=0)
         azure_device.start()
         record = PyK4ARecord(
-            device=azure_device, 
-            config=self.config, 
-            path=self.filename_video
+            device=azure_device, config=self.config, path=self.filename_video
         )
         record.create()
         while self.status:
@@ -72,7 +71,9 @@ class RecordVideo(QThread):
                 self.RGBUpdateFrame.emit(scaled_img)
 
             if np.any(cur_frame.depth):
-                depth_frame = self.colorize(cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV)
+                depth_frame = self.colorize(
+                    cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV
+                )
                 h, w, ch = depth_frame.shape
                 if sys.flags.debug:
                     print(h, w)

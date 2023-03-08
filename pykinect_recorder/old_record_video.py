@@ -1,39 +1,49 @@
-import os
-import sys
-import cv2
-import time
-import queue
 import datetime
 import logging
+import os
+import queue
+import sys
+import time
 from typing import Optional, Tuple
+
+import cv2
+import numpy as np
 
 import sounddevice as sd
 import soundfile as sf
-import numpy as np
+
 assert np  # avoid "imported but unused" message (W0611)
 
+import pyk4a
 from pydub import AudioSegment
 from pyk4a import Config, ImageFormat, PyK4A, PyK4ARecord
-import pyk4a
 
 from PySide6.QtCore import Qt, QThread, Signal, Slot
-from PySide6.QtGui import QImage, QPixmap, QFont
+from PySide6.QtGui import QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
-    QApplication, QHBoxLayout, QLabel, QMainWindow, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget, QDialog, 
+    QApplication,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
 )
 
 
 CONFIG = Config(
-    color_format=ImageFormat.COLOR_BGRA32, 
+    color_format=ImageFormat.COLOR_BGRA32,
     depth_mode=pyk4a.DepthMode.NFOV_UNBINNED,
     color_resolution=pyk4a.ColorResolution.RES_720P,
-    synchronized_images_only=True
+    synchronized_images_only=True,
 )
 
 # make output dir
 # if not os.path.exists('./tools/outputs/'):
 #     os.mkdir('./tools/outputs')
+
 
 class RecordRGBD:
     pass
@@ -53,9 +63,9 @@ class Thread(QThread):
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
         # base_path = 'C:\\Program Files\\Azure Kinect SDK v1.4.1\\tools\\outputs'
         base_path = "C:\\Users\\qhdrm\\Videos"
-        
-        self.filename_video = f'{base_path}\\{filename}.mkv'
-        self.filename_audio = f'{base_path}\\{filename}.wav'
+
+        self.filename_video = f"{base_path}\\{filename}.mkv"
+        self.filename_audio = f"{base_path}\\{filename}.wav"
         print(filename)
 
     def colorize(
@@ -71,15 +81,13 @@ class Thread(QThread):
         img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         img = cv2.applyColorMap(img, colormap)
         return img
-    
+
     def run(self):
         config = CONFIG
         azure_device = PyK4A(config=config, device_id=0)
         azure_device.start()
         record = PyK4ARecord(
-            device=azure_device, 
-            config=config, 
-            path=self.filename_video
+            device=azure_device, config=config, path=self.filename_video
         )
         record.create()
         print(self.status)
@@ -97,7 +105,9 @@ class Thread(QThread):
                 self.RGBUpdateFrame.emit(scaled_img)
 
             if np.any(cur_frame.depth):
-                depth_frame = self.colorize(cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV)
+                depth_frame = self.colorize(
+                    cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV
+                )
                 h, w, ch = depth_frame.shape
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -112,7 +122,9 @@ class MainWindow(QMainWindow):
         self.logger.setLevel(logging.DEBUG)
 
         fileHandler = logging.FileHandler("tools/pyk4a/example/outputs/log.txt")
-        formatter = logging.Formatter('[%(levelname)s] [%(asctime)s] (%(filename)s:%(lineno)d) > %(message)s')
+        formatter = logging.Formatter(
+            "[%(levelname)s] [%(asctime)s] (%(filename)s:%(lineno)d) > %(message)s"
+        )
         fileHandler.setFormatter(formatter)
         self.logger.addHandler(fileHandler)
 
@@ -127,8 +139,8 @@ class MainWindow(QMainWindow):
 
             e_message = QLabel("카메라에 문제가 있습니다. 재연결을 시도해주세요.")
             e_message.setAlignment(Qt.AlignCenter)
-            e_message.setFont(QFont('Arial', 15))
-            
+            e_message.setFont(QFont("Arial", 15))
+
             modal_layout.addWidget(e_message)
             modal.setLayout(modal_layout)
             modal.setWindowTitle("Error Message")
@@ -170,11 +182,11 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             self.logger.debug(e)
-        
+
         finally:
             self.logger.debug("카메라 연결 테스트를 종료합니다.")
             return initial_flag
-            
+
     def initial_window(self) -> None:
         # Title and dimensions
         self.setWindowTitle("영유아 녹화 프로그램")
@@ -184,8 +196,8 @@ class MainWindow(QMainWindow):
         images_layout = QHBoxLayout()
         self.time_label = QLabel(self)
         self.time_label.setAlignment(Qt.AlignCenter)
-        self.time_label.setFont(QFont('Arial', 15))
-        
+        self.time_label.setFont(QFont("Arial", 15))
+
         self.rgb_label = QLabel(self)
         self.rgb_label.setFixedSize(640, 480)
         self.depth_label = QLabel(self)
@@ -247,13 +259,13 @@ class MainWindow(QMainWindow):
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
         self.rgb_label.setPixmap(QPixmap.fromImage(image))
-    
+
     @Slot(QImage)
     def setDepthImage(self, image: QImage):
         self.depth_label.setPixmap(QPixmap.fromImage(image))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication()
     w = MainWindow()
     w.show()

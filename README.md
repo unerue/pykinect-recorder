@@ -8,6 +8,10 @@ pip install -r requirements.txt
 python main.py
 ```
 
+```bash
+ufmt format .
+black .
+```
 
 ## Setup process
 ### 1. Azure Kinect camera 연결 후 SDK 설치
