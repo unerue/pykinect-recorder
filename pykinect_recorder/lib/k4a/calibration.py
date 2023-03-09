@@ -61,6 +61,7 @@ class Calibration:
         if self.is_valid():
             self._handle = None
 
+    # 3D point of source_camera to 3D point of target_camera  
     def convert_3d_to_3d(
         self,
         source_point3d: _k4a.k4a_float3_t(),
@@ -82,6 +83,7 @@ class Calibration:
 
         return target_point3d
 
+    # 2D depth of source_camera to 3D point of target_camera
     def convert_2d_to_3d(
         self,
         source_point2d: _k4a.k4a_float2_t,
@@ -107,6 +109,7 @@ class Calibration:
 
         return target_point3d
 
+    # 3D point of source_camera to 2D pixel of target_camera
     def convert_3d_to_2d(
         self,
         source_point3d: _k4a.k4a_float3_t,
@@ -130,6 +133,7 @@ class Calibration:
 
         return target_point2d
 
+    # 2D depth of source_camera to 2D pixel of target_camera
     def convert_2d_to_2d(
         self,
         source_point2d: _k4a.k4a_float2_t,
@@ -155,6 +159,7 @@ class Calibration:
 
         return target_point2d
 
+    # 2D pixel of color_camera to 2D pixel of depth camera 
     def convert_color_2d_to_depth_2d(
         self, source_point2d: _k4a.k4a_float2_t, depth_image: _k4a.k4a_image_t
     ) -> _k4a.k4a_float2_t():
