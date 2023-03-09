@@ -125,6 +125,7 @@ class Device:
     def stop_imu(self):
         _k4a.k4a_device_stop_imu(self._handle)
 
+    # get device serial number
     def get_serialnum(self):
         serial_number_size = ctypes.c_size_t()
         result = _k4a.k4a_device_get_serialnum(self._handle, None, serial_number_size)

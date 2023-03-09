@@ -16,12 +16,11 @@ def setup_library(module_k4a_path):
         print("Failed to load library", e)
         sys.exit(1)
 
-
+# ?
 def k4a_device_get_installed_count():
     # K4A_EXPORT uint32_t k4a_device_get_installed_count(void);
 
     return k4a_dll.k4a_device_get_installed_count()
-
 
 def k4a_device_open(device_id, device_handle):
     # K4A_EXPORT k4a_result_t k4a_device_open(uint32_t index, k4a_device_t *device_handle);
