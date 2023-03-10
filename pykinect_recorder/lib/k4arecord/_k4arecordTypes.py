@@ -7,7 +7,7 @@ class _handle_k4a_record_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
-
+# streaming frame record 
 k4a_record_t = ctypes.POINTER(_handle_k4a_record_t)
 
 
@@ -17,7 +17,7 @@ class _handle_k4a_playback_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
-
+# watching video which recorded by k4a_record
 k4a_playback_t = ctypes.POINTER(_handle_k4a_playback_t)
 
 
@@ -27,7 +27,7 @@ class _handle_k4a_playback_data_block_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
-
+# Handle to a block of data read from k4a_playback
 k4a_playback_data_block_t = ctypes.POINTER(_handle_k4a_playback_data_block_t)
 
 
@@ -37,6 +37,7 @@ K4A_STREAM_RESULT_SUCCEEDED = 0
 K4A_STREAM_RESULT_FAILED = 1
 K4A_STREAM_RESULT_EOF = 2
 
+# handling record video
 k4a_playback_seek_origin_t = ctypes.c_int
 K4A_PLAYBACK_SEEK_BEGIN = 0
 K4A_PLAYBACK_SEEK_END = 1
