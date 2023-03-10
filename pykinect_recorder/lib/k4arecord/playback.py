@@ -7,7 +7,6 @@ from pykinect_azure.k4a.capture import Capture
 from pykinect_azure.k4a.calibration import Calibration
 from pykinect_azure.k4a.imu_sample import ImuSample
 
-
 class Playback:
     def __init__(self, filepath):
         self._handle = _k4arecord.k4a_playback_t()
