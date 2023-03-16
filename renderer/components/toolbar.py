@@ -24,7 +24,6 @@ class ToolbarLayout(QWidget):
         sidebarlayout.addWidget(self.sourceAddBtn)
         sidebarlayout.addWidget(self.uploadBtn)
         sidebarlayout.addWidget(self.optionBtn)
-        sidebarlayout
 
         self.setLayout(sidebarlayout)
 

@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 
 # from .record_video import RecordVideo
 from .components.toolbar import ToolbarLayout
+from .components.sidebar import SidebarLayout
 
 
 class MainWindow(QMainWindow):
@@ -94,12 +95,15 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("영유아 녹화 프로그램")
         width = 180 + 1280
         self.setFixedSize(width, 720)
+        print(type(SidebarLayout))
+        framelayout = QHBoxLayout()
 
-        self.sidebar = ToolbarLayout()
-        print(self.sidebar)
+        framelayout.addWidget(SidebarLayout)
+
 
         mainlayout = QVBoxLayout()
-        mainlayout.addWidget(self.sidebar)
+        mainlayout.addWidget(ToolbarLayout)
+        mainlayout.addLayout(framelayout)
 
         widget = QWidget(self)
         widget.setLayout(mainlayout)
