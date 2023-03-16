@@ -2,7 +2,7 @@ import sys
 
 import pyk4a
 import qdarktheme
-from pykinect_recorder.main_window import MainWindow
+from renderer.main_window import MainWindow
 from PySide6.QtWidgets import QApplication
 
 
