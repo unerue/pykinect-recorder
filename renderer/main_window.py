@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
 # from .record_video import RecordVideo
 from .components.toolbar import ToolbarLayout
 from .components.sidebar import SidebarLayout
+from .components.recordview import RecordViewLayout
 
 
 class MainWindow(QMainWindow):
@@ -95,83 +96,29 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("영유아 녹화 프로그램")
         width = 180 + 1280
         self.setFixedSize(width, 720)
-        print(type(SidebarLayout))
+
+        # toolbar Layout
+        self.toolbar = ToolbarLayout()
+        self.toolbar.setFixedHeight(80)
+        
+        # frame Layout
         framelayout = QHBoxLayout()
-
-        framelayout.addWidget(SidebarLayout)
-
+        self.sidebar = SidebarLayout()
+        self.sidebar.setFixedSize(250, 550)
+        self.recordview = RecordViewLayout()
+        self.recordview.setFixedSize(900, 550)
+        
+        framelayout.addWidget(self.sidebar)
+        framelayout.addWidget(self.recordview)
 
         mainlayout = QVBoxLayout()
-        mainlayout.addWidget(ToolbarLayout)
+
+        mainlayout.addWidget(self.toolbar)
         mainlayout.addLayout(framelayout)
 
         widget = QWidget(self)
         widget.setLayout(mainlayout)
         self.setCentralWidget(widget)
-
-
-    #     self.time_label = QLabel(
-    #         "You and me 내 맘이 보이지? 한참을 쳐다봐, 가까이 다가가 you see (ey-yeah) You see, ey, ey, ey, ey",
-    #         self,
-    #     )
-    #     self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    #     self.time_label.setFont(QFont("Arial", 15))
-    #     self.time_label.setFixedHeight(50)
-
-    #     self.rgb_label = QLabel("RGB 영상", self)
-    #     self.rgb_label.setStyleSheet("background-color: black;")
-    #     self.rgb_label.setFixedSize(640, 480)
-
-    #     self.depth_label = QLabel("깊이 영상", self)
-    #     self.depth_label.setStyleSheet("background-color: black;")
-    #     self.depth_label.setFixedSize(400, 360)
-
-    #     images_layout = QHBoxLayout()
-    #     images_layout.addWidget(self.rgb_label)
-    #     images_layout.addWidget(self.depth_label)
-
-    #     self.th = RecordVideo(self.config, self)
-    #     # self.th.finished.connect(self.close)
-    #     self.th.RGBUpdateFrame.connect(self.setRGBImage)
-    #     self.th.DepthUpdateFrame.connect(self.setDepthImage)
-
-    #     # Buttons layout
-    #     buttons_layout = QHBoxLayout()
-    #     self.button1 = QPushButton("녹화 시작")
-    #     self.button2 = QPushButton("녹화 종료")
-    #     self.button1.setFixedSize(120, 80)
-    #     self.button2.setFixedSize(120, 80)
-    #     buttons_layout.addWidget(self.button1)
-    #     buttons_layout.addWidget(self.button2)
-    #     buttons_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-
-    #     # Main layout
-    #     main_layout = QHBoxLayout()
-    #     preview_layout = QVBoxLayout()
-    #     preview_layout.addWidget(self.time_label)
-    #     preview_layout.addLayout(images_layout)
-    #     preview_layout.addLayout(buttons_layout)
-    #     main_layout.addLayout(preview_layout)
-
-    #     file_list = QVBoxLayout()
-    #     widget_name = QLabel("녹화된 영상 목록")
-    #     widget_name.setFixedHeight(30)
-    #     file_list.addWidget(widget_name)
-    #     file_widget = QWidget()
-    #     file_widget.setFixedWidth(360)
-    #     file_widget.setStyleSheet("background-color: black;")
-    #     file_list.addWidget(file_widget)
-
-    #     button3 = QPushButton("파일 업로드")
-    #     button3.setFixedSize(360, 50)
-    #     file_list.addWidget(button3)
-
-    #     main_layout.addLayout(file_list)
-
-    #     # Central widget
-    #     widget = QWidget(self)
-    #     widget.setLayout(main_layout)
-    #     self.setCentralWidget(widget)
 
     #     # Connections
     #     self.button1.clicked.connect(self.start)
