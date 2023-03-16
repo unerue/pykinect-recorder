@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class ToolbarWidget(QWidget):
+class ToolbarLayout(QWidget):
     def __init__(self) -> None:
         super().__init__()
 

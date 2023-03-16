@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 # from .record_video import RecordVideo
-from .components.toolbar import ToolbarWidget
+from .components.toolbar import ToolbarLayout
 
 
 class MainWindow(QMainWindow):
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
         width = 180 + 1280
         self.setFixedSize(width, 720)
 
-        self.sidebar = ToolbarWidget()
+        self.sidebar = ToolbarLayout()
         print(self.sidebar)
 
         mainlayout = QVBoxLayout()
