@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QComboBox, QVBoxLayout, 
     QWidget, QGridLayout, QSlider, QPushButton, QFrame
 )
-
 from PySide6.QtCore import Qt, QRect
 
 
@@ -136,7 +135,6 @@ class ColorControlPanel(QWidget):
         layout.addWidget(backlight, 7, 1)
         # layout.addWidget(QLabel("Power Freq"), 8, 0)
         # layout.addWidget(power_freq, 8, 1)
-        
         self.setLayout(layout)
 
     def toggle_menu(self, state):
@@ -258,11 +256,11 @@ class StateSwitchButton(QPushButton):
         self.bg_color = Qt.red
 
         self.setCheckable(True)
-        self.setMinimumWidth(55)
-        self.setMinimumHeight(22)
+        self.setMinimumWidth(55)  # 55
+        self.setMinimumHeight(22)  # 22
 
     def paintEvent(self, event):
-        self.label = "ON" if self.isChecked() else "OFF"
+        self.label = "" if self.isChecked() else ""
         self.bg_color = Qt.green if self.isChecked() else Qt.red
 
         radius, width = 8, 35
@@ -280,6 +278,7 @@ class StateSwitchButton(QPushButton):
         painter.drawRoundedRect(QRect(-width, -radius, 2*width, 2*radius), radius, radius)
         painter.setBrush(QBrush(self.bg_color))
         sw_rect = QRect(-radius, -radius, width + radius, 2*radius)
+
         if not self.isChecked():
             sw_rect.moveLeft(-width)
         painter.drawRoundedRect(sw_rect, radius, radius)
