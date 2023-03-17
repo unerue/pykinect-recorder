@@ -108,6 +108,8 @@ class MainWindow(QMainWindow):
         framelayout = QHBoxLayout()
         self.sidebar = SidebarLayout()
         # self.sidebar.setFixedSize(300, 550)
+        framelayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.toolbar.button_ml.clicked.connect(self.sidebar.vision_solution_panel.hide_panel)
         
         self.recordview = RecordViewLayout()
         self.recordview.setFixedSize(900, 550)

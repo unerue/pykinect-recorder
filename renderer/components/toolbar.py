@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QWidget, QStyle
+    QHBoxLayout, QPushButton, QWidget, QStyle, QFrame
 )
+from .sidebar import VisionSolutionPanel
 
 
 class ToolbarLayout(QWidget):
@@ -23,11 +24,15 @@ class ToolbarLayout(QWidget):
         self.optionBtn.setFont(QFont("Arial", 10))
         # self.optionBtn.setFixedSize(50, 50)
         # self.sourceAddBtn.setFixedWidth(50)
-    
+        self.button_ml = QPushButton("ML Solution")
+        self.button_ml.setFont(QFont("Arial", 10))
+        # self.hide_panel = self.findChild(QFrame, "VisionSolutionPanel")
+
         sidebarlayout = QHBoxLayout()
         sidebarlayout.addWidget(self.sourceAddBtn)
         sidebarlayout.addWidget(self.uploadBtn)
         sidebarlayout.addWidget(self.optionBtn)
+        sidebarlayout.addWidget(self.button_ml)
         sidebarlayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.setLayout(sidebarlayout)
 

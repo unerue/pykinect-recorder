@@ -19,6 +19,8 @@ class SidebarLayout(QWidget):
         layout.addWidget(DepthCameraPanel())
         layout.addWidget(IRCameraPanel())
         layout.addWidget(AudioPanel())
+        self.vision_solution_panel = VisionSolutionPanel()
+        layout.addWidget(self.vision_solution_panel)
 
         self.setLayout(layout)
         self.setFixedWidth(300)
@@ -245,8 +247,28 @@ class AudioPanel(QFrame):
         self.setLayout(layout_vbox)
 
 
-class MotionModule(QWidget):
-    """TODO: ten years later~~~"""
+class VisionSolutionPanel(QFrame):
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setObjectName("VisionSolutionPanel")
+        self.setStyleSheet("""
+            QFrame#VisionSolutionPanel {border-color: green; border-width: 2px;}
+        """)
+        layout_vbox = QGridLayout()
+        layout_vbox.addWidget(QLabel("Vision Solutions"), 0, 0, 1, 2)
+        self.setLayout(layout_vbox)
+        # self.setVisible(True)
+        
+        self.is_hide = True
+        self.hide()
+
+    def hide_panel(self):
+        if self.is_hide:
+            self.show()
+            self.is_hide = False
+        else:
+            self.hide()
+            self.is_hide = True
 
 
 class StateSwitchButton(QPushButton):
