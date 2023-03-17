@@ -19,4 +19,4 @@ if __name__ == "__main__":
     qdarktheme.setup_theme()
     main_window = MainWindow(CONFIG)
     main_window.show()
-    sys.exit(app.exec())
+    app.exec()

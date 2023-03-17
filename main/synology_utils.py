@@ -53,9 +53,9 @@ if __name__ == "__main__":
         default="hnvlab.synology.me",
         help="Set Ip address such as xxx.synology.me or 111.111.1.1",
     )
-    parser.add_argument("--Synology_Port", type=str, default="5001", help="")
-    parser.add_argument("--Username", type=str, default="qhdrmfdl123", help="")
-    parser.add_argument("--Password", type=str, default="Wpfhdnjs012!@", help="")
+    parser.add_argument("--Synology_Port", type=str, default="", help="")
+    parser.add_argument("--Username", type=str, default="", help="")
+    parser.add_argument("--Password", type=str, default="", help="")
     parser.add_argument(
         "--secure", type=bool, default=True, help="Set True if https is required"
     )
