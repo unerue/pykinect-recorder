@@ -1,12 +1,13 @@
 import logging
 import sys
+import os
 import time
 
 import numpy as np
 
 from pyk4a import PyK4A
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QFont, QImage, QPixmap
+from PySide6.QtGui import QFont, QImage, QPixmap, QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -27,6 +28,7 @@ class MainWindow(QMainWindow):
     def __init__(self, config) -> None:
         super().__init__()
         self.setWindowTitle("Azure Kinect Camera DK")
+        self.setWindowIcon(QIcon(os.path.abspath("./renderer/public/kinect-sensor.ico")))
         self.config = config
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)

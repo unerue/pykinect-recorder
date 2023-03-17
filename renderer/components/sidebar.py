@@ -1,3 +1,4 @@
+from typing import Tuple
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QComboBox, QVBoxLayout, 
@@ -84,13 +85,20 @@ class RgbCameraPanel(QFrame):
             self.hide()
 
 
+class _ColorSlider(QSlider):
+    def __init__(self, orientation, set_range_values: Tuple[int], set_value: int):
+        super().__init__(orientation)
+        self.setRange(*set_range_values)
+        self.setValue(set_value)
+
+
 class ColorControlPanel(QWidget):
     def __init__(self) -> None:
         super().__init__()
-
         # 메인 레이아웃
         layout = QGridLayout()
-        exposure_time = QSlider(Qt.Orientation.Horizontal)
+        # exposure_time = QSlider(Qt.Orientation.Horizontal)
+        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50)
         white_balance = QSlider(Qt.Orientation.Horizontal)
         brightness = QSlider(Qt.Orientation.Horizontal)
         contrast = QSlider(Qt.Orientation.Horizontal)
