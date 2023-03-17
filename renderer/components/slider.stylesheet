@@ -1,0 +1,15 @@
+QSlider::handle:horizontal { 
+    background-color: red;
+    border: 2px solid;
+}
+
+QSlider::groove:horizontal { 
+    background-color: blue;
+    border: 2px solid;
+}
+
+QSlider::groove:horizontal:hover { 
+    background-color: yellow;
+    border: 2px solid;
+}
+

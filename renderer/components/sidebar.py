@@ -1,4 +1,5 @@
-from typing import Tuple
+import os
+from typing import Tuple, Union
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QComboBox, QVBoxLayout, 
@@ -86,10 +87,17 @@ class RgbCameraPanel(QFrame):
 
 
 class _ColorSlider(QSlider):
-    def __init__(self, orientation, set_range_values: Tuple[int], set_value: int):
+    def __init__(self, orientation, set_range_values: Tuple[int], set_value: int, stylesheet: Union[str, os.PathLike] = None):
         super().__init__(orientation)
         self.setRange(*set_range_values)
         self.setValue(set_value)
+
+        # TODO: 외부 함수화 또는 PySide6에서 이런 함수 있는지 찾아보셈
+        if stylesheet is not None:
+            with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
+                stylesheet = f.read()
+                print(stylesheet)
+            self.setStyleSheet(str(stylesheet))
 
 
 class ColorControlPanel(QWidget):
@@ -98,7 +106,8 @@ class ColorControlPanel(QWidget):
         # 메인 레이아웃
         layout = QGridLayout()
         # exposure_time = QSlider(Qt.Orientation.Horizontal)
-        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50)
+        # TODO: stylesheet 넣어둔거 빼셈 예시를 보여드린거
+        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
         white_balance = QSlider(Qt.Orientation.Horizontal)
         brightness = QSlider(Qt.Orientation.Horizontal)
         contrast = QSlider(Qt.Orientation.Horizontal)
@@ -194,7 +203,6 @@ class IRCameraPanel(QFrame):
         layout_vbox.addLayout(layout_title_hbox)
 
         self.setLayout(layout_vbox)
-
 
 
 class AudioPanel(QFrame):
