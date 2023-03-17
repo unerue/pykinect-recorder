@@ -26,6 +26,7 @@ from .components.recordview import RecordViewLayout
 class MainWindow(QMainWindow):
     def __init__(self, config) -> None:
         super().__init__()
+        self.setWindowTitle("Azure Kinect Camera DK")
         self.config = config
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)
@@ -93,18 +94,18 @@ class MainWindow(QMainWindow):
             return initial_flag
 
     def initial_window(self) -> None:
-        self.setWindowTitle("영유아 녹화 프로그램")
-        width = 180 + 1280
-        self.setFixedSize(width, 720)
+        
+        self.setFixedSize(1920, 1080)
 
         # toolbar Layout
         self.toolbar = ToolbarLayout()
-        self.toolbar.setFixedHeight(80)
+        self.toolbar.setFixedHeight(50)
         
         # frame Layout
         framelayout = QHBoxLayout()
         self.sidebar = SidebarLayout()
-        self.sidebar.setFixedSize(250, 550)
+        # self.sidebar.setFixedSize(300, 550)
+        
         self.recordview = RecordViewLayout()
         self.recordview.setFixedSize(900, 550)
         
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow):
         framelayout.addWidget(self.recordview)
 
         mainlayout = QVBoxLayout()
+        mainlayout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         mainlayout.addWidget(self.toolbar)
         mainlayout.addLayout(framelayout)
