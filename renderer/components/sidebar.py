@@ -260,16 +260,16 @@ class StateSwitchButton(QPushButton):
         self.setMinimumHeight(22)  # 22
 
     def paintEvent(self, event):
-        self.label = "" if self.isChecked() else ""
+        self.label = "On" if self.isChecked() else "Off"
         self.bg_color = Qt.green if self.isChecked() else Qt.red
 
-        radius, width = 8, 35
+        radius, width = 8, 25
         center = self.rect().center()
 
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.translate(center)
-        painter.setBrush(QColor(0,0,0))
+        painter.setBrush(QColor(0, 0, 0))
 
         pen = QPen(Qt.black)
         pen.setWidth(2)
