@@ -14,3 +14,7 @@ keywords = ["azure", "kinect", "deep-learning", "computer-vision"]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
+
+[tool.black]
+line-length = 120
+target-version = ["py3.9", "py3.10"]
