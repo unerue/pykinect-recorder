@@ -1,9 +1,9 @@
 import cv2
 
-from pykinect_azure.k4a import _k4a
-from pykinect_azure.k4a.image import Image
-from pykinect_azure.k4a.transformation import Transformation
-from pykinect_azure.utils.postProcessing import smooth_depth_image
+from . import _k4a
+from .image import Image
+from .transformation import Transformation
+from ..utils.postProcessing import smooth_depth_image
 
 
 class Capture:

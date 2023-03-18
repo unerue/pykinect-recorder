@@ -1,4 +1,4 @@
-from pykinect_azure.k4a import _k4a
+from ..k4a import _k4a
 
 
 class RecordConfiguration:

@@ -1,29 +1,30 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QWidget, QStyle, QFrame
+    QHBoxLayout, QPushButton, QFrame
 )
-from .sidebar import VisionSolutionPanel
 
 
-class ToolbarLayout(QWidget):
+class ToolbarLayout(QFrame):
     def __init__(self) -> None:
         super().__init__()
+        
+        self.setObjectName("ToolbarLayout")
+        self.setStyleSheet("""
+            QFrame#ToolbarLayout {
+                border-color: blue; border-width: 2px;
+            }
+        """)
 
         self.sourceAddBtn = QPushButton("Add Source")
         self.sourceAddBtn.setFont(QFont("Arial", 15))
-        # self.sourceAddBtn.setFixedSize(300, 50)
         self.sourceAddBtn.setFixedWidth(300)
 
         self.uploadBtn = QPushButton("업로드")
         self.uploadBtn.setFont(QFont("Arial", 10))
-        # self.uploadBtn.setFixedSize(70, 50)
-        # self.sourceAddBtn.setFixedWidth(70)
 
         self.optionBtn = QPushButton("옵션")
         self.optionBtn.setFont(QFont("Arial", 10))
-        # self.optionBtn.setFixedSize(50, 50)
-        # self.sourceAddBtn.setFixedWidth(50)
         self.button_ml = QPushButton("ML Solution")
         self.button_ml.setFont(QFont("Arial", 10))
         # self.hide_panel = self.findChild(QFrame, "VisionSolutionPanel")
