@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pykinect-recorder"
+version = "0.2"
+description = ""
+license = "MIT"
+authors = [
+    "Kyung-Su Kang <unerue@me.com>",
+    "Young-Il Kim <qhdrmfdl123@gmail.com>"
+]
+
+repository = "https://github.com/unerue/pykinect-recorder"
+readme = ["README.md", "LICENSE"]
+keywords = ["azure", "kinect", "deep-learning", "computer-vision"]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
