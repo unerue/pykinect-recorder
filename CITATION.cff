@@ -1,0 +1,14 @@
+cff-version: "1.2.0"
+date-released: 2023-04
+message: "If you use this software, please cite it using these metadata."
+title: "PyKinect Recorder: Azure Kinect Sensor with Audio, Vision Solutions"
+url: "https://github.com/unerue/pykinect-recorder"
+authors:
+  - family-names: Kang
+    given-names: Kyung-Su
+  - family-names: Kim
+    given-names: Young-Il
+month: 04
+year: 2020
+address: "Online"
+# url: "https://www.aclweb.org/~"
