@@ -128,7 +128,6 @@ class ColorControlPanel(QWidget):
         # 메인 레이아웃
         layout = QGridLayout()
         exposure_time = QSlider(Qt.Orientation.Horizontal)
-        # TODO: stylesheet 넣어둔거 빼셈 예시를 보여드린거
         # exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
         white_balance = QSlider(Qt.Orientation.Horizontal)
         brightness = QSlider(Qt.Orientation.Horizontal)
@@ -384,11 +383,11 @@ class StateSwitchButton(QPushButton):
         pen.setStyle(Qt.PenStyle.MPenStyle)
         painter.setPen(pen)
 
-        painter.setBrush(QColor(20, 21, 24))
-        painter.drawRoundedRect(QRect(-width, -radius, 2*width, 2*radius), radius, radius)
+        painter.setBrush(QColor(255, 0, 0))
+        painter.drawRoundedRect(QRect(-width, -radius, 2*width, 2*radius), 3, 3)
         
         painter.setBrush(self.bg_color)
         sw_rect = QRect(-width+2, -radius+1, 2*radius-2, 2*radius-2)
         if not self.isChecked():
             sw_rect.moveLeft(width-radius*2)
-        painter.drawRoundedRect(sw_rect, radius, radius)
+        painter.drawRoundedRect(sw_rect, 3, 3)

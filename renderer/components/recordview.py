@@ -52,11 +52,11 @@ class RecordViewLayout(QWidget):
         top_layout.addWidget(self.depth_label)
 
         btn_layout = QHBoxLayout()
-        self.test_btn = QPushButton("test")
+        # self.test_btn = QPushButton("test")
         self.open_btn = QPushButton("Device open")
         self.viewer_btn = QPushButton("▶")
         self.record_btn = QPushButton("●")
-        btn_layout.addWidget(self.test_btn)
+        # btn_layout.addWidget(self.test_btn)
         btn_layout.addWidget(self.open_btn)
         btn_layout.addWidget(self.viewer_btn)
         btn_layout.addWidget(self.record_btn)
@@ -64,7 +64,7 @@ class RecordViewLayout(QWidget):
         self.device_flag = True
         self.viewer_flag = True
         self.record_flag = True
-        self.test_btn.clicked.connect(self.set_config)
+        # self.test_btn.clicked.connect(self.set_config)
         self.open_btn.clicked.connect(self.open_device)
         self.viewer_btn.clicked.connect(self.streaming)
         self.record_btn.clicked.connect(self.recording)
