@@ -1,7 +1,6 @@
 import logging
 import sys
 import os
-import time
 
 import numpy as np
 
@@ -9,13 +8,8 @@ from pyk4a import PyK4A
 from PySide6.QtCore import Qt, Slot, QSize
 from PySide6.QtGui import QFont, QImage, QPixmap, QIcon
 from PySide6.QtWidgets import (
-    QDialog,
-    QHBoxLayout,
-    QLabel,
-    QMainWindow,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
+    QDialog, QHBoxLayout, QLabel, QMainWindow, 
+    QPushButton, QVBoxLayout, QWidget,
 )
 
 # from .record_video import RecordVideo

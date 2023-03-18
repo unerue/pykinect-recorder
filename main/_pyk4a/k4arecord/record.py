@@ -1,4 +1,4 @@
-from pykinect_azure.k4arecord import _k4arecord
+from ..k4arecord import _k4arecord
 
 
 class Record:

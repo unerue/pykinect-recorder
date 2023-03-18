@@ -8,10 +8,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QRect
 
 
-# 왜 꼭 addWidget할 때 Instance로 넘겨줘야 하는가?
 class SidebarLayout(QWidget):
-    # 타이틀 포함
-    # 사이드바 레이아웃?
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
@@ -106,9 +103,9 @@ class ColorControlPanel(QWidget):
         super().__init__()
         # 메인 레이아웃
         layout = QGridLayout()
-        # exposure_time = QSlider(Qt.Orientation.Horizontal)
+        exposure_time = QSlider(Qt.Orientation.Horizontal)
         # TODO: stylesheet 넣어둔거 빼셈 예시를 보여드린거
-        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
+        # exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
         white_balance = QSlider(Qt.Orientation.Horizontal)
         brightness = QSlider(Qt.Orientation.Horizontal)
         contrast = QSlider(Qt.Orientation.Horizontal)

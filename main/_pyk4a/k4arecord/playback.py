@@ -1,11 +1,10 @@
-from pykinect_azure.k4arecord import _k4arecord
-from pykinect_azure.k4arecord.datablock import Datablock
-from pykinect_azure.k4arecord.record_configuration import RecordConfiguration
-
-from pykinect_azure.k4a import _k4a
-from pykinect_azure.k4a.capture import Capture
-from pykinect_azure.k4a.calibration import Calibration
-from pykinect_azure.k4a.imu_sample import ImuSample
+from . import _k4arecord
+from .datablock import Datablock
+from .record_configuration import RecordConfiguration
+from ..k4a import _k4a
+from ..k4a.capture import Capture
+from ..k4a.calibration import Calibration
+from ..k4a.imu_sample import ImuSample
 
 
 class Playback:

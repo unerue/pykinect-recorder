@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-from pykinect_azure.k4a import _k4a
+from . import _k4a
 
 
 class Image:

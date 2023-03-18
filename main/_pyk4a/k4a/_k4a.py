@@ -1,7 +1,7 @@
 import ctypes
 import sys
 import traceback
-from pyk4a.k4a._k4atypes import *
+from ._k4atypes import *
 
 k4a_dll = None
 

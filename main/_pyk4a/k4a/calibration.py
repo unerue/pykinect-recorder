@@ -1,6 +1,6 @@
 import ctypes
 
-from pyk4a.k4a import _k4a
+from . import _k4a
 
 
 class Calibration:
