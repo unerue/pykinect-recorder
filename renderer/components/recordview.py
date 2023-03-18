@@ -15,8 +15,11 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget,
 )
 
+from .sidebar import SidebarLayout
 from main._pyk4a.pykinect import start_device, initialize_libraries
 from main._pyk4a.k4a import Device
+
+
 class RecordViewLayout(QWidget):
     def __init__(self) -> None:
         super().__init__()      
@@ -49,19 +52,22 @@ class RecordViewLayout(QWidget):
         top_layout.addWidget(self.depth_label)
 
         btn_layout = QHBoxLayout()
+        self.test_btn = QPushButton("test")
         self.open_btn = QPushButton("Device open")
-        self.viewer_btn = QPushButton("Viewer")
-        self.record_btn = QPushButton("Recoding")
-        self.stop_btn = QPushButton("Stop/Save")
+        self.viewer_btn = QPushButton("▶")
+        self.record_btn = QPushButton("●")
+        btn_layout.addWidget(self.test_btn)
         btn_layout.addWidget(self.open_btn)
         btn_layout.addWidget(self.viewer_btn)
         btn_layout.addWidget(self.record_btn)
-        btn_layout.addWidget(self.stop_btn)
         
+        self.device_flag = True
+        self.viewer_flag = True
+        self.record_flag = True
+        self.test_btn.clicked.connect(self.set_config)
         self.open_btn.clicked.connect(self.open_device)
         self.viewer_btn.clicked.connect(self.streaming)
         self.record_btn.clicked.connect(self.recording)
-        self.stop_btn.clicked.connect(self.stoping)
         
         layout.addLayout(top_layout)
         layout.addWidget(self.ir_label)
@@ -69,42 +75,59 @@ class RecordViewLayout(QWidget):
         
         self.setLayout(layout)
         
-        # 쓰레드
-        
-        
 
     def set_config(self) -> None:
         pass
 
-    def open_device(self):    
-        #config = self.set_config()
-        initialize_libraries()
-        self.device = start_device()
-        self.open_btn.setEnabled(False)
+    def open_device(self):
+        if self.device_flag:
+            #config = self.set_config()
+            self.device_flag = False
+            initialize_libraries()
+            self.device = start_device()
+        else:
+            self.device_flag = True
+            self.device = None
     
     def streaming(self) -> None:
-        self.th = Pyk4aThread(device=self.device, record=False)
-        self.th.RGBUpdateFrame.connect(self.setRGBImage)
-        self.th.DepthUpdateFrame.connect(self.setDepthImage)
-        self.th.IRUpdateFrame.connect(self.setIRImage)
-        
-        print("Streaming Start...")
-        self.viewer_btn.setEnabled(False)
-        self.record_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
-        self.th.status = True
-        self.th.start()
+        if self.viewer_flag:
+            self.th = Pyk4aThread(device=self.device, record=False)
+            self.th.RGBUpdateFrame.connect(self.setRGBImage)
+            self.th.DepthUpdateFrame.connect(self.setDepthImage)
+            self.th.IRUpdateFrame.connect(self.setIRImage)
+            
+            self.record_btn.setEnabled(False)
+            self.th.status = True
+            self.viewer_btn.setText("■")
+            self.viewer_flag = False
+            self.th.start()
+        else:
+            self.record_btn.setEnabled(True)
+            self.th.status = False
+            self.viewer_btn.setText("▶")
+            self.viewer_flag = True
+            time.sleep(1)
+            
         
     def recording(self) -> None:
-        pass
+        if self.record_flag:
+            self.th = Pyk4aThread(device=self.device, record=True)
+            self.th.RGBUpdateFrame.connect(self.setRGBImage)
+            self.th.DepthUpdateFrame.connect(self.setDepthImage)
+            self.th.IRUpdateFrame.connect(self.setIRImage)
+            
+            self.record_btn.setEnabled(False)
+            self.th.status = True
+            self.viewer_btn.setText("■")
+            self.viewer_flag = False
+            self.th.start()
+        else:
+            self.record_btn.setEnabled(True)
+            self.th.status = False
+            self.viewer_btn.setText("▶")
+            self.viewer_flag = True
+            time.sleep(1)
         
-    def stoping(self) -> None:
-        print("Finishing...")
-        self.viewer_btn.setEnabled(True)
-        self.record_btn.setEnabled(True)
-        self.stop_btn.setEnabled(False)
-        self.th.status = False
-        time.sleep(1)
 
 
     @Slot(QImage)
@@ -135,7 +158,7 @@ class Pyk4aThread(QThread):
             self.set_filename()
     
     def run(self):
-        # Record 불러오는 코드 추가.
+        # TODO Record 불러오는 코드 추가.
         if self.record:
             pass
         
@@ -145,10 +168,7 @@ class Pyk4aThread(QThread):
             tmp_rgb_frame = cur_frame.get_color_image()
             tmp_depth_frame = cur_frame.get_depth_image()
             tmp_ir_frame = cur_frame.get_ir_image()
-            
-            print(tmp_rgb_frame)
-            
-            
+
             if tmp_rgb_frame[0]:
                 rgb_frame = tmp_rgb_frame[1]
                 rgb_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
