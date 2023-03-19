@@ -18,3 +18,7 @@ python = ">=3.10"
 [tool.black]
 line-length = 120
 target-version = ["py3.9", "py3.10"]
+
+[tool.isort]
+
+[tool.flake8]
