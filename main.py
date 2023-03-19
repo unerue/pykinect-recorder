@@ -8,19 +8,11 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 
 
-CONFIG = pyk4a.Config(
-    color_format=pyk4a.ImageFormat.COLOR_BGRA32,
-    depth_mode=pyk4a.DepthMode.NFOV_UNBINNED,
-    color_resolution=pyk4a.ColorResolution.RES_720P,
-    synchronized_images_only=True,
-)
-
-
 if __name__ == "__main__":
     app = QApplication()
     qdarktheme.setup_theme()
     # tray_icon = QSystemTrayIcon(QIcon(os.path.abspath("./renderer/public/kinect-sensor.ico")))
     # tray_icon.setToolTip("")
-    main_window = MainWindow(CONFIG)
+    main_window = MainWindow()
     main_window.show()
     app.exec()

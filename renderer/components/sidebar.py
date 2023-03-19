@@ -1,43 +1,29 @@
-import os
-from typing import Tuple, Union, List
-from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QFont
+from PySide6.QtGui import QPainter, QPen, QColor
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QComboBox, QVBoxLayout, 
-    QWidget, QGridLayout, QSlider, QPushButton, QFrame
+    QHBoxLayout, QLabel, QVBoxLayout, QRadioButton,
+    QWidget, QGridLayout, QCheckBox, QPushButton, QFrame
 )
 from PySide6.QtCore import Qt, QRect
 
+from .custom_buttons import Label, ComboBox, Slider
 
-class SidebarLayout(QFrame):
-    def __init__(self):
+
+class Sidebar(QFrame):
+    def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet("background-color: #242c33;")
+        layout_main = QVBoxLayout()
+        layout_main.addWidget(RgbCameraPanel())
+        layout_main.addWidget(DepthCameraPanel())
+        layout_main.addWidget(IRCameraPanel())
+        layout_main.addWidget(AudioPanel())
+        self.vision_solution_panel = VisionSolutionPanel()
+        layout_main.addWidget(self.vision_solution_panel)
+        self.setLayout(layout_main)
+        
         # self.setFixedHeight(1550)
         self.setMaximumHeight(1900)
-        layout = QVBoxLayout()
-        layout.addWidget(RgbCameraPanel())
-        layout.addWidget(DepthCameraPanel())
-        layout.addWidget(IRCameraPanel())
-        layout.addWidget(AudioPanel())
-        self.vision_solution_panel = VisionSolutionPanel()
-        layout.addWidget(self.vision_solution_panel)
-
-        self.setLayout(layout)
         self.setFixedWidth(300)
-
-
-class _ComboBox(QComboBox):
-    def __init__(self, items: List[str], current_index: int, stylesheet: Union[str, os.PathLike] = None):
-        super().__init__()
-        self.addItems(items)
-        self.setCurrentIndex(current_index)
-
-        # TODO: 외부 함수화 또는 PySide6에서 이런 함수 있는지 찾아보셈
-        if stylesheet is not None:
-            with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
-                stylesheet = f.read()
-                print(stylesheet)
-            self.setStyleSheet(str(stylesheet))
 
 
 class RgbCameraPanel(QFrame):
@@ -47,129 +33,117 @@ class RgbCameraPanel(QFrame):
         self.setObjectName("RgbCameraPanel")
         self.setStyleSheet("""
             QFrame#RgbCameraPanel {
-                border-color: gray; border-width: 2px;
-                border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 5px;
             }
         """)
-        layout_vbox = QVBoxLayout()
-        layout_title_hbox = QHBoxLayout()
+
+        layout_main = QVBoxLayout()
+        layout_title = QHBoxLayout()
         
         # toggle btn
-        self.state = True
-        self.btn_switch = StateSwitchButton()
-        self.btn_switch.clicked.connect(self.visible_option)
-        self.label_switch = QLabel("On")
-        self.label_switch.setFont(QFont("Arial", 7))
-        self.label_switch.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        layout_switch_vbox = QVBoxLayout()
-        layout_switch_vbox.addWidget(self.btn_switch)
-        layout_switch_vbox.addWidget(self.label_switch)
-        layout_title_hbox.addWidget(QLabel("RGB Camera Option"))
-        layout_title_hbox.addWidget(QLabel(""))
-        layout_title_hbox.addLayout(layout_switch_vbox)
+        self.is_change = True
+        self.btn_switch = ToggleButton()
+        self.btn_switch.clicked.connect(self._toggle)
+        self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
+       
+        layout_switch = QVBoxLayout()
+        layout_switch.addWidget(self.btn_switch)
+        layout_switch.addWidget(self.label_switch)
+        layout_title.addWidget(QLabel("RGB Camera Option"))
+        layout_title.addWidget(QLabel(""))
+        layout_title.addLayout(layout_switch)
         # 세부레이아웃
+
         layout_grid = QGridLayout()
-        
+
         layout_grid.addWidget(QLabel("Resolution"), 0, 0)
-        # # 해상도
-        self.btn_resolutions = _ComboBox(
-            ["1280×720", "1920×1080", "2560×1440", "3840×2160", "3070p"], 0
+        self.btn_resolutions = ComboBox(
+            ["720p", "1080p", "1440p", "2160p", "3072p"], 0
         )
         layout_grid.addWidget(self.btn_resolutions, 0, 1)
 
-        self.btn_rgbformat = QComboBox()
-        self.btn_rgbformat.addItem("BGRA")
-        self.btn_rgbformat.addItem("MJPG")
-        self.btn_rgbformat.addItem("NV12")
-        self.btn_rgbformat.addItem("YUV2")
-        self.btn_rgbformat.setCurrentIndex(0)
-
         layout_grid.addWidget(QLabel("Color Format"), 1, 0)
+        self.btn_rgbformat = ComboBox(
+            ["MJPG", "NV12", "YUV2", "BGRA"], 3
+        )
         layout_grid.addWidget(self.btn_rgbformat, 1, 1)
 
-        self.btn_fps = QComboBox()
-        self.btn_fps.addItem("5")
-        self.btn_fps.addItem("15")
-        self.btn_fps.addItem("30")
-        self.btn_fps.setCurrentIndex(2)
-        
-        self.panel_control = ColorControlPanel()
         layout_grid.addWidget(QLabel("FPS"), 2, 0)
+        self.btn_fps = ComboBox(
+            ["5", "15", "30"], 2
+        )
         layout_grid.addWidget(self.btn_fps, 2, 1)
 
-        layout_vbox.addLayout(layout_title_hbox)
-        layout_vbox.addLayout(layout_grid)
-        layout_vbox.addWidget(self.panel_control)
+        self.control_panel = ColorControlPanel()
+        layout_main.addLayout(layout_title)
+        layout_main.addLayout(layout_grid)
+        layout_main.addWidget(self.control_panel)
 
-        self.setLayout(layout_vbox)
+        self.setLayout(layout_main)
         
-    def visible_option(self):
-        if self.state:
+    def _toggle(self) -> None:
+        if self.is_change:
             self.btn_resolutions.setDisabled(True)
             self.btn_rgbformat.setDisabled(True)
             self.btn_fps.setDisabled(True)
-            self.panel_control.setDisabled(True)
-            self.state = False
+            self.control_panel.setDisabled(True)
+            self.is_change = False
             self.label_switch.setText("Off")
         else:
             self.btn_resolutions.setDisabled(False)
             self.btn_rgbformat.setDisabled(False)
             self.btn_fps.setDisabled(False)
-            self.panel_control.setDisabled(False)
-            self.state = True
+            self.control_panel.setDisabled(False)
+            self.is_change = True
             self.label_switch.setText("On")
             
-
-class _ColorSlider(QSlider):
-    def __init__(self, orientation, set_range_values: Tuple[int], set_value: int, stylesheet: Union[str, os.PathLike] = None):
-        super().__init__(orientation)
-        self.setRange(*set_range_values)
-        self.setValue(set_value)
-
-        # TODO: 외부 함수화 또는 PySide6에서 이런 함수 있는지 찾아보셈
-        if stylesheet is not None:
-            with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
-                stylesheet = f.read()
-                print(stylesheet)
-            self.setStyleSheet(str(stylesheet))
-
 
 class ColorControlPanel(QWidget):
     def __init__(self) -> None:
         super().__init__()
         # 메인 레이아웃
         layout = QGridLayout()
-        # exposure_time = QSlider(Qt.Orientation.Horizontal)
-        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
-        white_balance = QSlider(Qt.Orientation.Horizontal)
-        brightness = QSlider(Qt.Orientation.Horizontal)
-        contrast = QSlider(Qt.Orientation.Horizontal)
-        saturation = QSlider(Qt.Orientation.Horizontal)
-        sharpness = QSlider(Qt.Orientation.Horizontal)
-        gain = QSlider(Qt.Orientation.Horizontal)
-        backlight = QPushButton() # TODO Checkbox로 바꾸기
-        backlight.setCheckable(True)
-        # power_freq = 
 
         layout.addWidget(QLabel("Exposure Time"), 0, 0)
+        exposure_time = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(exposure_time, 0, 1)
+
         layout.addWidget(QLabel("White Balance"), 1, 0)
+        white_balance = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(white_balance, 1, 1)
+
         layout.addWidget(QLabel("Brightness"), 2, 0)
+        brightness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(brightness, 2, 1)
+
         layout.addWidget(QLabel("Contrast"), 3, 0)
+        contrast = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(contrast, 3, 1)
+
         layout.addWidget(QLabel("Saturation"), 4, 0)
+        saturation = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(saturation, 4, 1)
+
         layout.addWidget(QLabel("Sharpness"), 5, 0)
+        sharpness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(sharpness, 5, 1)
+
         layout.addWidget(QLabel("Gain"), 6, 0)
+        gain = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
         layout.addWidget(gain, 6, 1)
-        layout.addWidget(QLabel("Backlight comp"), 7, 0)
-        layout.addWidget(backlight, 7, 1)
-        # layout.addWidget(QLabel("Power Freq"), 8, 0)
-        # layout.addWidget(power_freq, 8, 1)
+
+        backlight = QCheckBox("Backlight compensation")
+        backlight.setCheckable(True)
+        layout.addWidget(backlight, 7, 0, 1, 2)
+
+        layout.addWidget(QLabel("Power Freq"), 8, 0)
+        layout_power_freq = QHBoxLayout()
+        self.power_freq1 = QRadioButton("50hz")
+        self.power_freq2 = QRadioButton("60hz")
+        layout_power_freq.addWidget(self.power_freq1)
+        layout_power_freq.addWidget(self.power_freq2)
+        layout.addLayout(layout_power_freq, 8, 1)
+
         self.setLayout(layout)
         
         
@@ -179,59 +153,50 @@ class DepthCameraPanel(QFrame):
         # 메인레이아웃
         self.setObjectName("DepthCameraPanel")
         self.setStyleSheet("""
-            QFrame#DepthCameraPanel {border-color: yellow; border-width: 2px;}
+            QFrame#DepthCameraPanel {
+                border-color: gray; border-width: 2px; border-radius: 5px;
+            }
         """)
-        layout_grid = QGridLayout()
-        layout_tophbox = QHBoxLayout()
-        
-        self.btn_switch = StateSwitchButton()
-        self.btn_switch.clicked.connect(self.visible_option)
-        self.label_switch = QLabel("On")
-        self.label_switch.setFont(QFont("Arial", 7))
-        self.label_switch.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        layout_switch_vbox = QVBoxLayout()
-        layout_switch_vbox.addWidget(self.btn_switch)
-        layout_switch_vbox.addWidget(self.label_switch)
-        
-        layout_tophbox.addWidget(QLabel(""))
-        layout_tophbox.addLayout(layout_switch_vbox)
-        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
-        layout_grid.addLayout(layout_tophbox, 0, 1)
 
-        self.state = True
-        self.btn_depth = QComboBox()
-        self.btn_depth.addItem("NFOV_Binned")
-        self.btn_depth.addItem("NFOV_Unbinned")
-        self.btn_depth.addItem("WFOV_Binned")
-        self.btn_depth.addItem("WFOV_UnBinned")
-        self.btn_depth.addItem("PASSIVE_IR")
-        self.btn_depth.setCurrentIndex(1)
+        layout_grid = QGridLayout()
+        layout_title = QHBoxLayout()
+        self.is_change = True
+
+        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
+        self.btn_switch = ToggleButton()
+        self.btn_switch.clicked.connect(self._toggle)
+        self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
+        layout_switch = QVBoxLayout()
+        layout_switch.addWidget(self.btn_switch)
+        layout_switch.addWidget(self.label_switch)
+        layout_title.addWidget(QLabel(""))
+        layout_title.addLayout(layout_switch)
+        layout_grid.addLayout(layout_title, 0, 1)
 
         layout_grid.addWidget(QLabel("Depth mode"), 1, 0)
+        self.btn_depth = ComboBox(
+            ["NFOV_Binned", "NFOV_Unbinned", "WFOV_Binned", "WFOV_UnBinned", "PASSIVE_IR"], 1
+        )
         layout_grid.addWidget(self.btn_depth, 1, 1)
 
-        self.btn_fps = QComboBox()
-        self.btn_fps.addItem("5")
-        self.btn_fps.addItem("15")
-        self.btn_fps.addItem("30")
-        self.btn_fps.setCurrentIndex(2)
-
         layout_grid.addWidget(QLabel("FPS"), 2, 0)
+        self.btn_fps = ComboBox(
+            ["5", "15", "30"], 2
+        )
         layout_grid.addWidget(self.btn_fps, 2, 1)
 
         self.setLayout(layout_grid)
 
-    def visible_option(self):
-        if self.state:
+    def _toggle(self) -> None:
+        if self.is_change:
             self.btn_depth.setDisabled(True)
             self.btn_fps.setDisabled(True)
-            self.state = False
+            self.is_change = False
             self.label_switch.setText("Off")
         else:
             self.btn_depth.setDisabled(False)
             self.btn_fps.setDisabled(False)
-            self.state = True
+            self.is_change = True
             self.label_switch.setText("On")
 
 
@@ -240,114 +205,95 @@ class IRCameraPanel(QFrame):
         super().__init__()
         self.setObjectName("IRCameraPanel")
         self.setStyleSheet("""
-            QFrame#IRCameraPanel {border-color: white; border-width: 2px;}
+            QFrame#IRCameraPanel {
+                border-color: gray; border-width: 2px; border-radius: 5px;
+            }
         """)
 
         layout_grid = QGridLayout()
-        layout_tophbox = QHBoxLayout()
-        self.state = True
-        
-        self.btn_switch = StateSwitchButton()
-        self.btn_switch.clicked.connect(self.visible_option)
-        self.label_switch = QLabel("On")
-        self.label_switch.setFont(QFont("Arial", 7))
-        self.label_switch.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        layout_switch_vbox = QVBoxLayout()
-        layout_switch_vbox.addWidget(self.btn_switch)
-        layout_switch_vbox.addWidget(self.label_switch)
-        
-        layout_tophbox = QHBoxLayout()
-        layout_tophbox.addWidget(QLabel(""))
-        layout_tophbox.addLayout(layout_switch_vbox)
-        layout_grid.addWidget(QLabel("IR Camera Option"), 0, 0)
-        layout_grid.addLayout(layout_tophbox, 0, 1)
-        
+        layout_title = QHBoxLayout()
+        self.is_change = True
+
+        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
+        self.btn_switch = ToggleButton()
+        self.btn_switch.clicked.connect(self._toggle)
+        self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
+        layout_switch = QVBoxLayout()
+        layout_switch.addWidget(self.btn_switch)
+        layout_switch.addWidget(self.label_switch)
+        layout_title.addWidget(QLabel(""))
+        layout_title.addLayout(layout_switch)
+        layout_grid.addLayout(layout_title, 0, 1)       
 
         self.setLayout(layout_grid)
 
-    def visible_option(self):
-        if self.state:
+    def _toggle(self) -> None:
+        if self.is_change:
             self.label_switch.setText("Off")
-            self.state = False
+            self.is_change = False
         else:
             self.label_switch.setText("On")
-            self.state = True
+            self.is_change = True
+
 
 class AudioPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("AudioPanel")
         self.setStyleSheet("""
-            QFrame#AudioPanel {border-color: green; border-width: 2px;}
+            QFrame#AudioPanel {
+                border-color: gray; border-width: 2px; border-radius: 5px;
+            }
         """)
         
-        layout_vbox = QGridLayout()
-        layout_tophbox = QHBoxLayout()
-        
-        self.state = True
-        
-        self.btn_switch = StateSwitchButton()
-        self.btn_switch.clicked.connect(self.visible_option)
-        self.label_switch = QLabel("On")
-        self.label_switch.setFont(QFont("Arial", 7))
-        self.label_switch.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        layout_switch_vbox = QVBoxLayout()
-        layout_switch_vbox.addWidget(self.btn_switch)
-        layout_switch_vbox.addWidget(self.label_switch)
-        
-        layout_tophbox = QHBoxLayout()
-        layout_tophbox.addWidget(QLabel(""))
-        layout_tophbox.addLayout(layout_switch_vbox)
-        
-        layout_vbox.addWidget(QLabel("Audio Option"), 0, 0)
-        layout_vbox.addLayout(layout_tophbox, 0, 1)
+        layout_grid = QGridLayout()
+        layout_title = QHBoxLayout()
+        self.is_change = True
 
-        self.btn_samplerate = QComboBox()
-        self.btn_samplerate.addItem("22050")
-        self.btn_samplerate.addItem("44100")
-        self.btn_samplerate.setCurrentIndex(1)
-
-        self.btn_channel = QComboBox()
-        self.btn_channel.addItem("1")
-        self.btn_channel.addItem("2")
-        self.btn_channel.addItem("3")
-        self.btn_channel.addItem("4")
-        self.btn_channel.addItem("5")
-        self.btn_channel.addItem("6")
-        self.btn_channel.addItem("7")
-        self.btn_channel.setCurrentIndex(0)
-
-        self.btn_subtype = QComboBox()
-        self.btn_subtype.addItem("PCM_S8")
-        self.btn_subtype.addItem("PCM_16")
-        self.btn_subtype.addItem("PCM_24")
-        self.btn_subtype.setCurrentIndex(2)
-
-        layout_vbox.addWidget(QLabel("Samplerate"), 1, 0)
-        layout_vbox.addWidget(self.btn_samplerate, 1, 1)
-        layout_vbox.addWidget(QLabel("Audio Channels"), 2, 0)
-        layout_vbox.addWidget(self.btn_channel, 2, 1)
-        layout_vbox.addWidget(QLabel("Subtype"), 3, 0)
-        layout_vbox.addWidget(self.btn_subtype, 3, 1)
-
-        self.setLayout(layout_vbox)
+        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
+        self.btn_switch = ToggleButton()
+        self.btn_switch.clicked.connect(self._toggle)
+        self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
+        layout_switch = QVBoxLayout()
+        layout_switch.addWidget(self.btn_switch)
+        layout_switch.addWidget(self.label_switch)
+        layout_title.addWidget(QLabel(""))
+        layout_title.addLayout(layout_switch)
+        layout_grid.addLayout(layout_title, 0, 1) 
         
-    def visible_option(self):
-        if self.state:
+        layout_grid.addWidget(QLabel("Samplerate"), 1, 0)
+        self.btn_samplerate = ComboBox(
+            ["22050", "44100"], 1
+        )
+        layout_grid.addWidget(self.btn_samplerate, 1, 1)
+
+        layout_grid.addWidget(QLabel("Audio Channels"), 2, 0)
+        self.btn_channel = ComboBox(
+            ["1", "2", "3", "4", "5", "6", "7"], 1
+        ) 
+        layout_grid.addWidget(self.btn_channel, 2, 1)
+
+        layout_grid.addWidget(QLabel("Subtype"), 3, 0)
+        self.btn_subtype = ComboBox(
+            ["PCM_S8", "PCM_16", "PCM_24"], 2
+        )
+        layout_grid.addWidget(self.btn_subtype, 3, 1)
+
+        self.setLayout(layout_grid)
+        
+    def _toggle(self) -> None:
+        if self.is_change:
             self.btn_samplerate.setDisabled(True)
             self.btn_channel.setDisabled(True)
             self.btn_subtype.setDisabled(True)
             self.label_switch.setText("Off")
-            self.state = False
+            self.is_change = False
         else:
             self.btn_samplerate.setDisabled(False)
             self.btn_channel.setDisabled(False)
             self.btn_subtype.setDisabled(False)
             self.label_switch.setText("On")
-            self.state = True
-
+            self.is_change = True
 
 
 class VisionSolutionPanel(QFrame):
@@ -355,17 +301,18 @@ class VisionSolutionPanel(QFrame):
         super().__init__(parent)
         self.setObjectName("VisionSolutionPanel")
         self.setStyleSheet("""
-            QFrame#VisionSolutionPanel {border-color: green; border-width: 2px;}
+            QFrame#VisionSolutionPanel {
+                border-color: green; border-width: 2px; border-radius: 5px;
+            }
         """)
         layout_vbox = QGridLayout()
         layout_vbox.addWidget(QLabel("Vision Solutions"), 0, 0, 1, 2)
         self.setLayout(layout_vbox)
-        # self.setVisible(True)
         
         self.is_hide = True
         self.hide()
 
-    def hide_panel(self):
+    def hide_panel(self) -> None:
         if self.is_hide:
             self.show()
             self.is_hide = False
@@ -374,8 +321,8 @@ class VisionSolutionPanel(QFrame):
             self.is_hide = True
 
 
-class StateSwitchButton(QPushButton):
-    def __init__(self, parent = None):
+class ToggleButton(QPushButton):
+    def __init__(self, parent = None) -> None:
         super().__init__(parent)
         self.bg_color = QColor(0, 188, 248)
 
@@ -383,7 +330,7 @@ class StateSwitchButton(QPushButton):
         self.setMinimumWidth(55)  # 55
         self.setMinimumHeight(22)  # 22
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         self.bg_color = QColor(255, 40, 40) if self.isChecked() else QColor(0, 188, 248)
 
         radius = 7
@@ -401,7 +348,7 @@ class StateSwitchButton(QPushButton):
         painter.setPen(pen)
 
         painter.setBrush(QColor(63, 64,66))
-        painter.drawRoundedRect(QRect(-width, -radius, 2*width, 2*radius), 3, 3)
+        painter.drawRoundedRect(QRect(-width-1, -radius-1, 2*width+2, 2*radius+2), 3, 3)
         
         painter.setBrush(self.bg_color)
         sw_rect = QRect(-width+2, -radius+1, 2*radius-2, 2*radius-2)

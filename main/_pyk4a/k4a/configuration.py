@@ -43,7 +43,7 @@ class Configuration:
     def create(self):
         self.color_format = _k4a.K4A_IMAGE_FORMAT_COLOR_MJPG
         self.color_resolution = _k4a.K4A_COLOR_RESOLUTION_720P
-        self.depth_mode = _k4a.K4A_DEPTH_MODE_WFOV_2X2BINNED
+        self.depth_mode = _k4a.K4A_DEPTH_MODE_NFOV_UNBINNED
         self.camera_fps = _k4a.K4A_FRAMES_PER_SECOND_30
         self.synchronized_images_only = False
         self.depth_delay_off_color_usec = 0
