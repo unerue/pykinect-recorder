@@ -10,9 +10,9 @@ from numpy.typing import NDArray
 from typing import Optional, Tuple
 
 from PySide6.QtCore import Qt, Slot, Signal, QThread
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtGui import QImage, QPixmap, QFont, QPalette, QColor
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget,
+    QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QToolTip
 )
 
 from .sidebar import SidebarLayout
@@ -52,22 +52,39 @@ class RecordViewLayout(QWidget):
         top_layout.addWidget(self.depth_label)
 
         btn_layout = QHBoxLayout()
-        # self.test_btn = QPushButton("test")
-        self.open_btn = QPushButton("Device open")
-        self.viewer_btn = QPushButton("▶")
-        self.record_btn = QPushButton("●")
-        # btn_layout.addWidget(self.test_btn)
-        btn_layout.addWidget(self.open_btn)
-        btn_layout.addWidget(self.viewer_btn)
-        btn_layout.addWidget(self.record_btn)
+        self.test_btn = QPushButton("test")
+        self.btn_open = QPushButton("Device open")
+        self.btn_viewer = QPushButton("▶")
+        self.btn_record = QPushButton("●")
+        
+        self.btn_viewer.setStyleSheet("""
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+            """
+        )
+        self.btn_record.setStyleSheet("""
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+            """
+        )
+
+        self.btn_viewer.setToolTip("<b>Streaming Button</b>")
+        self.btn_record.setToolTip("<b>Recording Button</b>")
+        
+        btn_layout.addWidget(self.test_btn)
+        btn_layout.addWidget(self.btn_open)
+        btn_layout.addWidget(self.btn_viewer)
+        btn_layout.addWidget(self.btn_record)
         
         self.device_flag = True
         self.viewer_flag = True
         self.record_flag = True
-        # self.test_btn.clicked.connect(self.set_config)
-        self.open_btn.clicked.connect(self.open_device)
-        self.viewer_btn.clicked.connect(self.streaming)
-        self.record_btn.clicked.connect(self.recording)
+        self.test_btn.clicked.connect(self.set_config)
+        self.btn_open.clicked.connect(self.open_device)
+        self.btn_viewer.clicked.connect(self.streaming)
+        self.btn_record.clicked.connect(self.recording)
         
         layout.addLayout(top_layout)
         layout.addWidget(self.ir_label)
@@ -78,6 +95,8 @@ class RecordViewLayout(QWidget):
 
     def set_config(self) -> None:
         pass
+    
+    
 
     def open_device(self):
         if self.device_flag:

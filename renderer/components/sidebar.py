@@ -127,8 +127,8 @@ class ColorControlPanel(QWidget):
         super().__init__()
         # 메인 레이아웃
         layout = QGridLayout()
-        exposure_time = QSlider(Qt.Orientation.Horizontal)
-        # exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
+        # exposure_time = QSlider(Qt.Orientation.Horizontal)
+        exposure_time = _ColorSlider(Qt.Orientation.Horizontal, (0, 100), 50, "slider.stylesheet")
         white_balance = QSlider(Qt.Orientation.Horizontal)
         brightness = QSlider(Qt.Orientation.Horizontal)
         contrast = QSlider(Qt.Orientation.Horizontal)
@@ -256,8 +256,10 @@ class IRCameraPanel(QFrame):
     def visible_option(self):
         if self.state:
             self.label_switch.setText("Off")
+            self.state = False
         else:
             self.label_switch.setText("On")
+            self.state = True
 
 class AudioPanel(QFrame):
     def __init__(self) -> None:
@@ -324,11 +326,13 @@ class AudioPanel(QFrame):
             self.btn_samplerate.setDisabled(True)
             self.btn_channel.setDisabled(True)
             self.btn_subtype.setDisabled(True)
+            self.label_switch.setText("Off")
             self.state = False
         else:
             self.btn_samplerate.setDisabled(False)
             self.btn_channel.setDisabled(False)
             self.btn_subtype.setDisabled(False)
+            self.label_switch.setText("On")
             self.state = True
 
 
@@ -383,7 +387,7 @@ class StateSwitchButton(QPushButton):
         pen.setStyle(Qt.PenStyle.MPenStyle)
         painter.setPen(pen)
 
-        painter.setBrush(QColor(255, 0, 0))
+        painter.setBrush(QColor(63, 64,66))
         painter.drawRoundedRect(QRect(-width, -radius, 2*width, 2*radius), 3, 3)
         
         painter.setBrush(self.bg_color)
