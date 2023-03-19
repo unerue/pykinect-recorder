@@ -36,8 +36,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 120
 target-version = ["py3.9", "py3.10"]
+exclude = """.venv|venv|.env"""
 
 [tool.isort]
+skip = [".gitignore"]
 
 [tool.flake8]
-
+exclude = ".venv"
+max-line-length = 120
