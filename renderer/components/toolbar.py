@@ -1,42 +1,31 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QFrame
+    QHBoxLayout, QFrame
 )
+from .custom_buttons import PushButton
 
 
-class ToolbarLayout(QFrame):
+class Toolbar(QFrame):
     def __init__(self) -> None:
         super().__init__()
         
-        self.setObjectName("ToolbarLayout")
+        self.setObjectName("Toolbar")
         self.setStyleSheet("""
-            QFrame#ToolbarLayout {
-                background-color: #3e4d59;
-                padding: 0px;
-                margin: 0px;
+            QFrame#Toolbar {
+                background-color: #3e4d59; padding: 0px; margin: 0px;
             }
         """)
 
-        self.sourceAddBtn = QPushButton("Add Source")
-        self.sourceAddBtn.setFont(QFont("Arial", 15))
-        self.sourceAddBtn.setFixedWidth(300)
+        btn_option = PushButton("옵션", "Arial", 10)
+        self.btn_ml = PushButton("ML Solution", "Arial", 10)
+        btn_option.clicked.connect(self.option)
 
-        self.uploadBtn = QPushButton("업로드")
-        self.uploadBtn.setFont(QFont("Arial", 10))
+        layout_main = QHBoxLayout()
+        layout_main.addWidget(btn_option)
+        layout_main.addWidget(self.btn_ml)
+        layout_main.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.setLayout(layout_main)
 
-        self.optionBtn = QPushButton("옵션")
-        self.optionBtn.setFont(QFont("Arial", 10))
-        self.button_ml = QPushButton("ML Solution")
-        self.button_ml.setFont(QFont("Arial", 10))
-        # self.hide_panel = self.findChild(QFrame, "VisionSolutionPanel")
-
-        sidebarlayout = QHBoxLayout()
-        sidebarlayout.addWidget(self.sourceAddBtn)
-        sidebarlayout.addWidget(self.uploadBtn)
-        sidebarlayout.addWidget(self.optionBtn)
-        sidebarlayout.addWidget(self.button_ml)
-        sidebarlayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.setLayout(sidebarlayout)
-
-
+    def option(self) -> None:
+        pass

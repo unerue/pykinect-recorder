@@ -61,9 +61,11 @@ def k4a_device_get_capture(device_handle, capture_handle, timeout):
 
 def k4a_device_get_imu_sample(device_handle, imu_sample_handle, timeout):
     """
-    K4A_EXPORT k4a_wait_result_t k4a_device_get_imu_sample(k4a_device_t device_handle,
-                                                                                                                    k4a_imu_sample_t *imu_sample,
-                                                                                                                    int32_t timeout_in_ms);
+    K4A_EXPORT k4a_wait_result_t k4a_device_get_imu_sample(
+        k4a_device_t device_handle,
+        k4a_imu_sample_t *imu_sample,
+        int32_t timeout_in_ms
+    );
     """
 
     _k4a_device_get_imu_sample = k4a_dll.k4a_device_get_imu_sample
