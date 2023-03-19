@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
         self.toolbar.setFixedHeight(50)
         
         # frame Layout
-        framelayout = QHBoxLayout()
+        framelayout = QHBoxLayout()        
         self.sidebar = SidebarLayout()
         # self.sidebar.setFixedSize(300, 550)
         framelayout.setAlignment(Qt.AlignmentFlag.AlignTop)

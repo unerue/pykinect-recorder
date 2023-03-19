@@ -1,5 +1,5 @@
 import os
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QFont
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QComboBox, QVBoxLayout, 
@@ -8,9 +8,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QRect
 
 
-class SidebarLayout(QWidget):
+class SidebarLayout(QFrame):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("background-color: #242c33;")
+        # self.setFixedHeight(1550)
+        self.setMaximumHeight(1900)
         layout = QVBoxLayout()
         layout.addWidget(RgbCameraPanel())
         layout.addWidget(DepthCameraPanel())
@@ -23,6 +26,20 @@ class SidebarLayout(QWidget):
         self.setFixedWidth(300)
 
 
+class _ComboBox(QComboBox):
+    def __init__(self, items: List[str], current_index: int, stylesheet: Union[str, os.PathLike] = None):
+        super().__init__()
+        self.addItems(items)
+        self.setCurrentIndex(current_index)
+
+        # TODO: 외부 함수화 또는 PySide6에서 이런 함수 있는지 찾아보셈
+        if stylesheet is not None:
+            with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
+                stylesheet = f.read()
+                print(stylesheet)
+            self.setStyleSheet(str(stylesheet))
+
+
 class RgbCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
@@ -30,7 +47,8 @@ class RgbCameraPanel(QFrame):
         self.setObjectName("RgbCameraPanel")
         self.setStyleSheet("""
             QFrame#RgbCameraPanel {
-                border-color: red; border-width: 2px;
+                border-color: gray; border-width: 2px;
+                border-radius: 5px;
             }
         """)
         layout_vbox = QVBoxLayout()
@@ -53,16 +71,11 @@ class RgbCameraPanel(QFrame):
         # 세부레이아웃
         layout_grid = QGridLayout()
         
-        # 해상도
-        self.btn_resolutions = QComboBox()
-        self.btn_resolutions.addItem("1280×720")
-        self.btn_resolutions.addItem("1920×1080")
-        self.btn_resolutions.addItem("2560×1440")
-        self.btn_resolutions.addItem("3840×2160")
-        self.btn_resolutions.setCurrentIndex(0)
-        # combo_res.addItem("3070p")  # TODO: ten years later~ 이게 선택이되면 fps가 15로 변경되는 코드를 짜야함
-
         layout_grid.addWidget(QLabel("Resolution"), 0, 0)
+        # # 해상도
+        self.btn_resolutions = _ComboBox(
+            ["1280×720", "1920×1080", "2560×1440", "3840×2160", "3070p"], 0
+        )
         layout_grid.addWidget(self.btn_resolutions, 0, 1)
 
         self.btn_rgbformat = QComboBox()

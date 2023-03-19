@@ -12,7 +12,9 @@ class ToolbarLayout(QFrame):
         self.setObjectName("ToolbarLayout")
         self.setStyleSheet("""
             QFrame#ToolbarLayout {
-                border-color: blue; border-width: 2px;
+                background-color: #3e4d59;
+                padding: 0px;
+                margin: 0px;
             }
         """)
 

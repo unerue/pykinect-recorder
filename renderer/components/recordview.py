@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 from PySide6.QtCore import Qt, Slot, Signal, QThread
 from PySide6.QtGui import QImage, QPixmap, QFont, QPalette, QColor
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QToolTip
+    QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QToolTip, QFrame
 )
 
 from .sidebar import SidebarLayout
@@ -20,16 +20,17 @@ from main._pyk4a.pykinect import start_device, initialize_libraries
 from main._pyk4a.k4a import Device
 
 
-class RecordViewLayout(QWidget):
+class RecordViewLayout(QFrame):
     def __init__(self) -> None:
-        super().__init__()      
+        super().__init__()
+        self.setStyleSheet("background-color: black;") 
         layout = QVBoxLayout()
 
         self.rgb_label = QLabel("RGB Sensor", self)
         self.rgb_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.rgb_label.setFixedWidth(440)
         self.rgb_label.setStyleSheet(
-            "background-color: black;"
+            "background-color: black; border-color: white;"
         )
 
         self.depth_label = QLabel("Depth Sensor", self)
@@ -56,13 +57,13 @@ class RecordViewLayout(QWidget):
         self.btn_open = QPushButton("Device open")
         self.btn_viewer = QPushButton("▶")
         self.btn_record = QPushButton("●")
-        
         self.btn_viewer.setStyleSheet("""
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
             """
         )
+        self.btn_viewer.setStyleSheet("background-color: red;")
         self.btn_record.setStyleSheet("""
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
