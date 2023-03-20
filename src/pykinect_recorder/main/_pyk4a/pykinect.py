@@ -1,7 +1,6 @@
 import ctypes
 
 from .k4a import _k4a, Device, default_configuration
-# from .k4abt import _k4abt, Tracker
 from .k4arecord import _k4arecord
 from .k4arecord.playback import Playback
 from .utils import (
@@ -65,7 +64,7 @@ def start_device(
 
     # Start device
     device.start(config, record, record_filepath)
-
+    
     return device
 
 

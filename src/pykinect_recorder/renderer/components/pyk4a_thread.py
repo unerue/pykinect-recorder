@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
-from main._pyk4a.k4a import Device
+from src.pykinect_recorder.main._pyk4a.k4a import Device
 
 
 class Pyk4aThread(QThread):
@@ -21,19 +21,17 @@ class Pyk4aThread(QThread):
         QThread.__init__(self, parent)
         self.device = device
         self.is_record = is_record
-        self.status = None
-        
-        if self.is_record:
-            self.set_filename()
+        self.is_run = None
     
     def run(self):
         # TODO Record 불러오는 코드 추가.
         if self.is_record:
             pass
         
-        while self.status:
+        while self.is_run:
             cur_frame = self.device.update()
-            # (Success, frame)
+
+            # (Success flag, numpy data)
             cur_rgb_frame = cur_frame.get_color_image()
             cur_depth_frame = cur_frame.get_depth_image()
             cur_ir_frame = cur_frame.get_ir_image()
@@ -48,7 +46,7 @@ class Pyk4aThread(QThread):
                 self.RGBUpdateFrame.emit(scaled_rgb_frame)
 
             if cur_depth_frame[0]:
-                depth_frame = self.colorize(
+                depth_frame = self._colorize(
                     cur_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV
                 )
                 h, w, ch = depth_frame.shape
@@ -58,7 +56,7 @@ class Pyk4aThread(QThread):
                 self.DepthUpdateFrame.emit(scaled_depth_frame)
 
             if cur_ir_frame[0]:
-                ir_frame = self.colorize(
+                ir_frame = self._colorize(
                     cur_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE
                 )
                 h, w, ch = ir_frame.shape
@@ -66,21 +64,8 @@ class Pyk4aThread(QThread):
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
                 self.IRUpdateFrame.emit(scaled_ir_frame)
-                
-                
-    def set_filename(self) -> None:
-        base_path = os.path.join(Path.home(), "Videos")
-
-        filename = datetime.datetime.now()
-        filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
-
-        self.filename_video = os.path.join(base_path, f"{filename}.mkv")
-        self.filename_audio = os.path.join(base_path, f"{filename}.wav")
-        if sys.flags.debug:
-            print(base_path, self.filename_video, self.filename_audio)
             
-            
-    def colorize(
+    def _colorize(
         self,
         image: NDArray,
         clipping_range: Tuple[Optional[int], Optional[int]] = (None, None),

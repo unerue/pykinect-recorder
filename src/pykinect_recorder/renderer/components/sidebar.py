@@ -4,8 +4,10 @@ from PySide6.QtWidgets import (
     QWidget, QGridLayout, QCheckBox, QPushButton, QFrame
 )
 from PySide6.QtCore import Qt, QRect
-
 from .custom_buttons import Label, ComboBox, Slider
+
+
+_config_sidebar = {}
 
 
 class Sidebar(QFrame):
@@ -20,10 +22,9 @@ class Sidebar(QFrame):
         self.vision_solution_panel = VisionSolutionPanel()
         layout_main.addWidget(self.vision_solution_panel)
         self.setLayout(layout_main)
-        
-        # self.setFixedHeight(1550)
+
         self.setMaximumHeight(1900)
-        self.setFixedWidth(300)
+        self.setFixedSize(300, 1000)
 
 
 class RgbCameraPanel(QFrame):
@@ -39,7 +40,7 @@ class RgbCameraPanel(QFrame):
 
         layout_main = QVBoxLayout()
         layout_title = QHBoxLayout()
-        
+
         # toggle btn
         self.is_change = True
         self.btn_switch = ToggleButton()
@@ -52,33 +53,35 @@ class RgbCameraPanel(QFrame):
         layout_title.addWidget(QLabel("RGB Camera Option"))
         layout_title.addWidget(QLabel(""))
         layout_title.addLayout(layout_switch)
-        # 세부레이아웃
 
         layout_grid = QGridLayout()
-
         layout_grid.addWidget(QLabel("Resolution"), 0, 0)
         self.btn_resolutions = ComboBox(
-            ["720p", "1080p", "1440p", "2160p", "3072p"], 0
+            ["720p", "1080p", "1440p", "1536", "2160p", "3072p"], 0
         )
         layout_grid.addWidget(self.btn_resolutions, 0, 1)
+        self.btn_resolutions.currentIndexChanged.connect(self.set_config)
 
         layout_grid.addWidget(QLabel("Color Format"), 1, 0)
         self.btn_rgbformat = ComboBox(
             ["MJPG", "NV12", "YUV2", "BGRA"], 3
         )
         layout_grid.addWidget(self.btn_rgbformat, 1, 1)
+        self.btn_rgbformat.currentIndexChanged.connect(self.set_config)
 
         layout_grid.addWidget(QLabel("FPS"), 2, 0)
         self.btn_fps = ComboBox(
             ["5", "15", "30"], 2
         )
         layout_grid.addWidget(self.btn_fps, 2, 1)
+        self.btn_fps.currentIndexChanged.connect(self.set_config)
 
         self.control_panel = ColorControlPanel()
         layout_main.addLayout(layout_title)
         layout_main.addLayout(layout_grid)
         layout_main.addWidget(self.control_panel)
 
+        self.set_config()
         self.setLayout(layout_main)
         
     def _toggle(self) -> None:
@@ -97,6 +100,11 @@ class RgbCameraPanel(QFrame):
             self.is_change = True
             self.label_switch.setText("On")
             
+    def set_config(self) -> None:
+        _config_sidebar["color_resolution"] = self.btn_resolutions.currentIndex()+1
+        _config_sidebar["color_format"] = self.btn_rgbformat.currentIndex()
+        _config_sidebar["camera_fps"] = self.btn_fps.currentIndex()
+    
 
 class ColorControlPanel(QWidget):
     def __init__(self) -> None:
@@ -105,48 +113,74 @@ class ColorControlPanel(QWidget):
         layout = QGridLayout()
 
         layout.addWidget(QLabel("Exposure Time"), 0, 0)
-        exposure_time = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(exposure_time, 0, 1)
+        self.exposure_time = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.exposure_time, 0, 1)
+        self.exposure_time.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("White Balance"), 1, 0)
-        white_balance = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(white_balance, 1, 1)
+        self.white_balance = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.white_balance, 1, 1)
+        self.white_balance.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("Brightness"), 2, 0)
-        brightness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(brightness, 2, 1)
+        self.brightness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.brightness, 2, 1)
+        self.brightness.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("Contrast"), 3, 0)
-        contrast = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(contrast, 3, 1)
+        self.contrast = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.contrast, 3, 1)
+        self.contrast.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("Saturation"), 4, 0)
-        saturation = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(saturation, 4, 1)
+        self.saturation = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.saturation, 4, 1)
+        self.saturation.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("Sharpness"), 5, 0)
-        sharpness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(sharpness, 5, 1)
+        self.sharpness = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.sharpness, 5, 1)
+        self.sharpness.sliderReleased.connect(self.set_config)
 
         layout.addWidget(QLabel("Gain"), 6, 0)
-        gain = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
-        layout.addWidget(gain, 6, 1)
+        self.gain = Slider(Qt.Orientation.Horizontal, (0, 100), 50)
+        layout.addWidget(self.gain, 6, 1)
+        self.gain.sliderReleased.connect(self.set_config)
 
-        backlight = QCheckBox("Backlight compensation")
-        backlight.setCheckable(True)
-        layout.addWidget(backlight, 7, 0, 1, 2)
+        self.backlight = QCheckBox("Backlight compensation")
+        self.backlight.setCheckable(True)
+        self.backlight.stateChanged.connect(self.set_config)
+        layout.addWidget(self.backlight, 7, 0, 1, 2)
 
         layout.addWidget(QLabel("Power Freq"), 8, 0)
         layout_power_freq = QHBoxLayout()
         self.power_freq1 = QRadioButton("50hz")
         self.power_freq2 = QRadioButton("60hz")
+        self.power_freq2.setChecked(True)
+        self.power_freq1.clicked.connect(self.set_config)
+        self.power_freq2.clicked.connect(self.set_config)
         layout_power_freq.addWidget(self.power_freq1)
         layout_power_freq.addWidget(self.power_freq2)
         layout.addLayout(layout_power_freq, 8, 1)
 
+        self.set_config()
         self.setLayout(layout)
         
-        
+    def set_config(self) -> None:
+        pass
+        # color_option = {
+        #     "exposure_time": self.exposure_time.value(),
+        #     "white_balance": self.white_balance.value(),
+        #     "contrast": self.contrast.value(),
+        #     "saturation": self.saturation.value(),
+        #     "sharpness": self.sharpness.value(),
+        #     "gain": self.gain.value(),
+        #     "backlight_compensation": self.backlight.isChecked(),
+        #     "power_frequency": "50hz" if self.power_freq1.isChecked() else "60hz"
+        # }
+        # _config_sidebar["color_option"] = color_option
+
+   
 class DepthCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
@@ -178,13 +212,16 @@ class DepthCameraPanel(QFrame):
             ["NFOV_Binned", "NFOV_Unbinned", "WFOV_Binned", "WFOV_UnBinned", "PASSIVE_IR"], 1
         )
         layout_grid.addWidget(self.btn_depth, 1, 1)
+        self.btn_depth.currentIndexChanged.connect(self.set_config)
 
         layout_grid.addWidget(QLabel("FPS"), 2, 0)
         self.btn_fps = ComboBox(
             ["5", "15", "30"], 2
         )
         layout_grid.addWidget(self.btn_fps, 2, 1)
+        self.btn_fps.currentIndexChanged.connect(self.set_config)
 
+        self.set_config()
         self.setLayout(layout_grid)
 
     def _toggle(self) -> None:
@@ -198,6 +235,9 @@ class DepthCameraPanel(QFrame):
             self.btn_fps.setDisabled(False)
             self.is_change = True
             self.label_switch.setText("On")
+
+    def set_config(self) -> None:
+        _config_sidebar["depth_mode"] = self.btn_depth.currentIndex()+1
 
 
 class IRCameraPanel(QFrame):
@@ -214,7 +254,7 @@ class IRCameraPanel(QFrame):
         layout_title = QHBoxLayout()
         self.is_change = True
 
-        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
+        layout_grid.addWidget(QLabel("IR Camera Option"), 0, 0)
         self.btn_switch = ToggleButton()
         self.btn_switch.clicked.connect(self._toggle)
         self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
@@ -250,7 +290,7 @@ class AudioPanel(QFrame):
         layout_title = QHBoxLayout()
         self.is_change = True
 
-        layout_grid.addWidget(QLabel("Depth Camera Option"), 0, 0)
+        layout_grid.addWidget(QLabel("Audio Option"), 0, 0)
         self.btn_switch = ToggleButton()
         self.btn_switch.clicked.connect(self._toggle)
         self.label_switch = Label("On", "Arial", 8, Qt.AlignmentFlag.AlignCenter)
@@ -266,19 +306,23 @@ class AudioPanel(QFrame):
             ["22050", "44100"], 1
         )
         layout_grid.addWidget(self.btn_samplerate, 1, 1)
+        self.btn_samplerate.currentIndexChanged.connect(self.set_config)
 
         layout_grid.addWidget(QLabel("Audio Channels"), 2, 0)
         self.btn_channel = ComboBox(
             ["1", "2", "3", "4", "5", "6", "7"], 1
         ) 
         layout_grid.addWidget(self.btn_channel, 2, 1)
+        self.btn_channel.currentIndexChanged.connect(self.set_config)
 
         layout_grid.addWidget(QLabel("Subtype"), 3, 0)
         self.btn_subtype = ComboBox(
             ["PCM_S8", "PCM_16", "PCM_24"], 2
         )
         layout_grid.addWidget(self.btn_subtype, 3, 1)
+        self.btn_subtype.currentIndexChanged.connect(self.set_config)
 
+        self.set_config()
         self.setLayout(layout_grid)
         
     def _toggle(self) -> None:
@@ -294,6 +338,15 @@ class AudioPanel(QFrame):
             self.btn_subtype.setDisabled(False)
             self.label_switch.setText("On")
             self.is_change = True
+
+    def set_config(self) -> None:
+        pass
+        # audio = {
+        #     "samplerate": self.btn_samplerate.currentText(),
+        #     "channel": self.btn_channel.currentText(),
+        #     "subtype": self.btn_subtype.currentText()
+        # }
+        # _config_sidebar["audio"] = audio
 
 
 class VisionSolutionPanel(QFrame):

@@ -1,4 +1,8 @@
+import os
+import sys
 import ctypes
+import datetime
+from pathlib import Path
 
 from . import _k4a
 from .capture import Capture
@@ -13,11 +17,13 @@ class Device:
     calibration = None
     capture = None
     imu_sample = None
+    filename_video = None
 
     def __init__(self, index: int = 0) -> None:
         self._handle = None
         self._handle = self.open(index)
         self.recording = False
+        self.record = False
 
     def __del__(self) -> None:
         self.close()
@@ -44,7 +50,7 @@ class Device:
         self.configuration = configuration
         self.start_cameras(configuration)
         self.start_imu()
-
+        
         if record:
             self.record = Record(
                 self._handle, self.configuration.handle(), record_filepath

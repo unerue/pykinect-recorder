@@ -3,4 +3,4 @@ import sys
 
 __appname__ = "AzureKinectCamera"
 
-from ._pyk4a import *
+from . import _pyk4a

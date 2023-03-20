@@ -547,9 +547,11 @@ def k4a_device_stop_imu(device_handle):
 
 def k4a_device_get_serialnum(device_handle, serial_number, serial_number_size):
     """
-    K4A_EXPORT k4a_buffer_result_t k4a_device_get_serialnum(k4a_device_t device_handle,
-                                                                                                                    char *serial_number,
-                                                                                                                    size_t *serial_number_size);
+    K4A_EXPORT k4a_buffer_result_t k4a_device_get_serialnum(
+        k4a_device_t device_handle,
+        char *serial_number,
+        size_t *serial_number_size
+    );
     """
 
     _k4a_device_get_serialnum = k4a_dll.k4a_device_get_serialnum
@@ -587,14 +589,16 @@ def k4a_device_get_color_control_capabilities(
     default_mode,
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_device_get_color_control_capabilities(k4a_device_t device_handle,
-                                                                                                                                            k4a_color_control_command_t command,
-                                                                                                                                            bool *supports_auto,
-                                                                                                                                            int32_t *min_value,
-                                                                                                                                            int32_t *max_value,
-                                                                                                                                            int32_t *step_value,
-                                                                                                                                            int32_t *default_value,
-                                                                                                                                            k4a_color_control_mode_t *default_mode);
+    K4A_EXPORT k4a_result_t k4a_device_get_color_control_capabilities(
+        k4a_device_t device_handle,
+        k4a_color_control_command_t command,
+        bool *supports_auto,
+        int32_t *min_value,
+        int32_t *max_value,
+        int32_t *step_value,
+        int32_t *default_value,
+        k4a_color_control_mode_t *default_mode
+    );
     """
 
     _k4a_device_get_color_control_capabilities = (
@@ -626,10 +630,12 @@ def k4a_device_get_color_control_capabilities(
 
 def k4a_device_get_color_control(device_handle, command, mode, value):
     """
-    K4A_EXPORT k4a_result_t k4a_device_get_color_control(k4a_device_t device_handle,
-                                                                                                                    k4a_color_control_command_t command,
-                                                                                                                    k4a_color_control_mode_t *mode,
-                                                                                                                    int32_t *value);
+    K4A_EXPORT k4a_result_t k4a_device_get_color_control(
+        k4a_device_t device_handle,
+        k4a_color_control_command_t command,
+        k4a_color_control_mode_t *mode,
+        int32_t *value
+    );
     """
 
     _k4a_device_get_color_control = k4a_dll.k4a_device_get_color_control
@@ -646,10 +652,12 @@ def k4a_device_get_color_control(device_handle, command, mode, value):
 
 def k4a_device_set_color_control(device_handle, command, mode, value):
     """
-    K4A_EXPORT k4a_result_t k4a_device_set_color_control(k4a_device_t device_handle,
-                                                                                                                    k4a_color_control_command_t command,
-                                                                                                                    k4a_color_control_mode_t mode,
-                                                                                                                    int32_t value);
+    K4A_EXPORT k4a_result_t k4a_device_set_color_control(
+        k4a_device_t device_handle,
+        k4a_color_control_command_t command,
+        k4a_color_control_mode_t mode,
+        int32_t value
+    );
     """
 
     _k4a_device_set_color_control = k4a_dll.k4a_device_set_color_control
@@ -666,9 +674,11 @@ def k4a_device_set_color_control(device_handle, command, mode, value):
 
 def k4a_device_get_raw_calibration(device_handle, data, data_size):
     """
-    K4A_EXPORT k4a_buffer_result_t k4a_device_get_raw_calibration(k4a_device_t device_handle,
-                                                                                                                                    uint8_t *data,
-                                                                                                                                    size_t *data_size);
+    K4A_EXPORT k4a_buffer_result_t k4a_device_get_raw_calibration(
+        k4a_device_t device_handle,
+        uint8_t *data,
+        size_t *data_size
+    );
     """
 
     _k4a_device_get_raw_calibration = k4a_dll.k4a_device_get_raw_calibration
@@ -686,10 +696,12 @@ def k4a_device_get_calibration(
     device_handle, depth_mode, color_resolution, calibration
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_device_get_calibration(k4a_device_t device_handle,
-                                                                                                            const k4a_depth_mode_t depth_mode,
-                                                                                                            const k4a_color_resolution_t color_resolution,
-                                                                                                            k4a_calibration_t *calibration);
+    K4A_EXPORT k4a_result_t k4a_device_get_calibration(
+        k4a_device_t device_handle,
+        const k4a_depth_mode_t depth_mode,
+        const k4a_color_resolution_t color_resolution,
+        k4a_calibration_t *calibration
+    );
     """
 
     _k4a_device_get_calibration = k4a_dll.k4a_device_get_calibration
@@ -710,9 +722,11 @@ def k4a_device_get_sync_jack(
     device_handle, sync_in_jack_connected, sync_out_jack_connected
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_device_get_sync_jack(k4a_device_t device_handle,
-                                                                                                            bool *sync_in_jack_connected,
-                                                                                                            bool *sync_out_jack_connected);
+    K4A_EXPORT k4a_result_t k4a_device_get_sync_jack(
+        k4a_device_t device_handle,
+        bool *sync_in_jack_connected,
+        bool *sync_out_jack_connected
+    );
     """
 
     _k4a_device_get_sync_jack = k4a_dll.k4a_device_get_sync_jack
@@ -732,11 +746,13 @@ def k4a_calibration_get_from_raw(
     raw_calibration, raw_calibration_size, depth_mode, color_resolution, calibration
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_get_from_raw(char *raw_calibration,
-                                                                                                                    size_t raw_calibration_size,
-                                                                                                                    const k4a_depth_mode_t depth_mode,
-                                                                                                                    const k4a_color_resolution_t color_resolution,
-                                                                                                                    k4a_calibration_t *calibration);
+    K4A_EXPORT k4a_result_t k4a_calibration_get_from_raw(
+        char *raw_calibration,
+        size_t raw_calibration_size,
+        const k4a_depth_mode_t depth_mode,
+        const k4a_color_resolution_t color_resolution,
+        k4a_calibration_t *calibration
+    );
     """
 
     _k4a_calibration_get_from_raw = k4a_dll.k4a_calibration_get_from_raw
@@ -758,11 +774,13 @@ def k4a_calibration_3d_to_3d(
     calibration, source_point3d_mm, source_camera, target_camera, target_point3d_mm
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_3d_to_3d(const k4a_calibration_t *calibration,
-                                                                                                            const k4a_float3_t *source_point3d_mm,
-                                                                                                            const k4a_calibration_type_t source_camera,
-                                                                                                            const k4a_calibration_type_t target_camera,
-                                                                                                            k4a_float3_t *target_point3d_mm);
+    K4A_EXPORT k4a_result_t k4a_calibration_3d_to_3d(
+        const k4a_calibration_t *calibration,
+        const k4a_float3_t *source_point3d_mm,
+        const k4a_calibration_type_t source_camera,
+        const k4a_calibration_type_t target_camera,
+        k4a_float3_t *target_point3d_mm
+    );
     """
 
     _k4a_calibration_3d_to_3d = k4a_dll.k4a_calibration_3d_to_3d
@@ -790,13 +808,15 @@ def k4a_calibration_2d_to_3d(
     valid,
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_2d_to_3d(const k4a_calibration_t *calibration,
-                                                                                                            const k4a_float2_t *source_point2d,
-                                                                                                            const float source_depth_mm,
-                                                                                                            const k4a_calibration_type_t source_camera,
-                                                                                                            const k4a_calibration_type_t target_camera,
-                                                                                                            k4a_float3_t *target_point3d_mm,
-                                                                                                            int *valid);
+    K4A_EXPORT k4a_result_t k4a_calibration_2d_to_3d(
+        const k4a_calibration_t *calibration,
+        const k4a_float2_t *source_point2d,
+        const float source_depth_mm,
+        const k4a_calibration_type_t source_camera,
+        const k4a_calibration_type_t target_camera,
+        k4a_float3_t *target_point3d_mm,
+        int *valid
+    );
     """
 
     _k4a_calibration_2d_to_3d = k4a_dll.k4a_calibration_2d_to_3d
@@ -826,12 +846,14 @@ def k4a_calibration_3d_to_2d(
     calibration, source_point3d_mm, source_camera, target_camera, target_point2d, valid
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_3d_to_2d(const k4a_calibration_t *calibration,
-                                                                                                            const k4a_float3_t *source_point3d_mm,
-                                                                                                            const k4a_calibration_type_t source_camera,
-                                                                                                            const k4a_calibration_type_t target_camera,
-                                                                                                            k4a_float2_t *target_point2d,
-                                                                                                            int *valid);
+    K4A_EXPORT k4a_result_t k4a_calibration_3d_to_2d(
+        const k4a_calibration_t *calibration,
+        const k4a_float3_t *source_point3d_mm,
+        const k4a_calibration_type_t source_camera,
+        const k4a_calibration_type_t target_camera,
+        k4a_float2_t *target_point2d,
+        int *valid
+    );
     """
 
     _k4a_calibration_3d_to_2d = k4a_dll.k4a_calibration_3d_to_2d
@@ -865,13 +887,15 @@ def k4a_calibration_2d_to_2d(
     valid,
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_2d_to_2d(const k4a_calibration_t *calibration,
-                                                                                                            const k4a_float2_t *source_point2d,
-                                                                                                            const float source_depth_mm,
-                                                                                                            const k4a_calibration_type_t source_camera,
-                                                                                                            const k4a_calibration_type_t target_camera,
-                                                                                                            k4a_float2_t *target_point2d,
-                                                                                                            int *valid);
+    K4A_EXPORT k4a_result_t k4a_calibration_2d_to_2d(
+        const k4a_calibration_t *calibration,
+        const k4a_float2_t *source_point2d,
+        const float source_depth_mm,
+        const k4a_calibration_type_t source_camera,
+        const k4a_calibration_type_t target_camera,
+        k4a_float2_t *target_point2d,
+        int *valid
+    );
     """
 
     _k4a_calibration_2d_to_2d = k4a_dll.k4a_calibration_2d_to_2d
@@ -901,11 +925,13 @@ def k4a_calibration_color_2d_to_depth_2d(
     calibration, source_point2d, depth_image, target_point2d, valid
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_calibration_color_2d_to_depth_2d(const k4a_calibration_t *calibration,
-                                                                                                                                    const k4a_float2_t *source_point2d,
-                                                                                                                                    const k4a_image_t depth_image,
-                                                                                                                                    k4a_float2_t *target_point2d,
-                                                                                                                                    int *valid);
+    K4A_EXPORT k4a_result_t k4a_calibration_color_2d_to_depth_2d(
+        const k4a_calibration_t *calibration,
+        const k4a_float2_t *source_point2d,
+        const k4a_image_t depth_image,
+        k4a_float2_t *target_point2d,
+        int *valid
+    );
     """
 
     _k4a_calibration_color_2d_to_depth_2d = k4a_dll.k4a_calibration_color_2d_to_depth_2d
@@ -947,9 +973,11 @@ def k4a_transformation_depth_image_to_color_camera(
     transformation_handle, depth_image, transformed_depth_image
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_color_camera(k4a_transformation_t transformation_handle,
-                                                                                                                                                    const k4a_image_t depth_image,
-                                                                                                                                                    k4a_image_t transformed_depth_image);
+    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_color_camera(
+        k4a_transformation_t transformation_handle,
+        const k4a_image_t depth_image,
+        k4a_image_t transformed_depth_image
+    );
     """
 
     _k4a_transformation_depth_image_to_color_camera = (
@@ -977,13 +1005,15 @@ def k4a_transformation_depth_image_to_color_camera_custom(
     invalid_custom_value,
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_color_camera_custom(k4a_transformation_t transformation_handle,
-                                                                                                                    const k4a_image_t depth_image,
-                                                                                                                    const k4a_image_t custom_image,
-                                                                                                                    k4a_image_t transformed_depth_image,
-                                                                                                                    k4a_image_t transformed_custom_image,
-                                                                                                                    k4a_transformation_interpolation_type_t interpolation_type,
-                                                                                                                    uint32_t invalid_custom_value);
+    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_color_camera_custom(
+        k4a_transformation_t transformation_handle,
+        const k4a_image_t depth_image,
+        const k4a_image_t custom_image,
+        k4a_image_t transformed_depth_image,
+        k4a_image_t transformed_custom_image,
+        k4a_transformation_interpolation_type_t interpolation_type,
+        uint32_t invalid_custom_value
+    );
     """
 
     _k4a_transformation_depth_image_to_color_camera_custom = (
@@ -1015,10 +1045,12 @@ def k4a_transformation_color_image_to_depth_camera(
     transformation_handle, depth_image, color_image, transformed_color_image
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_transformation_color_image_to_depth_camera(k4a_transformation_t transformation_handle,
-                                                                                                                                                    const k4a_image_t depth_image,
-                                                                                                                                                    const k4a_image_t color_image,
-                                                                                                                                                    k4a_image_t transformed_color_image);
+    K4A_EXPORT k4a_result_t k4a_transformation_color_image_to_depth_camera(
+        k4a_transformation_t transformation_handle,
+        const k4a_image_t depth_image,
+        const k4a_image_t color_image,
+        k4a_image_t transformed_color_image
+    );
     """
 
     _k4a_transformation_color_image_to_depth_camera = (
@@ -1041,10 +1073,12 @@ def k4a_transformation_depth_image_to_point_cloud(
     transformation_handle, depth_image, camera, xyz_image
 ):
     """
-    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_point_cloud(k4a_transformation_t transformation_handle,
-                                                                                                                                                    const k4a_image_t depth_image,
-                                                                                                                                                    const k4a_calibration_type_t camera,
-                                                                                                                                                    k4a_image_t xyz_image);
+    K4A_EXPORT k4a_result_t k4a_transformation_depth_image_to_point_cloud(
+        k4a_transformation_t transformation_handle,
+        const k4a_image_t depth_image,
+        const k4a_calibration_type_t camera,
+        k4a_image_t xyz_image
+    );
     """
 
     _k4a_transformation_depth_image_to_point_cloud = (

@@ -51,6 +51,7 @@ class Configuration:
         self.subordinate_delay_off_master_usec = 0
         self.disable_streaming_indicator = False
 
+        print(self.__dict__)
         self.on_value_change()
 
     def create_from_handle(self, configuration_handle):
