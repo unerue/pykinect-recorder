@@ -175,11 +175,13 @@ def K4A_FAILED(result):
 
 # Callback Function
 """
-typedef void(k4a_logging_message_cb_t)(void *context,
-										k4a_log_level_t level,
-										const char *file,
-										const int line,
-										const char *message);
+typedef void(k4a_logging_message_cb_t)(
+    void *context,
+    k4a_log_level_t level,
+    const char *file,
+    const int line,
+    const char *message
+);
 
 typedef void(k4a_memory_destroy_cb_t)(void *buffer, void *context);
 

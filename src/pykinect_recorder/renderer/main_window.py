@@ -6,8 +6,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QMainWindow, QVBoxLayout, QWidget,
 )
 
-from main.logger import logger
-from .components.toolbar import Toolbar
+# from main.logger import logger
+from .components.toolbar import Toolbar, SaveDirLoader
 from .components.sidebar import Sidebar
 from .components.sensor_viewer import SensorViewer
 
@@ -30,17 +30,20 @@ class MainWindow(QMainWindow):
 
         # toolbar Layout
         self.toolbar = Toolbar()
-        self.toolbar.setFixedHeight(50)
         
         # frame Layout
         layout_frame = QHBoxLayout()        
         self.sidebar = Sidebar()
         layout_frame.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.toolbar.btn_ml.clicked.connect(self.sidebar.vision_solution_panel.hide_panel)
-        
+
         self.sensor_viewer = SensorViewer()
+        # self.asidebar = SaveDirLoader()
+        # self.toolbar.btn_finddir.connect(self.)        
+
         layout_frame.addWidget(self.sidebar)
         layout_frame.addWidget(self.sensor_viewer)
+        # layout_frame.addWidget(self.asidebar)
 
         layout_main = QVBoxLayout()
         layout_main.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)

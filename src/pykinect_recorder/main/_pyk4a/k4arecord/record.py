@@ -29,6 +29,8 @@ class Record:
         if self.is_valid():
             _k4arecord.k4a_record_close(self.record_handle)
             self.record_handle = None
+        else:
+            print("sibal")
 
     def flush(self):
         if self.is_valid():
