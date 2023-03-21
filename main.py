@@ -1,8 +1,8 @@
 import qdarktheme
-from src.pykinect_recorder.renderer.main_window import MainWindow
+from pykinect_recorder.renderer.main_window import MainWindow
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon
-
+ 
 
 if __name__ == "__main__":
     app = QApplication()

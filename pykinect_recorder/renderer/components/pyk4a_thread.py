@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
-from src.pykinect_recorder.main._pyk4a.k4a import Device
+from pykinect_recorder.main._pyk4a.k4a import Device
 
 
 class Pyk4aThread(QThread):
