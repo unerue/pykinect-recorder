@@ -3,13 +3,15 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QHBoxLayout, QMainWindow, QVBoxLayout, QWidget,
+    QHBoxLayout, QMainWindow, QVBoxLayout, 
+    QWidget, QTabWidget, QToolBar
 )
 
-# from main.logger import logger
 from .components.toolbar import Toolbar, SaveDirLoader
-from .components.sidebar import Sidebar
+from .components.viewer_sidebar import ViewerSidebar
 from .components.sensor_viewer import SensorViewer
+from .components.dl_sidebar import DLSidebar
+from .components.custom_widgets import Label
 
 
 class MainWindow(QMainWindow):
@@ -28,26 +30,36 @@ class MainWindow(QMainWindow):
         
         self.setFixedSize(1920, 1080)
 
-        # toolbar Layout
+        # toolbar
         self.toolbar = Toolbar()
-        
+        self.toolbar_sample = QToolBar()
+        self.toolbar_sample.addAction("012")
+        self.toolbar_sample.addAction("123")
+
         # frame Layout
-        layout_frame = QHBoxLayout()        
-        self.sidebar = Sidebar()
+        layout_frame = QHBoxLayout()
+        self.tab_sidebar = QTabWidget()        
+        self.sidebar_viewer = ViewerSidebar()
+        self.sidebar_dl = DLSidebar()
+        self.tab_sidebar.addTab(self.sidebar_viewer, "Viewer")
+        self.tab_sidebar.addTab(self.sidebar_dl, "Deep Learning")
+        self.tab_sidebar.setMovable(True)
+
         layout_frame.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.toolbar.btn_ml.clicked.connect(self.sidebar.vision_solution_panel.hide_panel)
+        self.toolbar.btn_ml.clicked.connect(self.sidebar_viewer.vision_solution_panel.hide_panel)
 
         self.sensor_viewer = SensorViewer()
-        # self.asidebar = SaveDirLoader()
-        # self.toolbar.PATH.connect(self.asidebar.set_scrollArea)        
+        self.asidebar = SaveDirLoader()
+        self.toolbar.PATH.connect(self.asidebar.set_scrollArea)        
 
-        layout_frame.addWidget(self.sidebar)
+        layout_frame.addWidget(self.tab_sidebar)
         layout_frame.addWidget(self.sensor_viewer)
-        # layout_frame.addWidget(self.asidebar)
+        layout_frame.addWidget(self.asidebar)
 
         layout_main = QVBoxLayout()
         layout_main.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
+        layout_main.addWidget(self.toolbar_sample)
         layout_main.addWidget(self.toolbar)
         layout_main.addLayout(layout_frame)
 

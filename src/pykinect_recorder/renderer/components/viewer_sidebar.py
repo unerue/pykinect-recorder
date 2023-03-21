@@ -4,13 +4,13 @@ from PySide6.QtWidgets import (
     QWidget, QGridLayout, QCheckBox, QPushButton, QFrame
 )
 from PySide6.QtCore import Qt, QRect
-from .custom_buttons import Label, ComboBox, Slider
+from .custom_widgets import Label, ComboBox, Slider
 
 
 _config_sidebar = {}
 
 
-class Sidebar(QFrame):
+class ViewerSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet("background-color: #242c33;")
@@ -23,8 +23,8 @@ class Sidebar(QFrame):
         layout_main.addWidget(self.vision_solution_panel)
         self.setLayout(layout_main)
 
-        self.setMaximumHeight(1900)
-        self.setFixedSize(300, 1000)
+        self.setMaximumHeight(970)
+        self.setFixedWidth(300)
 
 
 class RgbCameraPanel(QFrame):

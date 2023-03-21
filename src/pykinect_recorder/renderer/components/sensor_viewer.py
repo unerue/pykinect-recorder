@@ -11,8 +11,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QDialog
 )
 
-from .custom_buttons import Label
-from .sidebar import _config_sidebar
+from .custom_widgets import Label
+from .viewer_sidebar import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
 from src.pykinect_recorder.main.logger import logger
 from src.pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
