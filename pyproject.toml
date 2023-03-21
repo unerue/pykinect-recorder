@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pykinect-recorder"
-version = "0.2.4"
+version = "0.2.0"
 description = ""
 license = "MIT"
 authors = [
