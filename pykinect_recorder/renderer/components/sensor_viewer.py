@@ -14,10 +14,10 @@ from PySide6.QtWidgets import (
 from .custom_widgets import Label
 from .viewer_sidebar import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
-from src.pykinect_recorder.main.logger import logger
-from src.pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
-from src.pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
-from src.pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries
+from pykinect_recorder.main.logger import logger
+from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
+from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
+from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries
 
 
 class SensorViewer(QFrame):

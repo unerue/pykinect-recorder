@@ -6,3 +6,6 @@ build
 main.spec
 pykinect_recorder.exe
 main/synology_utils.py
+build
+dist
+pykinect_recorder.egg-info

@@ -1,1 +1,0 @@
-from .pykinect_recorder import *
