@@ -1,13 +1,16 @@
 import os
-from PySide6.QtCore import Qt, Slot
+from pathlib import Path
+
+from PySide6.QtCore import Qt, Slot, Signal
 from PySide6.QtWidgets import (
-    QHBoxLayout, QFrame, QGridLayout,
+    QHBoxLayout, QFrame, QWidget,
     QVBoxLayout, QScrollArea, QFileDialog
 )
 from .custom_buttons import PushButton, Label
 
 
 class Toolbar(QFrame):
+    PATH = Signal(str)
     def __init__(self) -> None:
         super().__init__()
         self.setFixedSize(1900, 50)
@@ -48,44 +51,52 @@ class Toolbar(QFrame):
         )
         self.label_dirpath.setText(_dirNames)
         self.base_path = _dirNames
-
+        self.PATH.emit(self.base_path)
+        
     def option(self) -> None:
         pass
 
 
-class SaveDirLoader(QFrame):
+class SaveDirLoader(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet("""
             background-color: black;
         """)
         self.setFixedWidth(380)
-
-        layout_main = QVBoxLayout()
-        layout_title = QGridLayout()
-        
-        self.label_name = Label("파일 경로", orientation=Qt.AlignmentFlag.AlignCenter)
-        self.label_name.setFixedSize(180, 50)
-        self.label_name.setStyleSheet("""
-            border-color: white;
-        """)
-        self.label_filepath = Label("asdasd")
-        self.label_filepath.setFixedSize(180, 50)
-        self.label_filepath.setStyleSheet("""
-            border-color: white;
-        """)
-        layout_title.addWidget(self.label_name, 0, 0)
-        layout_title.addWidget(self.label_filepath, 0, 1)
-        layout_title.setAlignment(Qt.AlignmentFlag.AlignTop)
-
+        self.layout_main = QVBoxLayout()
         self.layout_scroll = QScrollArea()
-        self.layout_file = QVBoxLayout()
-        self.layout_scroll.setLayout(self.layout_file)
         
+    @Slot(str)
+    def set_scrollArea(self, filedirs: str) -> None:
+        layout_file = QVBoxLayout()
+        for filedir in Path(filedirs).iterdir():
+            fileinfo = _FileInfo()
+            filename = str(filedir).split("\\")[-1]
+            fileinfo.label_name.setText(filename)
+            fileinfo.label_stor.setText(str(os.path.getsize(filedir)))
+
+            layout_file.addWidget(fileinfo)
+        
+        self.layout_scroll.setLayout(layout_file)
         self.layout_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.layout_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.layout_main.addWidget(self.layout_scroll)
+        self.setLayout(self.layout_main)
 
-        layout_main.addLayout(layout_title)
-        layout_main.addWidget(self.layout_scroll)
 
+class _FileInfo(QFrame):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setStyleSheet(
+            "border-color: white;" "color: white;"
+        )
+        layout_main = QHBoxLayout()
+        self.label_name = Label("파일 이름", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
+        self.label_stor = Label("총 용량", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
+
+        layout_main.addWidget(self.label_name)
+        layout_main.addWidget(self.label_stor)
+
+        self.setFixedSize(340,100)
         self.setLayout(layout_main)

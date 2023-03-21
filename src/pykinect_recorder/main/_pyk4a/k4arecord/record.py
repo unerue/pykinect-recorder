@@ -9,6 +9,7 @@ class Record:
         self.create_recording(device_handle, device_configuration, filepath)
 
     def __del__(self):
+        self.flush()
         self.close()
 
     def create_recording(self, device_handle, device_configuration, filepath):
