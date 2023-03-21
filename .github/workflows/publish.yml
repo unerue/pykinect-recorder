@@ -1,0 +1,25 @@
+# name: Python package
+
+# on: [push]
+
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python-version: ["3.9", "3.10"]
+
+#     steps:
+#       - name: Set up Python ${{ matrix.python-version }}
+#         uses: JRubics/poetry-publish@v1.16
+#         with:
+#           python_version: "3.10"
+#           poetry_version: "==1.4" # (PIP version specifier syntax)
+#           pypi_token: ${{ secrets.PYPI_TOKEN }}
+#           build_format: "sdist"
+#           allow_poetry_pre_release: "yes"
+#           ignore_dev_requirements: "yes"
+#           repository_name: "pykinect-recorder"
+#           repository_url: "https://github.com/unerue/pykinect-recorder"
+#           repository_username: "unerue"

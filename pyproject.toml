@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pykinect-recorder"
-version = "0.2"
+version = "0.2.4"
 description = ""
 license = "MIT"
 authors = [
@@ -14,7 +14,7 @@ repository = "https://github.com/unerue/pykinect-recorder"
 keywords = ["azure", "kinect", "deep-learning", "computer-vision"]
 
 [tool.poetry.scripts]
-start = ""
+pykinect = "pykinect_recorder.main.cli.command:main"
 
 [tool.poetry.dependencies]
 python = "<3.12,>=3.8.1"
@@ -23,6 +23,7 @@ open3d = "^0.17.0"
 pyqtdarktheme = "^2.1.0"
 opencv-python = "^4.7.0.72"
 termcolor = "^2.2.0"
+click = "^8.1.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
