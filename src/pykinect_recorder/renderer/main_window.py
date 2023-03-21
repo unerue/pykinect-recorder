@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
 
         self.sensor_viewer = SensorViewer()
         # self.asidebar = SaveDirLoader()
-        # self.toolbar.PATH.connect(self.asidebar.set_scrollArea)        
+        # self.toolbar.btn_finddir.connect(self.)        
 
         layout_frame.addWidget(self.sidebar)
         layout_frame.addWidget(self.sensor_viewer)

@@ -108,11 +108,10 @@ class SensorViewer(QFrame):
                 setattr(self.config, k, v)
 
             initialize_libraries()
-            _device = start_device(config=self.config)
+            start_device(config=self.config)
             logger.debug(
                 "카메라 연결에 문제에 이상이 없습니다."
             )
-            _device.close()
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
@@ -123,6 +122,7 @@ class SensorViewer(QFrame):
             logger.error(
                 "카메라 연결에 문제가 있습니다. 연결을 재시도해주세요"
             )
+            print(logger)
 
             layout_modal.addWidget(e_message)
             modal.setLayout(layout_modal)
@@ -144,7 +144,6 @@ class SensorViewer(QFrame):
             self.btn_open.setText("Device open")
             self.device = None
     
-    # TODO Streaming 이랑 Recording 겹치는 코드가 많음.
     def streaming(self) -> None:
         if self.is_viewer:
             self.device = start_device(config=self.config, record=False)
@@ -161,8 +160,7 @@ class SensorViewer(QFrame):
             self.th.is_run = False
             self.btn_viewer.setText("▶")
             self.is_viewer = True
-            self.device.close()
-            self.th.quit()
+            self.device = None
             time.sleep(1)   
         
     def recording(self) -> None:
@@ -186,8 +184,7 @@ class SensorViewer(QFrame):
             self.th.is_run = False
             self.btn_record.setText("▶")
             self.is_record = True
-            self.device.close()
-            self.th.quit()
+            self.device = None
             time.sleep(1)
 
     def set_filename(self) -> None:
