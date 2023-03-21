@@ -38,12 +38,12 @@ class MainWindow(QMainWindow):
         self.toolbar.btn_ml.clicked.connect(self.sidebar.vision_solution_panel.hide_panel)
 
         self.sensor_viewer = SensorViewer()
-        # self.asidebar = SaveDirLoader()
-        # self.toolbar.PATH.connect(self.asidebar.set_scrollArea)        
+        self.asidebar = SaveDirLoader()
+        self.toolbar.PATH.connect(self.asidebar.set_scrollArea)        
 
         layout_frame.addWidget(self.sidebar)
         layout_frame.addWidget(self.sensor_viewer)
-        # layout_frame.addWidget(self.asidebar)
+        layout_frame.addWidget(self.asidebar)
 
         layout_main = QVBoxLayout()
         layout_main.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
