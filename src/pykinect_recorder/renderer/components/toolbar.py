@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QFrame, QWidget, QPushButton,
     QVBoxLayout, QScrollArea, QFileDialog
 )
-from .custom_buttons import PushButton, Label
+from .custom_widgets import PushButton, Label
 
 
 class Toolbar(QFrame):
