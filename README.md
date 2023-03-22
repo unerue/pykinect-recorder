@@ -1,14 +1,17 @@
 # pykinect-recorder
 
-## 가상환경 구축 및 패키지 설치
-```bash
-python -m venv .env
-pip install -r requirements.txt
+The pykinect-recorder is an educational/industrial library that provides sensor recording (including audio), playback, and computer vision soultions through a python wrapper of the Azure Kinect Sensor SDK.
 
-python main.py
-```
+## Installation
+
+### Prerequisites
+
+[Azure Kinect SDK](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md)
+
+#### Windows
 
 ```bash
-ufmt format .
-black .
+pip install pykinect-recorder
+
+pykinect
 ```
