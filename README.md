@@ -15,3 +15,7 @@ pip install pykinect-recorder
 
 pykinect
 ```
+
+## Features
+
+ML Solutions: native, mediapipe, torchvision
