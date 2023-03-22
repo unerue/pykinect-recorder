@@ -32,9 +32,6 @@ class MainWindow(QMainWindow):
 
         # toolbar
         self.toolbar = Toolbar()
-        self.toolbar_sample = QToolBar()
-        self.toolbar_sample.addAction("012")
-        self.toolbar_sample.addAction("123")
 
         # frame Layout
         layout_frame = QHBoxLayout()
@@ -59,7 +56,7 @@ class MainWindow(QMainWindow):
         layout_main = QVBoxLayout()
         layout_main.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
-        layout_main.addWidget(self.toolbar_sample)
+        # layout_main.addWidget(self.toolbar_sample)
         layout_main.addWidget(self.toolbar)
         layout_main.addLayout(layout_frame)
 

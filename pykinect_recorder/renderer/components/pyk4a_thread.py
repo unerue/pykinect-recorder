@@ -17,17 +17,12 @@ class Pyk4aThread(QThread):
     DepthUpdateFrame = Signal(QImage)
     IRUpdateFrame = Signal(QImage)
     
-    def __init__(self, device: Device, is_record: bool, parent=None) -> None:
+    def __init__(self, device: Device, parent=None) -> None:
         QThread.__init__(self, parent)
         self.device = device
-        self.is_record = is_record
         self.is_run = None
     
-    def run(self):
-        # TODO Record 불러오는 코드 추가.
-        if self.is_record:
-            pass
-        
+    def run(self):      
         while self.is_run:
             cur_frame = self.device.update()
 
@@ -64,7 +59,7 @@ class Pyk4aThread(QThread):
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
                 self.IRUpdateFrame.emit(scaled_ir_frame)
-            
+
     def _colorize(
         self,
         image: NDArray,

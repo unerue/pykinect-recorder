@@ -1,8 +1,10 @@
 import os
-from typing import Tuple, Union, List
+from typing import Tuple, Union, List, Any
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
-    QLabel, QComboBox, QPushButton, QSlider
+    QLabel, QComboBox, QPushButton, QSlider, 
+    QFrame, QVBoxLayout, QHBoxLayout
 )
 
 
@@ -83,3 +85,27 @@ class Label(QLabel):
                 stylesheet = f.read()
                 print(stylesheet)
             self.setStyleSheet(str(stylesheet))
+
+
+class Frame(QFrame):
+    def __init__(
+        self,
+        text: str,
+        layout: Union[QVBoxLayout, QHBoxLayout] = None,
+    ) -> None:
+        super().__init__()
+        self.setFixedSize(570, 460)
+        self.setObjectName("Frame")
+        self.setStyleSheet(
+            """QFrame#Frame {
+                border-color: white;
+            }"""
+        )
+
+        if layout is None:
+            self.layout_main = QVBoxLayout()
+            self.frame = Label(text, orientation=Qt.AlignmentFlag.AlignCenter)
+            self.layout_main.addWidget(self.frame)
+            self.setLayout(self.layout_main)
+        else:
+            self.setLayout(layout)
