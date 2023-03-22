@@ -5,15 +5,18 @@ import datetime
 import numpy as np
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
+from PySide6.QtGui import QImage, QPixmap, QDrag, QDragEnterEvent, QDragMoveEvent
 from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QDialog
+    QHBoxLayout, QPushButton, QVBoxLayout, 
+    QFrame, QDialog, QGridLayout
 )
 
-from .custom_widgets import Label
+from .custom_widgets import Label, Frame
 from .viewer_sidebar import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
+from .imu_viewer import IMUSensor
+from .audio_viewer import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
@@ -29,30 +32,17 @@ class SensorViewer(QFrame):
         self.config = None
         self.color_control = None
 
-        layout = QVBoxLayout()
-        self.label_rgb = Label("RGB Sensor", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
-        self.label_rgb.setFixedWidth(900)
-        self.label_rgb.setStyleSheet(
-            "border-color: white;"
-            "margin-left: 250px;"
-        )
-        self.label_rgb.move(300, 0)
-
-        self.label_depth = Label("Depth Sensor", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
-        self.label_depth.setFixedWidth(440)
-        self.label_depth.setStyleSheet(
-            "border-color: white;"
-        )
-
-        self.label_ir = Label("IR Sensor", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
-        self.label_ir.setFixedWidth(440)
-        self.label_ir.setStyleSheet(
-            "border-color: white;"
-        )
+        self.layout_grid = QGridLayout()
+        self.frame_rgb = Frame("RGB Sensor")
+        self.frame_depth = Frame("Depth Sensor")
+        self.frame_ir = Frame("IR Sensor")
         
-        layout_top = QHBoxLayout()
-        layout_top.addWidget(self.label_depth)
-        layout_top.addWidget(self.label_ir)
+        self.layout_subdata = QHBoxLayout() # TODO => 네이밍 다시 하기
+        self.imu_senser = IMUSensor()
+        self.audio_sensor = AudioSensor()
+        self.layout_subdata.addWidget(self.imu_senser)
+        self.layout_subdata.addWidget(self.audio_sensor)
+        self.frame_subdata = Frame("subdata", layout=self.layout_subdata)
 
         layout_btn = QHBoxLayout()
         self.btn_open = QPushButton("Device open")
@@ -82,7 +72,7 @@ class SensorViewer(QFrame):
         layout_btn.addWidget(self.btn_viewer)
         layout_btn.addWidget(self.btn_record)
         
-        self.th = Pyk4aThread(device=self.device, is_record=None)
+        self.th = Pyk4aThread(device=self.device)
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)
@@ -94,11 +84,13 @@ class SensorViewer(QFrame):
         self.btn_viewer.clicked.connect(self.streaming)
         self.btn_record.clicked.connect(self.recording)
         
-        layout.addWidget(self.label_rgb)
-        layout.addLayout(layout_top)
-        layout.addLayout(layout_btn)
-        
-        self.setLayout(layout)
+        self.layout_grid.addWidget(self.frame_rgb, 0, 0)
+        self.layout_grid.addWidget(self.frame_depth, 0, 1)
+        self.layout_grid.addWidget(self.frame_ir, 1, 0)
+        self.layout_grid.addWidget(self.frame_subdata, 1, 1)
+        self.layout_grid.addLayout(layout_btn, 2, 0, 1, 2)
+
+        self.setLayout(self.layout_grid)
         
     def check_device(self) -> bool:
         try:
@@ -137,9 +129,9 @@ class SensorViewer(QFrame):
             self.is_device = False
             self.btn_open.setText("Device close")
         else:
-            self.label_rgb.setText("RGB Frame")
-            self.label_depth.setText("Depth Frame")
-            self.label_ir.setText("IR Frame")
+            self.frame_rgb.frame.setText("RGB Frame")
+            self.frame_depth.frame.setText("Depth Frame")
+            self.frame_ir.frame.setText("IR Frame")
             self.is_device = True
             self.btn_open.setText("Device open")
             self.device = None
@@ -149,7 +141,6 @@ class SensorViewer(QFrame):
         if self.is_viewer:
             self.device = start_device(config=self.config, record=False)
             self.th.device = self.device
-            self.th.is_record = False
 
             self.btn_record.setEnabled(False)
             self.th.is_run = True
@@ -174,7 +165,6 @@ class SensorViewer(QFrame):
                 record_filepath=self.filename_video
             )
             self.th.device = self.device
-            self.th.is_record = True
 
             self.btn_viewer.setEnabled(False)
             self.th.is_run = True
@@ -203,15 +193,15 @@ class SensorViewer(QFrame):
         
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
-        self.label_rgb.setPixmap(QPixmap.fromImage(image))
+        self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))
     
     @Slot(QImage)
     def setDepthImage(self, image: QImage) -> None:
-        self.label_depth.setPixmap(QPixmap.fromImage(image))
+        self.frame_depth.frame.setPixmap(QPixmap.fromImage(image))
         
     @Slot(QImage)
     def setIRImage(self, image: QImage) -> None:
-        self.label_ir.setPixmap(QPixmap.fromImage(image))
+        self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
         
     def initial_check(self) -> bool:
         # TODO: pykinect_recorder 폴더에서 유틸로 처리

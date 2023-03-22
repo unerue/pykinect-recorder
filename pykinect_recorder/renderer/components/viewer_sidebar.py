@@ -57,7 +57,7 @@ class RgbCameraPanel(QFrame):
         layout_grid = QGridLayout()
         layout_grid.addWidget(QLabel("Resolution"), 0, 0)
         self.btn_resolutions = ComboBox(
-            ["720p", "1080p", "1440p", "1536", "2160p", "3072p"], 0
+            ["720p", "1080p", "1440p", "1536p", "2160p", "3072p"], 0
         )
         layout_grid.addWidget(self.btn_resolutions, 0, 1)
         self.btn_resolutions.currentIndexChanged.connect(self.set_config)
