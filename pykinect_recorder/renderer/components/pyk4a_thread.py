@@ -1,8 +1,5 @@
-import os
-import sys
 import cv2
-import datetime
-from pathlib import Path
+import time
 
 from numpy.typing import NDArray
 from typing import Optional, Tuple
@@ -10,12 +7,17 @@ from typing import Optional, Tuple
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4a import Device
+from pykinect_recorder.main._pyk4a.k4a import _k4a
 
 
 class Pyk4aThread(QThread):
     RGBUpdateFrame = Signal(QImage)
     DepthUpdateFrame = Signal(QImage)
     IRUpdateFrame = Signal(QImage)
+    Time = Signal(float)
+    AccData = Signal(list)
+    GyroData = Signal(list)
+    Fps = Signal(float)
     
     def __init__(self, device: Device, parent=None) -> None:
         QThread.__init__(self, parent)
@@ -24,12 +26,14 @@ class Pyk4aThread(QThread):
     
     def run(self):      
         while self.is_run:
+            start_t = time.time()
             cur_frame = self.device.update()
 
             # (Success flag, numpy data)
             cur_rgb_frame = cur_frame.get_color_image()
             cur_depth_frame = cur_frame.get_depth_image()
             cur_ir_frame = cur_frame.get_ir_image()
+            cur_imu_data = self.device.update_imu()
 
             if cur_rgb_frame[0]:
                 rgb_frame = cur_rgb_frame[1]
@@ -59,6 +63,17 @@ class Pyk4aThread(QThread):
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
                 self.IRUpdateFrame.emit(scaled_ir_frame)
+
+            end_time = time.time()
+            acc_time = cur_imu_data.acc_time
+            acc_data = cur_imu_data.acc
+            gyro_data = cur_imu_data.gyro
+            fps = 1/(end_time-start_t)
+
+            self.Fps.emit(fps)
+            self.Time.emit(acc_time/1e6)
+            self.AccData.emit(acc_data)
+            self.GyroData.emit(gyro_data)
 
     def _colorize(
         self,

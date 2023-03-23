@@ -76,6 +76,10 @@ class SensorViewer(QFrame):
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.Time.connect(self.setTime)
+        self.th.AccData.connect(self.setAccData)
+        self.th.GyroData.connect(self.setGyroData)
+        self.th.Fps.connect(self.setFps)
             
         self.is_device = True
         self.is_viewer = True
@@ -202,6 +206,27 @@ class SensorViewer(QFrame):
     @Slot(QImage)
     def setIRImage(self, image: QImage) -> None:
         self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
+
+    @Slot(float)
+    def setTime(self, time) -> None:
+        self.imu_senser.label_time.setText("Time(s) : %.3f" %time)
+
+    @Slot(float)
+    def setFps(self, value) -> None:
+        self.imu_senser.label_fps.setText("FPS : %.2f" %value)
+
+    @Slot(list)
+    def setAccData(self, values) -> None:
+        self.imu_senser.acc_x.setText("X : %.5f" %values[0])
+        self.imu_senser.acc_y.setText("Y : %.5f" %values[1])
+        self.imu_senser.acc_z.setText("Z : %.5f" %values[2])
+
+    @Slot(float)
+    def setGyroData(self, values) -> None:
+        self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
+        self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
+        self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
+
         
     def initial_check(self) -> bool:
         # TODO: pykinect_recorder 폴더에서 유틸로 처리
