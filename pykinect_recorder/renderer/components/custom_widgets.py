@@ -1,7 +1,8 @@
 import os
 from typing import Tuple, Union, List, Any
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt, QMimeData
+from PySide6.QtGui import QFont, QDrag
+
 from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton, QSlider, 
     QFrame, QVBoxLayout, QHBoxLayout
@@ -101,7 +102,7 @@ class Frame(QFrame):
                 border-color: white;
             }"""
         )
-
+        
         if layout is None:
             self.layout_main = QVBoxLayout()
             self.frame = Label(text, orientation=Qt.AlignmentFlag.AlignCenter)

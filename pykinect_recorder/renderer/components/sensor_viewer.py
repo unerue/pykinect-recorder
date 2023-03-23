@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
+from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPropertyAnimation
 from PySide6.QtGui import QImage, QPixmap, QDrag, QDragEnterEvent, QDragMoveEvent
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QVBoxLayout, 
@@ -88,13 +88,71 @@ class SensorViewer(QFrame):
         self.btn_viewer.clicked.connect(self.streaming)
         self.btn_record.clicked.connect(self.recording)
         
+        self.target = None
         self.layout_grid.addWidget(self.frame_rgb, 0, 0)
         self.layout_grid.addWidget(self.frame_depth, 0, 1)
         self.layout_grid.addWidget(self.frame_ir, 1, 0)
         self.layout_grid.addWidget(self.frame_subdata, 1, 1)
         self.layout_grid.addLayout(layout_btn, 2, 0, 1, 2)
 
+        self.setAcceptDrops(True)
         self.setLayout(self.layout_grid)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.MouseButtonPress:
+            self.mousePressEvent(event)
+        elif event.type() == QEvent.MouseMove:
+            self.mouseMoveEvent(event)
+        elif event.type() == QEvent.MouseButtonRelease:
+            self.mouseReleaseEvent(event)
+        return super().eventFilter(watched, event)
+    
+    def get_index(self, pos):
+        for i in range(self.layout_grid.count()):
+            if self.layout_grid.itemAt(i).geometry().contains(pos) and i != self.target:
+                return i
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.target = self.get_index(event.windowPos().toPoint())
+        else:
+            self.target = None
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton and self.target is not None:
+            drag = QDrag(self.layout_grid.itemAt(self.target).widget())
+            pix = self.layout_grid.itemAt(self.target).widget().grab()
+            mimedata = QMimeData()
+            mimedata.setImageData(pix)
+            drag.setMimeData(mimedata)
+            drag.setPixmap(pix)
+            drag.exec(Qt.DropAction.CopyAction | Qt.DropAction.MoveAction)
+
+    def mouseReleaseEvent(self, event):
+        self.target = None
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasImage():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        event.accept()
+
+    def dropEvent(self, event):
+        if not event.source().geometry().contains(event.pos()):
+            source = self.get_index(event.pos())
+            if source is None:
+                return
+
+            i, j = max(self.target, source), min(self.target, source)
+            p1, p2 = self.layout_grid.getItemPosition(i), self.layout_grid.getItemPosition(j)
+
+            self.layout_grid.addItem(self.layout_grid.takeAt(i), *p2)
+            self.layout_grid.addItem(self.layout_grid.takeAt(j), *p1)
+
+            event.accept()
         
     def check_device(self) -> bool:
         try:
