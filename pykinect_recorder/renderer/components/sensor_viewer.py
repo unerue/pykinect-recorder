@@ -15,12 +15,13 @@ from PySide6.QtWidgets import (
 from .custom_widgets import Label, Frame
 from .viewer_sidebar import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
+from .playback import PlayBackThread
 from .imu_viewer import IMUSensor
 from .audio_viewer import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
-from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries
+from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
 
 
 class SensorViewer(QFrame):
@@ -241,6 +242,31 @@ class SensorViewer(QFrame):
             self.device.close()
             self.th.quit()
             time.sleep(1)
+
+    @Slot(str)
+    def playback(self, filepath) -> None:
+        # playback
+        print(filepath)
+        initialize_libraries()
+        playback = start_playback(filepath)
+        playback_config = playback.get_record_configuration()
+
+        # Connect
+        self.th = PlayBackThread(playback=playback)
+        self.th.RGBUpdateFrame.connect(self.setRGBImage)
+        self.th.DepthUpdateFrame.connect(self.setDepthImage)
+        self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.Time.connect(self.setTime)
+        # self.th.AccData.connect(self.setAccData)
+        # self.th.GyroData.connect(self.setGyroData)
+        self.th.Fps.connect(self.setFps)
+
+        # set option
+        self.th.is_run = True
+        self.btn_record.setEnabled(False)
+        self.btn_viewer.setEnabled(False)
+        self.btn_open.setEnabled(False)
+        self.th.start()
 
     def set_filename(self) -> None:
         base_path = os.path.join(Path.home(), "Videos")

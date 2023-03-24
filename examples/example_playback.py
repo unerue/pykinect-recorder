@@ -1,15 +1,15 @@
 import cv2
 
-import pykinect_azure as pykinect
+from pykinect_recorder.main._pyk4a.pykinect import initialize_libraries, start_playback
 
 if __name__ == "__main__":
-    video_filename = "output.mkv"
+    video_filename = "C:/Users/zeroone/Videos/2023_03_21_10_57_05.mkv"
 
     # Initialize the library, if the library is not found, add the library path as argument
-    pykinect.initialize_libraries()
+    initialize_libraries()
 
     # Start playback
-    playback = pykinect.start_playback(video_filename)
+    playback = start_playback(video_filename)
 
     playback_config = playback.get_record_configuration()
     # print(playback_config)
