@@ -17,7 +17,7 @@ keywords = ["azure", "kinect", "deep-learning", "computer-vision"]
 pykinect = "pykinect_recorder.main.cli.command:main"
 
 [tool.poetry.dependencies]
-python = "<3.12,>=3.8.1"
+python = "<3.11,>=3.8.1"
 pyside6 = "^6.4.2"
 open3d = "^0.17.0"
 pyqtdarktheme = "^2.1.0"
