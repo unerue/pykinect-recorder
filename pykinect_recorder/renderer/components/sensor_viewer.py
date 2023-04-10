@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
+from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPropertyAnimation
 from PySide6.QtGui import QImage, QPixmap, QDrag, QDragEnterEvent, QDragMoveEvent
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QVBoxLayout, 
@@ -15,12 +15,13 @@ from PySide6.QtWidgets import (
 from .custom_widgets import Label, Frame
 from .viewer_sidebar import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
+from .playback import PlayBackThread
 from .imu_viewer import IMUSensor
 from .audio_viewer import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
-from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries
+from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
 
 
 class SensorViewer(QFrame):
@@ -76,6 +77,10 @@ class SensorViewer(QFrame):
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.Time.connect(self.setTime)
+        self.th.AccData.connect(self.setAccData)
+        self.th.GyroData.connect(self.setGyroData)
+        self.th.Fps.connect(self.setFps)
             
         self.is_device = True
         self.is_viewer = True
@@ -84,13 +89,71 @@ class SensorViewer(QFrame):
         self.btn_viewer.clicked.connect(self.streaming)
         self.btn_record.clicked.connect(self.recording)
         
+        self.target = None
         self.layout_grid.addWidget(self.frame_rgb, 0, 0)
         self.layout_grid.addWidget(self.frame_depth, 0, 1)
         self.layout_grid.addWidget(self.frame_ir, 1, 0)
         self.layout_grid.addWidget(self.frame_subdata, 1, 1)
         self.layout_grid.addLayout(layout_btn, 2, 0, 1, 2)
 
+        self.setAcceptDrops(True)
         self.setLayout(self.layout_grid)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.MouseButtonPress:
+            self.mousePressEvent(event)
+        elif event.type() == QEvent.MouseMove:
+            self.mouseMoveEvent(event)
+        elif event.type() == QEvent.MouseButtonRelease:
+            self.mouseReleaseEvent(event)
+        return super().eventFilter(watched, event)
+    
+    def get_index(self, pos):
+        for i in range(self.layout_grid.count()):
+            if self.layout_grid.itemAt(i).geometry().contains(pos) and i != self.target:
+                return i
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.target = self.get_index(event.windowPos().toPoint())
+        else:
+            self.target = None
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton and self.target is not None:
+            drag = QDrag(self.layout_grid.itemAt(self.target).widget())
+            pix = self.layout_grid.itemAt(self.target).widget().grab()
+            mimedata = QMimeData()
+            mimedata.setImageData(pix)
+            drag.setMimeData(mimedata)
+            drag.setPixmap(pix)
+            drag.exec(Qt.DropAction.CopyAction | Qt.DropAction.MoveAction)
+
+    def mouseReleaseEvent(self, event):
+        self.target = None
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasImage():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        event.accept()
+
+    def dropEvent(self, event):
+        if not event.source().geometry().contains(event.pos()):
+            source = self.get_index(event.pos())
+            if source is None:
+                return
+
+            i, j = max(self.target, source), min(self.target, source)
+            p1, p2 = self.layout_grid.getItemPosition(i), self.layout_grid.getItemPosition(j)
+
+            self.layout_grid.addItem(self.layout_grid.takeAt(i), *p2)
+            self.layout_grid.addItem(self.layout_grid.takeAt(j), *p1)
+
+            event.accept()
         
     def check_device(self) -> bool:
         try:
@@ -180,6 +243,31 @@ class SensorViewer(QFrame):
             self.th.quit()
             time.sleep(1)
 
+    @Slot(str)
+    def playback(self, filepath) -> None:
+        # playback
+        print(filepath)
+        initialize_libraries()
+        playback = start_playback(filepath)
+        playback_config = playback.get_record_configuration()
+
+        # Connect
+        self.th = PlayBackThread(playback=playback)
+        self.th.RGBUpdateFrame.connect(self.setRGBImage)
+        self.th.DepthUpdateFrame.connect(self.setDepthImage)
+        self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.Time.connect(self.setTime)
+        # self.th.AccData.connect(self.setAccData)
+        # self.th.GyroData.connect(self.setGyroData)
+        self.th.Fps.connect(self.setFps)
+
+        # set option
+        self.th.is_run = True
+        self.btn_record.setEnabled(False)
+        self.btn_viewer.setEnabled(False)
+        self.btn_open.setEnabled(False)
+        self.th.start()
+
     def set_filename(self) -> None:
         base_path = os.path.join(Path.home(), "Videos")
 
@@ -202,6 +290,27 @@ class SensorViewer(QFrame):
     @Slot(QImage)
     def setIRImage(self, image: QImage) -> None:
         self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
+
+    @Slot(float)
+    def setTime(self, time) -> None:
+        self.imu_senser.label_time.setText("Time(s) : %.3f" %time)
+
+    @Slot(float)
+    def setFps(self, value) -> None:
+        self.imu_senser.label_fps.setText("FPS : %.2f" %value)
+
+    @Slot(list)
+    def setAccData(self, values) -> None:
+        self.imu_senser.acc_x.setText("X : %.5f" %values[0])
+        self.imu_senser.acc_y.setText("Y : %.5f" %values[1])
+        self.imu_senser.acc_z.setText("Z : %.5f" %values[2])
+
+    @Slot(float)
+    def setGyroData(self, values) -> None:
+        self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
+        self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
+        self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
+
         
     def initial_check(self) -> bool:
         # TODO: pykinect_recorder 폴더에서 유틸로 처리

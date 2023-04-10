@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import pykinect_azure as pykinect
-
+from pykinect_recorder.main._pyk4a import pykinect as pykinect
 
 def handle_close(evt):
     global keep_running

@@ -6,11 +6,10 @@ from typing import Optional, Tuple
 
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
-from pykinect_recorder.main._pyk4a.k4a import Device
-from pykinect_recorder.main._pyk4a.k4a import _k4a
+from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
 
 
-class Pyk4aThread(QThread):
+class PlayBackThread(QThread):
     RGBUpdateFrame = Signal(QImage)
     DepthUpdateFrame = Signal(QImage)
     IRUpdateFrame = Signal(QImage)
@@ -19,21 +18,21 @@ class Pyk4aThread(QThread):
     GyroData = Signal(list)
     Fps = Signal(float)
     
-    def __init__(self, device: Device, parent=None) -> None:
+    def __init__(self, playback: Playback, parent=None) -> None:
         QThread.__init__(self, parent)
-        self.device = device
+        self.playback = playback
         self.is_run = None
-    
+
     def run(self):      
         while self.is_run:
             start_t = time.time()
-            cur_frame = self.device.update()
+            _, cur_frame = self.playback.update()
 
             # (Success flag, numpy data)
             cur_rgb_frame = cur_frame.get_color_image()
             cur_depth_frame = cur_frame.get_depth_image()
             cur_ir_frame = cur_frame.get_ir_image()
-            cur_imu_data = self.device.update_imu()
+            # cur_imu_data = self.playback.update_imu()
 
             if cur_rgb_frame[0]:
                 rgb_frame = cur_rgb_frame[1]
@@ -65,15 +64,19 @@ class Pyk4aThread(QThread):
                 self.IRUpdateFrame.emit(scaled_ir_frame)
 
             end_time = time.time()
-            acc_time = cur_imu_data.acc_time
-            acc_data = cur_imu_data.acc
-            gyro_data = cur_imu_data.gyro
+            # acc_time = cur_imu_data.acc_time
+            # acc_data = cur_imu_data.acc
+            # gyro_data = cur_imu_data.gyro
             fps = 1/(end_time-start_t)
 
             self.Fps.emit(fps)
-            self.Time.emit(acc_time/1e6)
-            self.AccData.emit(acc_data)
-            self.GyroData.emit(gyro_data)
+            # self.Time.emit(acc_time/1e6)
+            # self.AccData.emit(acc_data)
+            # self.GyroData.emit(gyro_data)
+
+        if cv2.waitKey(30) == ord("q"):
+            self.is_run = False
+            self.quit()
 
     def _colorize(
         self,
