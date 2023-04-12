@@ -5,15 +5,16 @@
 
 import sys
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtCore import QPointF, Slot
+from PySide6.QtCore import QPointF, Slot, QUrl
 from PySide6.QtMultimedia import (QAudioDevice, QAudioFormat,
         QAudioSource, QMediaDevices)
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+from PySide6.QtMultimedia import (
+    QAudioFormat, QAudioSource, QMediaDevices,
+    QMediaCaptureSession, QMediaRecorder, QAudioInput, 
+)
 
 SAMPLE_COUNT = 2000
-
-
 RESOLUTION = 4
 
 
@@ -38,8 +39,8 @@ class MainWindow(QMainWindow):
         self._chart.setTitle(f"Data from the microphone ({name})")
 
         format_audio = QAudioFormat()
-        format_audio.setSampleRate(8000)
-        format_audio.setChannelCount(1)
+        format_audio.setSampleRate(44200)
+        format_audio.setChannelCount(3)
         format_audio.setSampleFormat(QAudioFormat.UInt8)
 
         self._audio_input = QAudioSource(device, format_audio, self)
@@ -76,16 +77,25 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    # app = QApplication(sys.argv)
 
-    input_devices = QMediaDevices.audioInputs()
-    if not input_devices:
-        QMessageBox.warning(None, "audio", "There is no audio input device available.")
-        sys.exit(-1)
-    main_win = MainWindow(input_devices[0])
-    main_win.setWindowTitle("audio")
-    available_geometry = main_win.screen().availableGeometry()
-    size = available_geometry.height() * 3 / 4
-    main_win.resize(size, size)
-    main_win.show()
-    sys.exit(app.exec())
+    # input_devices = QMediaDevices.audioInputs()
+    # if not input_devices:
+    #     QMessageBox.warning(None, "audio", "There is no audio input device available.")
+    #     sys.exit(-1)
+    # main_win = MainWindow(input_devices[0])
+    # main_win.setWindowTitle("audio")
+    # available_geometry = main_win.screen().availableGeometry()
+    # size = available_geometry.height() * 3 / 4
+    # main_win.resize(size, size)
+    # main_win.show()
+    # sys.exit(app.exec())
+
+    session = QMediaCaptureSession()
+    audioInput = QAudioInput()
+    session.setAudioInput(audioInput)
+    recorder = QMediaRecorder()
+    session.setRecorder(recorder)
+    recorder.setQuality(QMediaRecorder.HighQuality)
+    recorder.setOutputLocation(QUrl.fromLocalFile("test.mp3"))
+    recorder.record()

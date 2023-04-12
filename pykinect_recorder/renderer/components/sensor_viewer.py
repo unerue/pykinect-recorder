@@ -5,8 +5,8 @@ import datetime
 import numpy as np
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPropertyAnimation
-from PySide6.QtGui import QImage, QPixmap, QDrag, QDragEnterEvent, QDragMoveEvent
+from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPointF
+from PySide6.QtGui import QImage, QPixmap, QDrag
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QVBoxLayout, 
     QFrame, QDialog, QGridLayout
@@ -22,6 +22,10 @@ from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
+
+
+SAMPLE_COUNT = 10000
+RESOLUTION = 4
 
 
 class SensorViewer(QFrame):
@@ -73,6 +77,7 @@ class SensorViewer(QFrame):
         layout_btn.addWidget(self.btn_viewer)
         layout_btn.addWidget(self.btn_record)
         
+        self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         self.th = Pyk4aThread(device=self.device)
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
@@ -81,6 +86,7 @@ class SensorViewer(QFrame):
         self.th.AccData.connect(self.setAccData)
         self.th.GyroData.connect(self.setGyroData)
         self.th.Fps.connect(self.setFps)
+        self.th.Audio.connect(self.setAudioData)
             
         self.is_device = True
         self.is_viewer = True
@@ -202,8 +208,10 @@ class SensorViewer(QFrame):
     # TODO Streaming 이랑 Recording 겹치는 코드가 많음.
     def streaming(self) -> None:
         if self.is_viewer:
+            self.set_filename()
             self.device = start_device(config=self.config, record=False)
             self.th.device = self.device
+            self.th.audio_file = self.filename_audio
 
             self.btn_record.setEnabled(False)
             self.th.is_run = True
@@ -228,6 +236,8 @@ class SensorViewer(QFrame):
                 record_filepath=self.filename_video
             )
             self.th.device = self.device
+            self.th.audio_record = True
+            self.th.audio_file = self.filename_audio
 
             self.btn_viewer.setEnabled(False)
             self.th.is_run = True
@@ -257,8 +267,6 @@ class SensorViewer(QFrame):
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)
         self.th.Time.connect(self.setTime)
-        # self.th.AccData.connect(self.setAccData)
-        # self.th.GyroData.connect(self.setGyroData)
         self.th.Fps.connect(self.setFps)
 
         # set option
@@ -275,7 +283,7 @@ class SensorViewer(QFrame):
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
 
         self.filename_video = os.path.join(base_path, f"{filename}.mkv")
-        # self.filename_audio = os.path.join(base_path, f"{filename}.wav")
+        self.filename_audio = os.path.join(base_path, f"{filename}.mp3")
         if sys.flags.debug:
             print(base_path, self.filename_video)
         
@@ -310,6 +318,22 @@ class SensorViewer(QFrame):
         self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
         self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
         self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
+
+    @Slot(list)
+    def setAudioData(self, values) -> None:
+        start = 0
+        if (values[1] < SAMPLE_COUNT):
+            start = SAMPLE_COUNT - values[1]
+            for s in range(start):
+                self.buffer[s].setY(self.buffer[s + values[1]].y())
+
+        data_index = 0
+        for s in range(start, SAMPLE_COUNT):
+            value = (ord(values[0][data_index]) - 128) / 128
+            self.buffer[s].setY(value)
+            data_index = data_index + RESOLUTION
+        
+        self.audio_sensor.series.replace(self.buffer)
 
         
     def initial_check(self) -> bool:
