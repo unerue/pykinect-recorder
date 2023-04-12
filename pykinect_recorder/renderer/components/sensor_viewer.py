@@ -208,8 +208,10 @@ class SensorViewer(QFrame):
     # TODO Streaming 이랑 Recording 겹치는 코드가 많음.
     def streaming(self) -> None:
         if self.is_viewer:
+            self.set_filename()
             self.device = start_device(config=self.config, record=False)
             self.th.device = self.device
+            self.th.audio_file = self.filename_audio
 
             self.btn_record.setEnabled(False)
             self.th.is_run = True

@@ -120,6 +120,10 @@ class Pyk4aThread(QThread):
                     available_samples = data.size() // RESOLUTION
                     self.Audio.emit([data, available_samples])
 
+        if self.audio_record is None:
+            import os
+            os.remove(self.audio_file)
+
         self.audio_input.stop()
         self.io_device = None
 
