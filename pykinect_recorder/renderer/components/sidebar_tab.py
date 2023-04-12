@@ -2,9 +2,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QTabWidget
 )
-from .dl_sidebar import DLSidebar
-from .viewer_sidebar import ViewerSidebar
-from .explorer_sidebar import ExplorerSidebar
+from .sidebar_solutions import DLSidebar
+from .sidebar_record_control import ViewerSidebar
+from .sidebar_explorer import ExplorerSidebar
 
 class SideBar(QTabWidget):
     ToggleSign = Signal(bool)

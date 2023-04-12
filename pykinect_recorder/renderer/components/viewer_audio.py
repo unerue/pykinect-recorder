@@ -2,7 +2,7 @@ from PySide6.QtGui import QColor, QBrush
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QFrame, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from .custom_widgets import Label
+from ..common_widgets import Label
 
 
 SAMPLE_COUNT = 10000

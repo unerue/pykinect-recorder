@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (
     QFrame
 )
 
-class ASideBar(QFrame):
+class Asidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet("""

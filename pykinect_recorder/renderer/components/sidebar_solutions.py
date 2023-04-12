@@ -4,6 +4,6 @@ from PySide6.QtWidgets import (
 )
 
 
-class DLSidebar(QFrame):
+class SolutionSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()

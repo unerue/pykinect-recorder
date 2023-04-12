@@ -12,12 +12,12 @@ from PySide6.QtWidgets import (
     QFrame, QDialog, QGridLayout
 )
 
-from .custom_widgets import Label, Frame
-from .viewer_sidebar import _config_sidebar
+from ..common_widgets import Label, Frame
+from .sidebar_record_control import _config_sidebar
 from .pyk4a_thread import Pyk4aThread
-from .playback import PlayBackThread
-from .imu_viewer import IMUSensor
-from .audio_viewer import AudioSensor
+from .playback_sensors import PlayBackThread
+from .viewer_imu import IMUSensor
+from .viewer_audio import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration

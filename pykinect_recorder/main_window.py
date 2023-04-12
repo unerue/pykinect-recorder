@@ -7,11 +7,11 @@ from PySide6.QtWidgets import (
     QWidget, QTabWidget, QToolBar
 )
 
-from .components.toolbar import Toolbar
-from .components.tab_sidebar import SideBar
-from .components.asidebar import ASideBar
-from .components.sensor_viewer import SensorViewer
-from .components.custom_widgets import Label
+from .renderer.components.toolbar import Toolbar
+from .renderer.components.sidebar_tab import SideBar
+from .renderer.components.asidebar import Asidebar
+from .renderer.components.viewer_sensors import SensorViewer
+from .renderer.common_widgets import Label
 
 
 class MainWindow(QMainWindow):
@@ -22,7 +22,6 @@ class MainWindow(QMainWindow):
         self.initial_window()
 
     def initial_window(self) -> None:
-        
         self.setFixedSize(1920, 1080)
 
         # toolbar
@@ -33,7 +32,7 @@ class MainWindow(QMainWindow):
         layout_frame.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.tab_sidebar = SideBar()
         self.sensor_viewer = SensorViewer()
-        self.asidebar = ASideBar()
+        self.asidebar = Asidebar()
         self.tab_sidebar.ToggleSign.connect(self.asidebar.toggle_hide)
         self.tab_sidebar.sidebar_explorer.Filepath.connect(self.sensor_viewer.playback)
 

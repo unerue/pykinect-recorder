@@ -9,7 +9,7 @@ from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
 
 
-class PlayBackThread(QThread):
+class PlaybackSensors(QThread):
     RGBUpdateFrame = Signal(QImage)
     DepthUpdateFrame = Signal(QImage)
     IRUpdateFrame = Signal(QImage)
