@@ -2,16 +2,16 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QTabWidget
 )
-from .sidebar_solutions import DLSidebar
+from .sidebar_solutions import SolutionSidebar
 from .sidebar_record_control import ViewerSidebar
 from .sidebar_explorer import ExplorerSidebar
 
-class SideBar(QTabWidget):
+class Sidebar(QTabWidget):
     ToggleSign = Signal(bool)
     def __init__(self) -> None:
         super().__init__()
         self.sidebar_viewer = ViewerSidebar()
-        self.sidebar_dl = DLSidebar()
+        self.sidebar_dl = SolutionSidebar()
         self.sidebar_explorer = ExplorerSidebar()
         self.addTab(self.sidebar_viewer, "Viewer")
         self.addTab(self.sidebar_dl, "Deep Learning")

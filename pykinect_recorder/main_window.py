@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
 )
 
 from .renderer.components.toolbar import Toolbar
-from .renderer.components.sidebar_tab import SideBar
+from .renderer.components.sidebar_tab import Sidebar
 from .renderer.components.asidebar import Asidebar
 from .renderer.components.viewer_sensors import SensorViewer
 from .renderer.common_widgets import Label
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         # frame Layout
         layout_frame = QHBoxLayout()
         layout_frame.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.tab_sidebar = SideBar()
+        self.tab_sidebar = Sidebar()
         self.sensor_viewer = SensorViewer()
         self.asidebar = Asidebar()
         self.tab_sidebar.ToggleSign.connect(self.asidebar.toggle_hide)

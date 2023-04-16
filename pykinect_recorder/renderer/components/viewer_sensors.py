@@ -14,8 +14,8 @@ from PySide6.QtWidgets import (
 
 from ..common_widgets import Label, Frame
 from .sidebar_record_control import _config_sidebar
-from .pyk4a_thread import Pyk4aThread
-from .playback_sensors import PlayBackThread
+from .record_sensors import RecordSensors
+from .playback_sensors import PlaybackSensors
 from .viewer_imu import IMUSensor
 from .viewer_audio import AudioSensor
 from pykinect_recorder.main.logger import logger
@@ -78,7 +78,7 @@ class SensorViewer(QFrame):
         layout_btn.addWidget(self.btn_record)
         
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
-        self.th = Pyk4aThread(device=self.device)
+        self.th = RecordSensors(device=self.device)
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)
@@ -262,7 +262,7 @@ class SensorViewer(QFrame):
         playback_config = playback.get_record_configuration()
 
         # Connect
-        self.th = PlayBackThread(playback=playback)
+        self.th = PlaybackSensors(playback=playback)
         self.th.RGBUpdateFrame.connect(self.setRGBImage)
         self.th.DepthUpdateFrame.connect(self.setDepthImage)
         self.th.IRUpdateFrame.connect(self.setIRImage)

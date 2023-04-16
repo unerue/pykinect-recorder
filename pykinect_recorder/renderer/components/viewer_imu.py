@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout
 from ..common_widgets import Label
 
 
-class IMUSensor(QFrame):
+class ImuSensor(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(270)

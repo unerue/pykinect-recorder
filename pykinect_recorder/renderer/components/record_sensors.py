@@ -27,7 +27,7 @@ def callback(indata, frames, time, status):
     q.put(indata.copy())
 
 
-class Pyk4aThread(QThread):
+class RecordSensors(QThread):
     global queue
     RGBUpdateFrame = Signal(QImage)
     DepthUpdateFrame = Signal(QImage)
