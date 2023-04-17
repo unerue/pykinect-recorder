@@ -1,10 +1,9 @@
 import os
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtGui import QIcon, QImage
 from PySide6.QtWidgets import (
-    QHBoxLayout, QMainWindow, QVBoxLayout, 
-    QWidget, QTabWidget, QToolBar
+    QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
 )
 
 from .renderer.components.sidebar_menu import SidebarMenus
@@ -12,7 +11,22 @@ from .renderer.components.toolbar import Toolbar
 from .renderer.components.sidebar_tab import Sidebar
 from .renderer.components.asidebar import Asidebar
 from .renderer.components.viewer_sensors import SensorViewer
-from .renderer.common_widgets import Label
+
+
+class AllSignals:
+    def __init__(self):
+        # Thread Signals
+        self.captured_rgb = Signal(QImage)
+        self.captured_depth = Signal(QImage)
+        self.captured_ir = Signal(QImage)
+        self.captured_time = Signal(float)
+        self.captured_acc_data = Signal(list)
+        self.captured_yyro_data = Signal(list)
+        self.captured_fps = Signal(float)
+
+        # Remain Signals
+        self.playback_filepath = Signal(str)
+
 
 
 class MainWindow(QMainWindow):
