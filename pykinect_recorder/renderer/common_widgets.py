@@ -53,17 +53,32 @@ class Slider(QSlider):
         orientation, 
         set_range_values: Tuple[int], 
         set_value: int, 
-        stylesheet: Union[str, os.PathLike] = None
     ) -> None:
         super().__init__(orientation)
         self.setRange(*set_range_values)
         self.setValue(set_value)
 
-        if stylesheet is not None:
-            with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
-                stylesheet = f.read()
-                print(stylesheet)
-            self.setStyleSheet(str(stylesheet))
+        self.setStyleSheet(
+            """
+            QSlider { margin: 0px; }
+            QSlider::groove:horizontal {
+                height: 10px;
+                margin: 1px;
+                background-color: "#1d2e48"
+            }
+            QSlider::handle:horizontal {
+                border: 10px;
+                margin: 0px;
+                background-color: "#3d85e0";
+            }
+            QSlider:handle:horizontal:hover {
+                background-color: "#4d96FF";
+            }
+            QSlider:handle:horizontal:pressed {
+                background-color: "#FFFFFF";
+            }
+            """
+        )
 
 
 class Label(QLabel):

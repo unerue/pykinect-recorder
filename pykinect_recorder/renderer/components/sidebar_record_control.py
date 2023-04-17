@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QWidget, QGridLayout, QCheckBox, QPushButton, QFrame
 )
 from PySide6.QtCore import Qt, QRect
-from .custom_widgets import Label, ComboBox, Slider
+from ..common_widgets import Label, ComboBox, Slider
 
 
 _config_sidebar = {}

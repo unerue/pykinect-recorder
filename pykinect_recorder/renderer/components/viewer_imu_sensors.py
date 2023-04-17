@@ -1,10 +1,10 @@
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout
 
-from .custom_widgets import Label
+from ..common_widgets import Label
 
 
-class IMUSensor(QFrame):
+class ImuSensors(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(270)

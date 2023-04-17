@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QFrame, QWidget, QVBoxLayout, QScrollArea, 
     QPushButton, QHBoxLayout, QFileDialog
 )
-from .custom_widgets import Label, PushButton
+from ..common_widgets import Label, PushButton
 
 
 class ExplorerSidebar(QFrame):

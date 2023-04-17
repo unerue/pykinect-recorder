@@ -50,8 +50,8 @@ class RecordRGBD:
 
 
 class Thread(QThread):
-    RGBUpdateFrame = Signal(QImage)
-    DepthUpdateFrame = Signal(QImage)
+    rgb_updated_frame = Signal(QImage)
+    depth_updated_frame = Signal(QImage)
 
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -92,27 +92,27 @@ class Thread(QThread):
         record.create()
         print(self.status)
         while self.status:
-            cur_frame = azure_device.get_capture()
-            record.write_capture(cur_frame)
+            current_frame = azure_device.get_capture()
+            record.write_capture(current_frame)
 
-            if np.any(cur_frame.color):
-                color_frame = cur_frame.color[:, :, :3].copy()
+            if np.any(current_frame.color):
+                color_frame = current_frame.color[:, :, :3].copy()
                 color_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
 
                 h, w, ch = color_frame.shape
                 img = QImage(color_frame, w, h, ch * w, QImage.Format_RGB888)
                 scaled_img = img.scaled(640, 480, Qt.KeepAspectRatio)
-                self.RGBUpdateFrame.emit(scaled_img)
+                self.rgb_updated_frame.emit(scaled_img)
 
-            if np.any(cur_frame.depth):
+            if np.any(current_frame.depth):
                 depth_frame = self.colorize(
-                    cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV
+                    current_frame.depth, (None, 5000), cv2.COLORMAP_HSV
                 )
                 h, w, ch = depth_frame.shape
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_depth_frame = depth_frame.scaled(640, 480, Qt.KeepAspectRatio)
-                self.DepthUpdateFrame.emit(scaled_depth_frame)
+                self.depth_updated_frame.emit(scaled_depth_frame)
 
 
 class MainWindow(QMainWindow):
@@ -208,8 +208,8 @@ class MainWindow(QMainWindow):
         # Thread in charge of updating the image
         self.th = Thread(self)
         # self.th.finished.connect(self.close)
-        self.th.RGBUpdateFrame.connect(self.setRGBImage)
-        self.th.DepthUpdateFrame.connect(self.setDepthImage)
+        self.th.rgb_updated_frame.connect(self.setRGBImage)
+        self.th.depth_updated_frame.connect(self.setDepthImage)
 
         # Buttons layout
         buttons_layout = QHBoxLayout()

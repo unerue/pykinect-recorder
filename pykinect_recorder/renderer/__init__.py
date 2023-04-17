@@ -1,4 +1,4 @@
-from .main_window import *
+from ..main_window import *
 from .components import *
 
 
