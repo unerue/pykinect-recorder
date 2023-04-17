@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QWidget, QTabWidget, QToolBar
 )
 
+from .renderer.components.sidebar_menu import SidebarMenus
 from .renderer.components.toolbar import Toolbar
 from .renderer.components.sidebar_tab import Sidebar
 from .renderer.components.asidebar import Asidebar
@@ -24,28 +25,26 @@ class MainWindow(QMainWindow):
     def initial_window(self) -> None:
         self.setFixedSize(1920, 1080)
 
-        # toolbar
+        main_widget = QWidget()
+        main_layout = QVBoxLayout(main_widget)
         self.toolbar = Toolbar()
+        main_layout.addWidget(self.toolbar)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
-        # frame Layout
-        layout_frame = QHBoxLayout()
-        layout_frame.setAlignment(Qt.AlignmentFlag.AlignTop)
+        main_sub_layout = QHBoxLayout()
+        main_sub_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         self.tab_sidebar = Sidebar()
         self.sensor_viewer = SensorViewer()
         self.asidebar = Asidebar()
         self.tab_sidebar.ToggleSign.connect(self.asidebar.toggle_hide)
         self.tab_sidebar.sidebar_explorer.Filepath.connect(self.sensor_viewer.playback)
 
-        layout_frame.addWidget(self.tab_sidebar)
-        layout_frame.addWidget(self.sensor_viewer)
-        layout_frame.addWidget(self.asidebar)
+        main_sub_layout.addWidget(SidebarMenus())
+        main_sub_layout.addWidget(self.tab_sidebar)
+        main_sub_layout.addWidget(self.sensor_viewer)
+        main_sub_layout.addWidget(self.asidebar)
 
-        layout_main = QVBoxLayout()
-        layout_main.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
-        layout_main.addWidget(self.toolbar)
-        layout_main.addLayout(layout_frame)
-
-        widget_main = QWidget(self)
-        widget_main.setLayout(layout_main)
-        self.setCentralWidget(widget_main)
+        main_layout.addLayout(main_sub_layout)
+        self.setCentralWidget(main_widget)

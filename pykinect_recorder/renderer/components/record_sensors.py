@@ -29,14 +29,14 @@ def callback(indata, frames, time, status):
 
 class RecordSensors(QThread):
     global queue
-    RGBUpdateFrame = Signal(QImage)
-    DepthUpdateFrame = Signal(QImage)
-    IRUpdateFrame = Signal(QImage)
-    Time = Signal(float)
-    AccData = Signal(list)
-    GyroData = Signal(list)
-    Fps = Signal(float)
-    Audio = Signal(list)
+    rgb_updated_frame = Signal(QImage)
+    depth_updated_frame = Signal(QImage)
+    ir_updated_frame = Signal(QImage)
+    Time = Signal(float)  # modify var name
+    AccData = Signal(list)  # modify var name
+    gyro_data = Signal(list)
+    Fps = Signal(float)  # modify var name
+    audio_data = Signal(list)
     
     def __init__(self, device: Device, audio_record = None, parent=None) -> None:
         QThread.__init__(self, parent)
@@ -46,79 +46,69 @@ class RecordSensors(QThread):
         self.input_devices = QMediaDevices.audioInputs()
         self.audio_input = None
         self.audio_file = None
-        self.audio_record = audio_record
+        self.audio_record = audio_record  # verb -> noun
     
     def run(self):
-        self.readyAudio()
+        self.readyAudio()  # snake_case
         self.io_device = self.audio_input.start()
 
-        with sf.SoundFile(
-            self.audio_file,
-            mode="x",
-            samplerate=44100,
-            channels=2,
-        ) as file:
-            with sd.InputStream(
-                samplerate=44100,
-                device=0,
-                channels=2,
-                callback=callback,
-            ):
+        with sf.SoundFile(self.audio_file, mode="x", samplerate=44100, channels=2, ) as file:
+            with sd.InputStream(samplerate=44100, device=0, channels=2, callback=callback):
                 while self.is_run:
-                    start_t = time.time()
-                    cur_frame = self.device.update()
+                    start_t = time.time()  # start_time
+                    current_frame = self.device.update()  # current_frame
                     file.write(q.get())
 
-                    # (Success flag, numpy data)
-                    cur_rgb_frame = cur_frame.get_color_image()
-                    cur_depth_frame = cur_frame.get_depth_image()
-                    cur_ir_frame = cur_frame.get_ir_image()
-                    cur_imu_data = self.device.update_imu()
+                    # (success flag, numpy data)
+                    current_rgb_frame = current_frame.get_color_image()
+                    current_depth_frame = current_frame.get_depth_image()
+                    current_ir_frame = current_frame.get_ir_image()
+                    current_imu_data = self.device.update_imu()
 
-                    if cur_rgb_frame[0]:
-                        rgb_frame = cur_rgb_frame[1]
+                    if current_rgb_frame[0]:
+                        rgb_frame = current_rgb_frame[1]
                         rgb_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
                         
                         h, w, ch = rgb_frame.shape
                         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
                         scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
-                        self.RGBUpdateFrame.emit(scaled_rgb_frame)
+                        self.rgb_updated_frame.emit(scaled_rgb_frame)
 
-                    if cur_depth_frame[0]:
+                    if current_depth_frame[0]:
                         depth_frame = self._colorize(
-                            cur_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV
+                            current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV
                         )
                         h, w, ch = depth_frame.shape
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
                         scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                        self.DepthUpdateFrame.emit(scaled_depth_frame)
+                        self.depth_updated_frame.emit(scaled_depth_frame)
 
-                    if cur_ir_frame[0]:
+                    if current_ir_frame[0]:
                         ir_frame = self._colorize(
-                            cur_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE
+                            current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE
                         )
                         h, w, ch = ir_frame.shape
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                         scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                        self.IRUpdateFrame.emit(scaled_ir_frame)
+                        self.ir_updated_frame.emit(scaled_ir_frame)
 
                     end_time = time.time()
-                    acc_time = cur_imu_data.acc_time
-                    acc_data = cur_imu_data.acc
-                    gyro_data = cur_imu_data.gyro
+                    acc_time = current_imu_data.acc_time
+                    acc_data = current_imu_data.acc
+                    gyro_data = current_imu_data.gyro
                     fps = 1/(end_time-start_t)
 
                     self.Fps.emit(fps)
                     self.Time.emit(acc_time/1e6)
                     self.AccData.emit(acc_data)
-                    self.GyroData.emit(gyro_data)
+                    self.gyro_data.emit(gyro_data)
 
                     # audio
                     data = self.io_device.readAll()
                     available_samples = data.size() // RESOLUTION
-                    self.Audio.emit([data, available_samples])
+                    self.audio_data.emit([data, available_samples])
 
         if self.audio_record is None:
             import os

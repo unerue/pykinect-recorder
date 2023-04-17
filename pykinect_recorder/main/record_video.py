@@ -14,8 +14,8 @@ from PySide6.QtGui import QImage
 
 
 class RecordVideo(QThread):
-    RGBUpdateFrame = Signal(QImage)
-    DepthUpdateFrame = Signal(QImage)
+    rgb_updated_frame = Signal(QImage)
+    depth_updated_frame = Signal(QImage)
 
     def __init__(self, config, parent=None):
         QThread.__init__(self, parent)
@@ -56,11 +56,11 @@ class RecordVideo(QThread):
         )
         record.create()
         while self.status:
-            cur_frame = azure_device.get_capture()
-            record.write_capture(cur_frame)
+            current_frame = azure_device.get_capture()
+            record.write_capture(current_frame)
 
-            if np.any(cur_frame.color):
-                color_frame = cur_frame.color[:, :, :3].copy()
+            if np.any(current_frame.color):
+                color_frame = current_frame.color[:, :, :3].copy()
                 color_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
 
                 h, w, ch = color_frame.shape
@@ -68,11 +68,11 @@ class RecordVideo(QThread):
                     print(h, w)
                 img = QImage(color_frame, w, h, ch * w, QImage.Format_RGB888)
                 scaled_img = img.scaled(640, 480, Qt.KeepAspectRatio)
-                self.RGBUpdateFrame.emit(scaled_img)
+                self.rgb_updated_frame.emit(scaled_img)
 
-            if np.any(cur_frame.depth):
+            if np.any(current_frame.depth):
                 depth_frame = self.colorize(
-                    cur_frame.depth, (None, 5000), cv2.COLORMAP_HSV
+                    current_frame.depth, (None, 5000), cv2.COLORMAP_HSV
                 )
                 h, w, ch = depth_frame.shape
                 if sys.flags.debug:
@@ -80,4 +80,4 @@ class RecordVideo(QThread):
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_depth_frame = depth_frame.scaled(400, 360, Qt.KeepAspectRatio)
-                self.DepthUpdateFrame.emit(scaled_depth_frame)
+                self.depth_updated_frame.emit(scaled_depth_frame)

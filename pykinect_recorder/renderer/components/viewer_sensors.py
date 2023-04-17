@@ -16,7 +16,7 @@ from ..common_widgets import Label, Frame
 from .sidebar_record_control import _config_sidebar
 from .record_sensors import RecordSensors
 from .playback_sensors import PlaybackSensors
-from .viewer_imu import IMUSensor
+from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
@@ -37,13 +37,13 @@ class SensorViewer(QFrame):
         self.config = None
         self.color_control = None
 
-        self.layout_grid = QGridLayout()
+        self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
         self.frame_depth = Frame("Depth Sensor")
         self.frame_ir = Frame("IR Sensor")
         
         self.layout_subdata = QHBoxLayout() # TODO => 네이밍 다시 하기
-        self.imu_senser = IMUSensor()
+        self.imu_senser = ImuSensors()
         self.audio_sensor = AudioSensor()
         self.layout_subdata.addWidget(self.imu_senser)
         self.layout_subdata.addWidget(self.audio_sensor)
@@ -79,14 +79,14 @@ class SensorViewer(QFrame):
         
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         self.th = RecordSensors(device=self.device)
-        self.th.RGBUpdateFrame.connect(self.setRGBImage)
-        self.th.DepthUpdateFrame.connect(self.setDepthImage)
-        self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.rgb_updated_frame.connect(self.setRGBImage)
+        self.th.depth_updated_frame.connect(self.setDepthImage)
+        self.th.ir_updated_frame.connect(self.setIRImage)
         self.th.Time.connect(self.setTime)
         self.th.AccData.connect(self.setAccData)
-        self.th.GyroData.connect(self.setGyroData)
+        self.th.gyro_data.connect(self.setgyro_data)
         self.th.Fps.connect(self.setFps)
-        self.th.Audio.connect(self.setAudioData)
+        self.th.audio_data.connect(self.setAudioData)
             
         self.is_device = True
         self.is_viewer = True
@@ -96,14 +96,14 @@ class SensorViewer(QFrame):
         self.btn_record.clicked.connect(self.recording)
         
         self.target = None
-        self.layout_grid.addWidget(self.frame_rgb, 0, 0)
-        self.layout_grid.addWidget(self.frame_depth, 0, 1)
-        self.layout_grid.addWidget(self.frame_ir, 1, 0)
-        self.layout_grid.addWidget(self.frame_subdata, 1, 1)
-        self.layout_grid.addLayout(layout_btn, 2, 0, 1, 2)
+        self.grid_layout.addWidget(self.frame_rgb, 0, 0)
+        self.grid_layout.addWidget(self.frame_depth, 0, 1)
+        self.grid_layout.addWidget(self.frame_ir, 1, 0)
+        self.grid_layout.addWidget(self.frame_subdata, 1, 1)
+        self.grid_layout.addLayout(layout_btn, 2, 0, 1, 2)
 
         self.setAcceptDrops(True)
-        self.setLayout(self.layout_grid)
+        self.setLayout(self.grid_layout)
 
     def eventFilter(self, watched, event):
         if event.type() == QEvent.MouseButtonPress:
@@ -263,9 +263,9 @@ class SensorViewer(QFrame):
 
         # Connect
         self.th = PlaybackSensors(playback=playback)
-        self.th.RGBUpdateFrame.connect(self.setRGBImage)
-        self.th.DepthUpdateFrame.connect(self.setDepthImage)
-        self.th.IRUpdateFrame.connect(self.setIRImage)
+        self.th.rgb_updated_frame.connect(self.setRGBImage)
+        self.th.depth_updated_frame.connect(self.setDepthImage)
+        self.th.ir_updated_frame.connect(self.setIRImage)
         self.th.Time.connect(self.setTime)
         self.th.Fps.connect(self.setFps)
 
@@ -314,7 +314,7 @@ class SensorViewer(QFrame):
         self.imu_senser.acc_z.setText("Z : %.5f" %values[2])
 
     @Slot(float)
-    def setGyroData(self, values) -> None:
+    def setgyro_data(self, values) -> None:
         self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
         self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
         self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
