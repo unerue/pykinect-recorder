@@ -1,0 +1,20 @@
+QPushButton {
+    border-color: #2d2d2d;
+}
+
+QPushButton:hover {
+    border-color: white;
+}
+
+QPushButton:pressed {
+    border-color :white;
+    background-color: #202124;
+    
+}
+
+QToolTip {
+    font:"Arial"; 
+    font-size: 15px; 
+    color: #ffffff; 
+    border: 1px solid #ffffff; 
+}

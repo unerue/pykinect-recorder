@@ -1,7 +1,7 @@
 import os
 from typing import Tuple, Union, List, Any
-from PySide6.QtCore import Qt, QMimeData
-from PySide6.QtGui import QFont, QDrag
+from PySide6.QtCore import Qt, Signal, QObject
+from PySide6.QtGui import QFont, QImage
 
 from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton, QSlider, 
@@ -125,3 +125,32 @@ class Frame(QFrame):
             self.setLayout(self.layout_main)
         else:
             self.setLayout(layout)
+
+
+class AllSignals(QObject):
+    # Stacked Widget signals
+    stacked_sidebar_status = Signal(str)
+    stacked_status = Signal(str)
+
+    # Thread Signals
+    captured_rgb = Signal(QImage)
+    captured_depth = Signal(QImage)
+    captured_ir = Signal(QImage)
+    captured_time = Signal(float)
+    captured_acc_data = Signal(list)
+    captured_gyro_data = Signal(list)
+    captured_fps = Signal(float)
+    captured_audio = Signal(list)
+
+    # playback Signals
+    playback_filepath = Signal(str)
+
+    # savepath Signals
+    save_filepath = Signal(str)
+    
+    def __init__(self):
+        super().__init__()
+        pass
+        
+
+all_signals = AllSignals()

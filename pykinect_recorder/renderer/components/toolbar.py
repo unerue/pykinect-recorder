@@ -6,8 +6,9 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QFrame, QWidget, QPushButton,
     QVBoxLayout, QScrollArea, QFileDialog
 )
-from ..common_widgets import PushButton, Label
 
+from ..common_widgets import PushButton, Label
+from ..common_widgets import all_signals
 
 class Toolbar(QFrame):
     def __init__(self) -> None:
@@ -48,6 +49,7 @@ class Toolbar(QFrame):
         )
         self.label_dirpath.setText(_dirNames)
         self.base_path = _dirNames
+        all_signals.save_filepath.emit(self.base_path)
         
     def option(self) -> None:
         pass

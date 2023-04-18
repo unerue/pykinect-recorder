@@ -22,6 +22,7 @@ from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
+from ..common_widgets import all_signals
 
 
 SAMPLE_COUNT = 10000
@@ -29,13 +30,14 @@ RESOLUTION = 4
 
 
 class SensorViewer(QFrame):
-    def __init__(self) -> None:
+    def __init__(self, size: tuple[int, int] = (1200, 1000)) -> None:
         super().__init__()
-        self.setFixedSize(1200, 1000)
+        self.setFixedSize(*size)
         self.setStyleSheet("background-color: black;") 
         self.device = None
         self.config = None
         self.color_control = None
+        self.base_path = None
 
         self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
@@ -79,14 +81,15 @@ class SensorViewer(QFrame):
         
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         self.th = RecordSensors(device=self.device)
-        self.th.rgb_updated_frame.connect(self.setRGBImage)
-        self.th.depth_updated_frame.connect(self.setDepthImage)
-        self.th.ir_updated_frame.connect(self.setIRImage)
-        self.th.Time.connect(self.setTime)
-        self.th.AccData.connect(self.setAccData)
-        self.th.gyro_data.connect(self.setgyro_data)
-        self.th.Fps.connect(self.setFps)
-        self.th.audio_data.connect(self.setAudioData)
+
+        all_signals.captured_rgb.connect(self.setRGBImage)
+        all_signals.captured_depth.connect(self.setDepthImage)
+        all_signals.captured_ir.connect(self.setIRImage)
+        all_signals.captured_time.connect(self.setTime)
+        all_signals.captured_acc_data.connect(self.setAccData)
+        all_signals.captured_gyro_data.connect(self.setGyroData)
+        all_signals.captured_fps.connect(self.setFps)
+        all_signals.captured_audio.connect(self.setAudioData)
             
         self.is_device = True
         self.is_viewer = True
@@ -115,8 +118,8 @@ class SensorViewer(QFrame):
         return super().eventFilter(watched, event)
     
     def get_index(self, pos):
-        for i in range(self.layout_grid.count()):
-            if self.layout_grid.itemAt(i).geometry().contains(pos) and i != self.target:
+        for i in range(self.grid_layout.count()):
+            if self.grid_layout.itemAt(i).geometry().contains(pos) and i != self.target:
                 return i
 
     def mousePressEvent(self, event):
@@ -127,8 +130,8 @@ class SensorViewer(QFrame):
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.LeftButton and self.target is not None:
-            drag = QDrag(self.layout_grid.itemAt(self.target).widget())
-            pix = self.layout_grid.itemAt(self.target).widget().grab()
+            drag = QDrag(self.grid_layout.itemAt(self.target).widget())
+            pix = self.grid_layout.itemAt(self.target).widget().grab()
             mimedata = QMimeData()
             mimedata.setImageData(pix)
             drag.setMimeData(mimedata)
@@ -154,10 +157,10 @@ class SensorViewer(QFrame):
                 return
 
             i, j = max(self.target, source), min(self.target, source)
-            p1, p2 = self.layout_grid.getItemPosition(i), self.layout_grid.getItemPosition(j)
+            p1, p2 = self.grid_layout.getItemPosition(i), self.grid_layout.getItemPosition(j)
 
-            self.layout_grid.addItem(self.layout_grid.takeAt(i), *p2)
-            self.layout_grid.addItem(self.layout_grid.takeAt(j), *p1)
+            self.grid_layout.addItem(self.grid_layout.takeAt(i), *p2)
+            self.grid_layout.addItem(self.grid_layout.takeAt(j), *p1)
 
             event.accept()
         
@@ -263,11 +266,11 @@ class SensorViewer(QFrame):
 
         # Connect
         self.th = PlaybackSensors(playback=playback)
-        self.th.rgb_updated_frame.connect(self.setRGBImage)
-        self.th.depth_updated_frame.connect(self.setDepthImage)
-        self.th.ir_updated_frame.connect(self.setIRImage)
-        self.th.Time.connect(self.setTime)
-        self.th.Fps.connect(self.setFps)
+        all_signals.captured_rgb.connect(self.setRGBImage)
+        all_signals.captured_depth.connect(self.setDepthImage)
+        all_signals.captured_ir.connect(self.setIRImage)
+        all_signals.captured_time.connect(self.setTime)
+        all_signals.captured_fps.connect(self.setFps)
 
         # set option
         self.th.is_run = True
@@ -277,15 +280,20 @@ class SensorViewer(QFrame):
         self.th.start()
 
     def set_filename(self) -> None:
-        base_path = os.path.join(Path.home(), "Videos")
+        if self.base_path is None:
+            self.base_path = os.path.join(Path.home(), "Videos")
 
         filename = datetime.datetime.now()
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
 
-        self.filename_video = os.path.join(base_path, f"{filename}.mkv")
-        self.filename_audio = os.path.join(base_path, f"{filename}.mp3")
+        self.filename_video = os.path.join(self.base_path, f"{filename}.mkv")
+        self.filename_audio = os.path.join(self.base_path, f"{filename}.mp3")
         if sys.flags.debug:
-            print(base_path, self.filename_video)
+            print(self.base_path, self.filename_video)
+
+    @Slot(str)
+    def setBasePath(self, value: str) -> None:
+        self.base_path = value
         
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
@@ -314,7 +322,7 @@ class SensorViewer(QFrame):
         self.imu_senser.acc_z.setText("Z : %.5f" %values[2])
 
     @Slot(float)
-    def setgyro_data(self, values) -> None:
+    def setGyroData(self, values) -> None:
         self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
         self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
         self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
