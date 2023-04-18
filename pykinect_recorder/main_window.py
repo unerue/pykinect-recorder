@@ -15,6 +15,9 @@ from .renderer.components.viewer_sensors import SensorViewer
 
 class AllSignals:
     def __init__(self):
+        # Stacked Widget signals
+        self.stacked_widget_status = Signal(str)
+
         # Thread Signals
         self.captured_rgb = Signal(QImage)
         self.captured_depth = Signal(QImage)
@@ -47,6 +50,12 @@ class MainWindow(QMainWindow):
 
         main_sub_layout = QHBoxLayout()
         main_sub_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        self.sidebar_menus = SidebarMenus()
+        # self.stacked_layout = 
+
+
+
 
         self.tab_sidebar = Sidebar()
         self.sensor_viewer = SensorViewer()
