@@ -14,6 +14,8 @@ from PySide6.QtMultimedia import (
     QAudioFormat, QAudioSource, QMediaDevices,
 )
 
+from ..common_widgets import all_signals
+
 
 RESOLUTION = 4
 q = queue.Queue()
@@ -28,16 +30,7 @@ def callback(indata, frames, time, status):
 
 
 class RecordSensors(QThread):
-    global queue
-    rgb_updated_frame = Signal(QImage)
-    depth_updated_frame = Signal(QImage)
-    ir_updated_frame = Signal(QImage)
-    Time = Signal(float)  # modify var name
-    AccData = Signal(list)  # modify var name
-    gyro_data = Signal(list)
-    Fps = Signal(float)  # modify var name
-    audio_data = Signal(list)
-    
+    global queue  
     def __init__(self, device: Device, audio_record = None, parent=None) -> None:
         QThread.__init__(self, parent)
         self.device = device
@@ -72,7 +65,7 @@ class RecordSensors(QThread):
                         h, w, ch = rgb_frame.shape
                         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
                         scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
-                        self.rgb_updated_frame.emit(scaled_rgb_frame)
+                        all_signals.captured_rgb.emit(scaled_rgb_frame)
 
                     if current_depth_frame[0]:
                         depth_frame = self._colorize(
@@ -82,7 +75,7 @@ class RecordSensors(QThread):
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
                         scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                        self.depth_updated_frame.emit(scaled_depth_frame)
+                        all_signals.captured_depth.emit(scaled_depth_frame)
 
                     if current_ir_frame[0]:
                         ir_frame = self._colorize(
@@ -92,23 +85,27 @@ class RecordSensors(QThread):
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                         scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                        self.ir_updated_frame.emit(scaled_ir_frame)
+                        all_signals.captured_ir.emit(scaled_ir_frame)
 
                     end_time = time.time()
                     acc_time = current_imu_data.acc_time
                     acc_data = current_imu_data.acc
                     gyro_data = current_imu_data.gyro
-                    fps = 1/(end_time-start_t)
 
-                    self.Fps.emit(fps)
-                    self.Time.emit(acc_time/1e6)
-                    self.AccData.emit(acc_data)
-                    self.gyro_data.emit(gyro_data)
+                    try:
+                        fps = 1/(end_time-start_t)
+                        all_signals.captured_fps.emit(fps)
+                    except:
+                        pass
+                    
+                    all_signals.captured_time.emit(acc_time/1e6)
+                    all_signals.captured_acc_data.emit(acc_data)
+                    all_signals.captured_gyro_data.emit(gyro_data)
 
                     # audio
                     data = self.io_device.readAll()
                     available_samples = data.size() // RESOLUTION
-                    self.audio_data.emit([data, available_samples])
+                    all_signals.captured_audio.emit([data, available_samples])
 
         if self.audio_record is None:
             import os

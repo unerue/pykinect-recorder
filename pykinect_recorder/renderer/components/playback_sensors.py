@@ -7,17 +7,11 @@ from typing import Optional, Tuple
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
+from ..common_widgets import all_signals
+
 
 
 class PlaybackSensors(QThread):
-    rgb_updated_frame = Signal(QImage)
-    depth_updated_frame = Signal(QImage)
-    ir_updated_frame = Signal(QImage)
-    Time = Signal(float)
-    AccData = Signal(list)
-    gyro_data = Signal(list)
-    Fps = Signal(float)
-    
     def __init__(self, playback: Playback, parent=None) -> None:
         QThread.__init__(self, parent)
         self.playback = playback
@@ -41,7 +35,7 @@ class PlaybackSensors(QThread):
                 h, w, ch = rgb_frame.shape
                 rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
                 scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
-                self.rgb_updated_frame.emit(scaled_rgb_frame)
+                all_signals.captured_rgb.emit(scaled_rgb_frame)
 
             if current_depth_frame[0]:
                 depth_frame = self._colorize(
@@ -51,7 +45,7 @@ class PlaybackSensors(QThread):
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                self.depth_updated_frame.emit(scaled_depth_frame)
+                all_signals.captured_depth.emit(scaled_depth_frame)
 
             if current_ir_frame[0]:
                 ir_frame = self._colorize(
@@ -61,18 +55,14 @@ class PlaybackSensors(QThread):
 
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
                 scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                self.ir_updated_frame.emit(scaled_ir_frame)
+                all_signals.captured_ir.emit(scaled_ir_frame)
 
             end_time = time.time()
-            # acc_time = current_imu_data.acc_time
-            # acc_data = current_imu_data.acc
-            # gyro_data = current_imu_data.gyro
-            fps = 1/(end_time-start_t)
-
-            self.Fps.emit(fps)
-            # self.Time.emit(acc_time/1e6)
-            # self.AccData.emit(acc_data)
-            # self.gyro_data.emit(gyro_data)
+            try:
+                fps = 1/(end_time-start_t)
+                all_signals.captured_fps.emit(fps)
+            except:
+                pass
 
         if cv2.waitKey(30) == ord("q"):
             self.is_run = False

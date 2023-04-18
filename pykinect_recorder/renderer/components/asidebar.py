@@ -9,12 +9,4 @@ class Asidebar(QFrame):
         self.setStyleSheet("""
             background-color: black;
         """)
-        self.setFixedSize(360, 1000)
-        self.hide()
-
-    @Slot(bool)
-    def toggle_hide(self, value) -> None:
-        if value == True:
-            self.show()
-        else:
-            self.hide()
+        self.setFixedSize(320, 1000)

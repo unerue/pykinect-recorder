@@ -1,12 +1,14 @@
 import os
-from PySide6.QtCore import Signal, QSize, Qt
+from PySide6.QtCore import Signal, QSize, Qt, Slot
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QVBoxLayout, QFrame, QPushButton
 )
 
+
+from ..common_widgets import all_signals
+
 class SidebarMenus(QFrame):
-    ToggleSign = Signal(bool)
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(60)
@@ -40,10 +42,9 @@ class SidebarMenus(QFrame):
         main_layout.addWidget(self.deeplearning_option)
         self.setLayout(main_layout)
 
-        # self.recorder_option.clicked.connect()
-        # self.explorer_option.clicked.connect()
-        # self.deeplearning_option.clicked.connect()
-
+        self.recorder_option.clicked.connect(self.clicked_recorder)
+        self.explorer_option.clicked.connect(self.clicked_explorer)
+        self.deeplearning_option.clicked.connect(self.clicked_solution)
 
     def _make_icons(
             self, 
@@ -62,7 +63,15 @@ class SidebarMenus(QFrame):
         if stylesheet is not None:
             with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
                 stylesheet = f.read()
-                print(stylesheet)
             _btn.setStyleSheet(str(stylesheet))
 
         return _btn
+    
+    def clicked_recorder(self):
+        all_signals.stacked_sidebar_status.emit("recorder")
+
+    def clicked_explorer(self):
+        all_signals.stacked_sidebar_status.emit("explorer")
+
+    def clicked_solution(self):
+        all_signals.stacked_sidebar_status.emit("solution")

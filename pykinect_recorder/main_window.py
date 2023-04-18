@@ -6,30 +6,14 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
 )
 
-from .renderer.components.sidebar_menu import SidebarMenus
 from .renderer.components.toolbar import Toolbar
-from .renderer.components.sidebar_tab import Sidebar
+from .renderer.components.sidebar_menu import SidebarMenus
+from .renderer.components.sidebar_control import StackedSidebar
+from .renderer.components.viewer_control import StackedViewer
 from .renderer.components.asidebar import Asidebar
-from .renderer.components.viewer_sensors import SensorViewer
 
 
-class AllSignals:
-    def __init__(self):
-        # Stacked Widget signals
-        self.stacked_widget_status = Signal(str)
-
-        # Thread Signals
-        self.captured_rgb = Signal(QImage)
-        self.captured_depth = Signal(QImage)
-        self.captured_ir = Signal(QImage)
-        self.captured_time = Signal(float)
-        self.captured_acc_data = Signal(list)
-        self.captured_yyro_data = Signal(list)
-        self.captured_fps = Signal(float)
-
-        # Remain Signals
-        self.playback_filepath = Signal(str)
-
+from .renderer.common_widgets import all_signals
 
 
 class MainWindow(QMainWindow):
@@ -49,25 +33,20 @@ class MainWindow(QMainWindow):
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         main_sub_layout = QHBoxLayout()
-        main_sub_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        main_sub_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         self.sidebar_menus = SidebarMenus()
-        # self.stacked_layout = 
-
-
-
-
-        self.tab_sidebar = Sidebar()
-        self.sensor_viewer = SensorViewer()
+        self.stacked_sidebar = StackedSidebar()
+        self.stacked_viewer = StackedViewer()
         self.asidebar = Asidebar()
-        self.tab_sidebar.ToggleSign.connect(self.asidebar.toggle_hide)
-        self.tab_sidebar.sidebar_explorer.Filepath.connect(self.sensor_viewer.playback)
-
-        main_sub_layout.addWidget(SidebarMenus())
-        main_sub_layout.addWidget(self.tab_sidebar)
-        main_sub_layout.addWidget(self.sensor_viewer)
+        
+        all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
+        all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)
+        all_signals.stacked_sidebar_status.connect(self.stacked_viewer.setCurrentWidget)
+        main_sub_layout.addWidget(self.sidebar_menus)
+        main_sub_layout.addWidget(self.stacked_sidebar)
+        main_sub_layout.addWidget(self.stacked_viewer)
         main_sub_layout.addWidget(self.asidebar)
-
 
         main_layout.addLayout(main_sub_layout)
         self.setCentralWidget(main_widget)
