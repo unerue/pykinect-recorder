@@ -12,7 +12,7 @@ class SidebarMenus(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(60)
-        self.setStyleSheet("background-color: #2d2d2d;")
+        self.setStyleSheet("background-color: #333333;")
         _root_path = "..\\pykinect-recorder\\pykinect_recorder\\renderer\\public\\"
 
         main_layout = QVBoxLayout()

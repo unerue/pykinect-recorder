@@ -28,11 +28,16 @@ class MainWindow(QMainWindow):
 
         main_widget = QWidget()
         main_layout = QVBoxLayout(main_widget)
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
         self.toolbar = Toolbar()
         main_layout.addWidget(self.toolbar)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         main_sub_layout = QHBoxLayout()
+        main_sub_layout.setSpacing(0)
+        main_sub_layout.setContentsMargins(0, 0, 0, 0)
         main_sub_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         self.sidebar_menus = SidebarMenus()
@@ -41,12 +46,17 @@ class MainWindow(QMainWindow):
         self.asidebar = Asidebar()
         
         all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
+        all_signals.config_viewer.connect(self.stacked_viewer.main_viewer.setConfig)
+        all_signals.config_viewer.connect(self.stacked_viewer.main_explorer.setConfig)
         all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)
         all_signals.stacked_sidebar_status.connect(self.stacked_viewer.setCurrentWidget)
+        all_signals.playback_filepath.connect(self.stacked_viewer.main_viewer.playback)
+
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
         main_sub_layout.addWidget(self.stacked_viewer)
         main_sub_layout.addWidget(self.asidebar)
+        main_sub_layout.addStretch()
 
         main_layout.addLayout(main_sub_layout)
         self.setCentralWidget(main_widget)

@@ -1,7 +1,7 @@
 import os
 from typing import Tuple, Union, List, Any
-from PySide6.QtCore import Qt, Signal, QObject
-from PySide6.QtGui import QFont, QImage
+from PySide6.QtCore import Qt, Signal, QObject, QPoint
+from PySide6.QtGui import QFont, QImage, QPen, QPainter, QFontMetrics
 
 from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton, QSlider, 
@@ -39,6 +39,9 @@ class PushButton(QPushButton):
         super().__init__()
         self.setText(text)
         self.setFont(QFont(f"{font}", fontsize))
+        self.setStyleSheet(
+            "color: white;"
+        )
 
         if stylesheet is not None:
             with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
@@ -60,16 +63,26 @@ class Slider(QSlider):
 
         self.setStyleSheet(
             """
-            QSlider { margin: 0px; }
+            QSlider { 
+                margin: 0px;
+                border-radius: 4px;
+            }
+            QSlider::sub-page:horizontal {
+                background-color: #3f4042;
+                height: 12px;
+                border-radius: 4px;
+            }
             QSlider::groove:horizontal {
-                height: 10px;
+                height: 12px;
                 margin: 1px;
-                background-color: "#1d2e48"
+                border-radius: 4px;
+                background-color: "#3f4042"
             }
             QSlider::handle:horizontal {
                 border: 10px;
                 margin: 0px;
-                background-color: "#3d85e0";
+                border-radius: 3px;
+                background-color: "#00bcf8";
             }
             QSlider:handle:horizontal:hover {
                 background-color: "#4d96FF";
@@ -79,6 +92,24 @@ class Slider(QSlider):
             }
             """
         )
+
+    def paintEvent(self, event):
+        QSlider.paintEvent(self, event)
+
+        curr_value = str(self.value())
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.white))
+
+        font_metrics = QFontMetrics(self.font())
+        font_width = font_metrics.boundingRect(curr_value).width()
+
+        rect = self.geometry()
+        if self.orientation() == Qt.Horizontal:
+            horizontal_x_pos = rect.width()//2 - font_width//2 - 5
+            horizontal_y_pos = rect.height() * 0.7
+            painter.drawText(QPoint(horizontal_x_pos, horizontal_y_pos), curr_value)
+        else:
+            pass
 
 
 class Label(QLabel):
@@ -110,7 +141,8 @@ class Frame(QFrame):
         layout: Union[QVBoxLayout, QHBoxLayout] = None,
     ) -> None:
         super().__init__()
-        self.setFixedSize(570, 460)
+        self.setMaximumHeight(480)
+        self.setFixedWidth(640)
         self.setObjectName("Frame")
         self.setStyleSheet(
             """QFrame#Frame {
@@ -142,12 +174,14 @@ class AllSignals(QObject):
     captured_fps = Signal(float)
     captured_audio = Signal(list)
 
-    # playback Signals
+    # playback/save_path Signals
     playback_filepath = Signal(str)
-
-    # savepath Signals
     save_filepath = Signal(str)
-    
+    is_run = Signal(bool)
+
+    # config Signals
+    config_viewer = Signal(dict)
+
     def __init__(self):
         super().__init__()
         pass

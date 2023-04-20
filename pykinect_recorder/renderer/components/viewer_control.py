@@ -12,6 +12,8 @@ class StackedViewer(QFrame):
     def __init__(self) -> None:
         super().__init__()
 
+        self.setMaximumHeight(1080)
+        self.setMaximumWidth(1300)
         self.main_layout = QStackedLayout()
         self.main_viewer = SensorViewer()
         self.main_explorer = SensorViewer()

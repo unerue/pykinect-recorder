@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import ctypes
 import datetime
 import numpy as np
 from pathlib import Path
@@ -13,13 +14,13 @@ from PySide6.QtWidgets import (
 )
 
 from ..common_widgets import Label, Frame
-from .sidebar_record_control import _config_sidebar
 from .record_sensors import RecordSensors
 from .playback_sensors import PlaybackSensors
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
 from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
+from pykinect_recorder.main._pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL, k4a_device_t
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
 from ..common_widgets import all_signals
@@ -32,12 +33,13 @@ RESOLUTION = 4
 class SensorViewer(QFrame):
     def __init__(self, size: tuple[int, int] = (1200, 1000)) -> None:
         super().__init__()
-        self.setFixedSize(*size)
-        self.setStyleSheet("background-color: black;") 
+
+        self.setStyleSheet("background-color: #1e1e1e;") 
         self.device = None
         self.config = None
         self.color_control = None
         self.base_path = None
+        self.emit_configs = None
 
         self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
@@ -52,9 +54,13 @@ class SensorViewer(QFrame):
         self.frame_subdata = Frame("subdata", layout=self.layout_subdata)
 
         layout_btn = QHBoxLayout()
+        layout_btn.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.btn_open = QPushButton("Device open")
+        self.btn_open.setFixedSize(200, 40)
         self.btn_viewer = QPushButton("▶")
+        self.btn_viewer.setFixedSize(200, 40)
         self.btn_record = QPushButton("●")
+        self.btn_record.setFixedSize(200, 40)
 
         self.btn_viewer.setStyleSheet("""
             QToolTip {
@@ -74,14 +80,19 @@ class SensorViewer(QFrame):
 
         self.btn_viewer.setToolTip("<b>Streaming Button</b>")
         self.btn_record.setToolTip("<b>Recording Button</b>")
-        
+
+        layout_btn.addStretch()
+        layout_btn.addStretch()
         layout_btn.addWidget(self.btn_open)
+        layout_btn.addStretch()
         layout_btn.addWidget(self.btn_viewer)
-        layout_btn.addWidget(self.btn_record)
+        layout_btn.addStretch()
+        layout_btn.addWidget(self.btn_record)      
+        layout_btn.addStretch()
+        layout_btn.addStretch()
         
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         self.th = RecordSensors(device=self.device)
-
         all_signals.captured_rgb.connect(self.setRGBImage)
         all_signals.captured_depth.connect(self.setDepthImage)
         all_signals.captured_ir.connect(self.setIRImage)
@@ -166,11 +177,7 @@ class SensorViewer(QFrame):
         
     def check_device(self) -> bool:
         try:
-            self.config = Configuration()
-
-            for k, v in _config_sidebar.items():
-                setattr(self.config, k, v)
-
+            self.config = Configuration()     
             initialize_libraries()
             _device = start_device(config=self.config)
             logger.debug(
@@ -212,7 +219,20 @@ class SensorViewer(QFrame):
     def streaming(self) -> None:
         if self.is_viewer:
             self.set_filename()
-            self.device = start_device(config=self.config, record=False)
+
+            for k, v in self.emit_configs["color"].items():
+                setattr(self.config, k, v)
+            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+
+            self.device = start_device(config=self.config, record=False)   
+            for k, v in self.emit_configs["color_option"].items():
+                k4a_device_set_color_control(
+                    self.device._handle,
+                    color_command_dict[k],
+                    K4A_COLOR_CONTROL_MODE_MANUAL,
+                    ctypes.c_int32(int(v))
+            )
+
             self.th.device = self.device
             self.th.audio_file = self.filename_audio
 
@@ -233,11 +253,25 @@ class SensorViewer(QFrame):
     def recording(self) -> None:
         if self.is_record:
             self.set_filename()
+
+            for k, v in self.emit_configs["color"].items():
+                setattr(self.config, k, v)
+            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+
             self.device = start_device(
                 config=self.config, 
                 record=True, 
                 record_filepath=self.filename_video
             )
+            
+            for k, v in self.emit_configs["color_option"].items():
+                k4a_device_set_color_control(
+                    self.device._handle,
+                    color_command_dict[k],
+                    K4A_COLOR_CONTROL_MODE_MANUAL,
+                    ctypes.c_int32(int(v))
+            )
+            
             self.th.device = self.device
             self.th.audio_record = True
             self.th.audio_file = self.filename_audio
@@ -255,6 +289,18 @@ class SensorViewer(QFrame):
             self.device.close()
             self.th.quit()
             time.sleep(1)
+
+    def set_filename(self) -> None:
+        if self.base_path is None:
+            self.base_path = os.path.join(Path.home(), "Videos")
+
+        filename = datetime.datetime.now()
+        filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
+
+        self.filename_video = os.path.join(self.base_path, f"{filename}.mkv")
+        self.filename_audio = os.path.join(self.base_path, f"{filename}.mp3")
+        if sys.flags.debug:
+            print(self.base_path, self.filename_video)
 
     @Slot(str)
     def playback(self, filepath) -> None:
@@ -279,17 +325,9 @@ class SensorViewer(QFrame):
         self.btn_open.setEnabled(False)
         self.th.start()
 
-    def set_filename(self) -> None:
-        if self.base_path is None:
-            self.base_path = os.path.join(Path.home(), "Videos")
-
-        filename = datetime.datetime.now()
-        filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
-
-        self.filename_video = os.path.join(self.base_path, f"{filename}.mkv")
-        self.filename_audio = os.path.join(self.base_path, f"{filename}.mp3")
-        if sys.flags.debug:
-            print(self.base_path, self.filename_video)
+    @Slot(dict)
+    def setConfig(self, value: dict) -> None:
+        self.emit_configs = value
 
     @Slot(str)
     def setBasePath(self, value: str) -> None:

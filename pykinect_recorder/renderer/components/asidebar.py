@@ -9,4 +9,5 @@ class Asidebar(QFrame):
         self.setStyleSheet("""
             background-color: black;
         """)
-        self.setFixedSize(320, 1000)
+        # self.setFixedSize(320, 1000)
+        self.hide()

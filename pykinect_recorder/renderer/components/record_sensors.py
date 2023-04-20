@@ -64,7 +64,7 @@ class RecordSensors(QThread):
                         
                         h, w, ch = rgb_frame.shape
                         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
-                        scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
+                        scaled_rgb_frame = rgb_frame.scaled(640, 480, Qt.KeepAspectRatio)
                         all_signals.captured_rgb.emit(scaled_rgb_frame)
 
                     if current_depth_frame[0]:
@@ -74,7 +74,7 @@ class RecordSensors(QThread):
                         h, w, ch = depth_frame.shape
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
-                        scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
+                        scaled_depth_frame = depth_frame.scaled(500, 500, Qt.KeepAspectRatio)
                         all_signals.captured_depth.emit(scaled_depth_frame)
 
                     if current_ir_frame[0]:
@@ -84,7 +84,7 @@ class RecordSensors(QThread):
                         h, w, ch = ir_frame.shape
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
-                        scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
+                        scaled_ir_frame = ir_frame.scaled(500, 500, Qt.KeepAspectRatio)
                         all_signals.captured_ir.emit(scaled_ir_frame)
 
                     end_time = time.time()

@@ -1,5 +1,5 @@
 QPushButton {
-    border-color: #2d2d2d;
+    border-color: #333333;
 }
 
 QPushButton:hover {

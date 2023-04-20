@@ -6,14 +6,13 @@ from PySide6.QtWidgets import (
     QFrame, QWidget, QVBoxLayout, QScrollArea, 
     QPushButton, QHBoxLayout, QFileDialog
 )
-from ..common_widgets import Label, PushButton
+from ..common_widgets import Label, PushButton, all_signals
 
 
 class ExplorerSidebar(QFrame):
-    Filepath = Signal(str)
     def __init__(self) -> None:
         super().__init__()
-        self.setStyleSheet("background-color: #242c33;")
+        self.setStyleSheet("background-color: #252526;")
         
         self.layout_main = QVBoxLayout()
         self.layout_title = QHBoxLayout()
@@ -33,7 +32,7 @@ class ExplorerSidebar(QFrame):
 
         self.layout_main.addLayout(self.layout_title)
         self.layout_main.addWidget(self.layout_scroll)
-        self.setMaximumHeight(970)
+        self.setMaximumHeight(1080)
         self.setFixedWidth(300)
         self.setLayout(self.layout_main)
 
@@ -69,7 +68,7 @@ class ExplorerSidebar(QFrame):
     def emit_file_path(self, filename) -> None:
         tmp = f"{self.base_path}/{filename}"
         tmp = tmp.replace('\\', '/')
-        self.Filepath.emit(tmp)
+        all_signals.playback_filepath.emit(tmp)
         
 
 class _FileInfo(QPushButton):
