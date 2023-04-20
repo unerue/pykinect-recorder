@@ -188,3 +188,22 @@ class AllSignals(QObject):
         
 
 all_signals = AllSignals()
+default_configs = {
+    "color": {
+        "color_resolution": 1,
+        "color_format": 0,
+        "camera_fps": 2
+    },
+    "color_option": {
+        "K4A_COLOR_CONTROL_EXPOSURE_TIME_ABSOLUTE": 33300,
+        "K4A_COLOR_CONTROL_WHITEBALANCE": 4500,
+        "K4A_COLOR_CONTROL_CONTRAST": 5,
+        "K4A_COLOR_CONTROL_SATURATION": 32,
+        "K4A_COLOR_CONTROL_SHARPNESS": 2,
+        "K4A_COLOR_CONTROL_BRIGHTNESS": 128,
+        "K4A_COLOR_CONTROL_GAIN": 128,
+        "K4A_COLOR_CONTROL_BACKLIGHT_COMPENSATION": 1,
+        "K4A_COLOR_CONTROL_POWERLINE_FREQUENCY": 2,
+    },
+    "depth_mode": 2,
+}

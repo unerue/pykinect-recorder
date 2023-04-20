@@ -23,7 +23,7 @@ from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
 from pykinect_recorder.main._pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL, k4a_device_t
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
-from ..common_widgets import all_signals
+from ..common_widgets import all_signals, default_configs
 
 
 SAMPLE_COUNT = 10000
@@ -220,18 +220,33 @@ class SensorViewer(QFrame):
         if self.is_viewer:
             self.set_filename()
 
-            for k, v in self.emit_configs["color"].items():
-                setattr(self.config, k, v)
-            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+            if self.emit_configs is None:
+                _config = default_configs
+                for k, v in _config["color"].items():
+                    setattr(self.config, k, v)
+                setattr(self.config, "depth_mode", _config["depth_mode"])
+                self.device = start_device(config=self.config, record=False)   
 
-            self.device = start_device(config=self.config, record=False)   
-            for k, v in self.emit_configs["color_option"].items():
-                k4a_device_set_color_control(
-                    self.device._handle,
-                    color_command_dict[k],
-                    K4A_COLOR_CONTROL_MODE_MANUAL,
-                    ctypes.c_int32(int(v))
-            )
+                for k, v in _config["color_option"].items():
+                    k4a_device_set_color_control(
+                        self.device._handle,
+                        color_command_dict[k],
+                        K4A_COLOR_CONTROL_MODE_MANUAL,
+                        ctypes.c_int32(int(v))
+                    )
+            else:
+                for k, v in self.emit_configs["color"].items():
+                    setattr(self.config, k, v)
+                setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+                self.device = start_device(config=self.config, record=False)   
+
+                for k, v in self.emit_configs["color_option"].items():
+                    k4a_device_set_color_control(
+                        self.device._handle,
+                        color_command_dict[k],
+                        K4A_COLOR_CONTROL_MODE_MANUAL,
+                        ctypes.c_int32(int(v))
+                    )
 
             self.th.device = self.device
             self.th.audio_file = self.filename_audio
@@ -254,23 +269,42 @@ class SensorViewer(QFrame):
         if self.is_record:
             self.set_filename()
 
-            for k, v in self.emit_configs["color"].items():
-                setattr(self.config, k, v)
-            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+            if self.emit_configs is None:
+                _config = default_configs
+                for k, v in _config["color"].items():
+                    setattr(self.config, k, v)
+                setattr(self.config, "depth_mode", _config["depth_mode"])
+                self.device = start_device(
+                    config=self.config, 
+                    record=True, 
+                    record_filepath=self.filename_video
+                )
 
-            self.device = start_device(
-                config=self.config, 
-                record=True, 
-                record_filepath=self.filename_video
-            )
-            
-            for k, v in self.emit_configs["color_option"].items():
-                k4a_device_set_color_control(
-                    self.device._handle,
-                    color_command_dict[k],
-                    K4A_COLOR_CONTROL_MODE_MANUAL,
-                    ctypes.c_int32(int(v))
-            )
+                for k, v in _config["color_option"].items():
+                    k4a_device_set_color_control(
+                        self.device._handle,
+                        color_command_dict[k],
+                        K4A_COLOR_CONTROL_MODE_MANUAL,
+                        ctypes.c_int32(int(v))
+                    )
+            else:
+                for k, v in self.emit_configs["color"].items():
+                    setattr(self.config, k, v)
+                setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+
+                self.device = start_device(
+                    config=self.config, 
+                    record=True, 
+                    record_filepath=self.filename_video
+                )
+                
+                for k, v in self.emit_configs["color_option"].items():
+                    k4a_device_set_color_control(
+                        self.device._handle,
+                        color_command_dict[k],
+                        K4A_COLOR_CONTROL_MODE_MANUAL,
+                        ctypes.c_int32(int(v))
+                    )
             
             self.th.device = self.device
             self.th.audio_record = True
