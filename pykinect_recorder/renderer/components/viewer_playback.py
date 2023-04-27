@@ -1,3 +1,4 @@
+import time
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
 from PySide6.QtGui import QImage, QPixmap, QDrag
 from PySide6.QtWidgets import (
@@ -118,6 +119,10 @@ class PlaybackViewer(QFrame):
 
     @Slot(str)
     def playback(self, filepath) -> None:
+        if self.th is not None and self.th.is_run:
+            self.stop_playback()
+            time.sleep(0.01)
+
         initialize_libraries()
         playback = start_playback(filepath)
         playback_config = playback.get_record_configuration()
