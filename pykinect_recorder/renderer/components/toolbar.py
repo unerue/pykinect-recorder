@@ -1,14 +1,13 @@
 import os
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QHBoxLayout, QFrame, QWidget, QPushButton,
-    QVBoxLayout, QScrollArea, QFileDialog
+    QHBoxLayout, QFrame, QFileDialog
 )
 
 from ..common_widgets import PushButton, Label
-from ..common_widgets import all_signals
+from ..signals import all_signals
 
 class Toolbar(QFrame):
     def __init__(self) -> None:

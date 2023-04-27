@@ -3,7 +3,6 @@ import sys
 import time
 import ctypes
 import datetime
-import numpy as np
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPointF
@@ -18,12 +17,12 @@ from .record_sensors import RecordSensors
 from .playback_sensors import PlaybackSensors
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
-from pykinect_recorder.main.logger import logger
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
-from pykinect_recorder.main._pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL, k4a_device_t
+from pykinect_recorder.main._pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL
 from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
-from ..common_widgets import all_signals, default_configs
+from .sidebar_record_control import _config_sidebar
+from ..signals import all_signals
 
 
 SAMPLE_COUNT = 10000
@@ -39,7 +38,7 @@ class SensorViewer(QFrame):
         self.config = None
         self.color_control = None
         self.base_path = None
-        self.emit_configs = None
+        self.emit_configs = _config_sidebar
 
         self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
@@ -62,12 +61,17 @@ class SensorViewer(QFrame):
         self.btn_record = QPushButton("●")
         self.btn_record.setFixedSize(200, 40)
 
+        self.btn_open.setStyleSheet("""
+            QPushButton:hover {
+                border-color: "white";
+            }
+        """)
         self.btn_viewer.setStyleSheet("""
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
-            QPushButton {
-                background-color: red;
+            QPushButton:hover {
+                border-color: "white";
             }
             """
         )
@@ -75,8 +79,15 @@ class SensorViewer(QFrame):
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
+            QPushButton {
+                background-color: red;
+            }
+            QPushButton:hover {
+                border-color: "white";
+            }
             """
         )
+        
 
         self.btn_viewer.setToolTip("<b>Streaming Button</b>")
         self.btn_record.setToolTip("<b>Recording Button</b>")
@@ -108,6 +119,7 @@ class SensorViewer(QFrame):
         self.btn_open.clicked.connect(self.open_device)
         self.btn_viewer.clicked.connect(self.streaming)
         self.btn_record.clicked.connect(self.recording)
+        self.btn_viewer.setEnabled(False)
         
         self.target = None
         self.grid_layout.addWidget(self.frame_rgb, 0, 0)
@@ -180,9 +192,6 @@ class SensorViewer(QFrame):
             self.config = Configuration()     
             initialize_libraries()
             _device = start_device(config=self.config)
-            logger.debug(
-                "카메라 연결에 문제에 이상이 없습니다."
-            )
             _device.close()
         except:
             modal = QDialog()
@@ -191,16 +200,11 @@ class SensorViewer(QFrame):
                 "<b>카메라 연결에 문제가 있습니다. <br> 연결을 재시도해주세요.</b>", 
                 "Arial", 20, Qt.AlignmentFlag.AlignCenter
             )
-            logger.error(
-                "카메라 연결에 문제가 있습니다. 연결을 재시도해주세요"
-            )
-
             layout_modal.addWidget(e_message)
             modal.setLayout(layout_modal)
             modal.setWindowTitle("Error Message")
             modal.resize(400, 200)
             modal.exec()
-            sys.exit(0)
 
     def open_device(self) -> None:
         if self.is_device is True:
@@ -220,46 +224,33 @@ class SensorViewer(QFrame):
         if self.is_viewer:
             self.set_filename()
 
-            if self.emit_configs is None:
-                _config = default_configs
-                for k, v in _config["color"].items():
-                    setattr(self.config, k, v)
-                setattr(self.config, "depth_mode", _config["depth_mode"])
-                self.device = start_device(config=self.config, record=False)   
+            for k, v in self.emit_configs["color"].items():
+                setattr(self.config, k, v)
+            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+            self.device = start_device(config=self.config, record=False)   
 
-                for k, v in _config["color_option"].items():
-                    k4a_device_set_color_control(
-                        self.device._handle,
-                        color_command_dict[k],
-                        K4A_COLOR_CONTROL_MODE_MANUAL,
-                        ctypes.c_int32(int(v))
-                    )
-            else:
-                for k, v in self.emit_configs["color"].items():
-                    setattr(self.config, k, v)
-                setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-                self.device = start_device(config=self.config, record=False)   
-
-                for k, v in self.emit_configs["color_option"].items():
-                    k4a_device_set_color_control(
-                        self.device._handle,
-                        color_command_dict[k],
-                        K4A_COLOR_CONTROL_MODE_MANUAL,
-                        ctypes.c_int32(int(v))
-                    )
+            for k, v in self.emit_configs["color_option"].items():
+                k4a_device_set_color_control(
+                    self.device._handle,
+                    color_command_dict[k],
+                    K4A_COLOR_CONTROL_MODE_MANUAL,
+                    ctypes.c_int32(int(v))
+                )
 
             self.th.device = self.device
             self.th.audio_file = self.filename_audio
 
             self.btn_record.setEnabled(False)
-            self.th.is_run = True
+            self.btn_open.setEnabled(False)
             self.btn_viewer.setText("■")
+            self.th.is_run = True
             self.is_viewer = False
             self.th.start()
         else:
             self.btn_record.setEnabled(True)
-            self.th.is_run = False
+            self.btn_open.setEnabled(True)
             self.btn_viewer.setText("▶")
+            self.th.is_run = False
             self.is_viewer = True
             self.device.close()
             self.th.quit()
@@ -269,56 +260,38 @@ class SensorViewer(QFrame):
         if self.is_record:
             self.set_filename()
 
-            if self.emit_configs is None:
-                _config = default_configs
-                for k, v in _config["color"].items():
-                    setattr(self.config, k, v)
-                setattr(self.config, "depth_mode", _config["depth_mode"])
-                self.device = start_device(
-                    config=self.config, 
-                    record=True, 
-                    record_filepath=self.filename_video
-                )
+            for k, v in self.emit_configs["color"].items():
+                setattr(self.config, k, v)
+            setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
+            self.device = start_device(
+                config=self.config, 
+                record_filepath=self.filename_video,
+                record=True
+            )   
 
-                for k, v in _config["color_option"].items():
-                    k4a_device_set_color_control(
-                        self.device._handle,
-                        color_command_dict[k],
-                        K4A_COLOR_CONTROL_MODE_MANUAL,
-                        ctypes.c_int32(int(v))
-                    )
-            else:
-                for k, v in self.emit_configs["color"].items():
-                    setattr(self.config, k, v)
-                setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-
-                self.device = start_device(
-                    config=self.config, 
-                    record=True, 
-                    record_filepath=self.filename_video
+            for k, v in self.emit_configs["color_option"].items():
+                k4a_device_set_color_control(
+                    self.device._handle,
+                    color_command_dict[k],
+                    K4A_COLOR_CONTROL_MODE_MANUAL,
+                    ctypes.c_int32(int(v))
                 )
-                
-                for k, v in self.emit_configs["color_option"].items():
-                    k4a_device_set_color_control(
-                        self.device._handle,
-                        color_command_dict[k],
-                        K4A_COLOR_CONTROL_MODE_MANUAL,
-                        ctypes.c_int32(int(v))
-                    )
             
             self.th.device = self.device
             self.th.audio_record = True
             self.th.audio_file = self.filename_audio
 
-            self.btn_viewer.setEnabled(False)
-            self.th.is_run = True
+            # self.btn_viewer.setEnabled(False)
+            self.btn_open.setEnabled(False)
             self.btn_record.setText("■")
+            self.th.is_run = True
             self.is_record = False
             self.th.start()
         else:
-            self.btn_viewer.setEnabled(True)
-            self.th.is_run = False
+            # self.btn_viewer.setEnabled(True)
+            self.btn_open.setEnabled(True)
             self.btn_record.setText("▶")
+            self.th.is_run = False
             self.is_record = True
             self.device.close()
             self.th.quit()
@@ -335,29 +308,6 @@ class SensorViewer(QFrame):
         self.filename_audio = os.path.join(self.base_path, f"{filename}.mp3")
         if sys.flags.debug:
             print(self.base_path, self.filename_video)
-
-    @Slot(str)
-    def playback(self, filepath) -> None:
-        # playback
-        print(filepath)
-        initialize_libraries()
-        playback = start_playback(filepath)
-        playback_config = playback.get_record_configuration()
-
-        # Connect
-        self.th = PlaybackSensors(playback=playback)
-        all_signals.captured_rgb.connect(self.setRGBImage)
-        all_signals.captured_depth.connect(self.setDepthImage)
-        all_signals.captured_ir.connect(self.setIRImage)
-        all_signals.captured_time.connect(self.setTime)
-        all_signals.captured_fps.connect(self.setFps)
-
-        # set option
-        self.th.is_run = True
-        self.btn_record.setEnabled(False)
-        self.btn_viewer.setEnabled(False)
-        self.btn_open.setEnabled(False)
-        self.th.start()
 
     @Slot(dict)
     def setConfig(self, value: dict) -> None:
@@ -414,41 +364,3 @@ class SensorViewer(QFrame):
             data_index = data_index + RESOLUTION
         
         self.audio_sensor.series.replace(self.buffer)
-
-        
-    def initial_check(self) -> bool:
-        # TODO: pykinect_recorder 폴더에서 유틸로 처리
-        # self.logger
-        initial_flag = True
-        logger.debug("---------------녹화 시작 전 테스트를 진행합니다.---------------")
-        logger.debug(
-            f"\n \
-            FPS : {str(self.azure_device._config.camera_fps)}\n \
-            color_format: {str(self.azure_device._config.color_format)}\n \
-            color_resolution: {str(self.azure_device._config.color_resolution)}\n \
-            depth_mode: {str(self.azure_device._config.depth_mode)}"
-        )
-        self.logger.debug("\n---------------영상 테스트를 시작합니다.---------------")
-
-        try:
-            self.azure_device.start()
-            num_frames = 0
-
-            while num_frames < 10:
-                frame = self.azure_device.get_capture()
-                if frame.color.shape[2] != 4:
-                    self.logger.debug("RGBD 영상의 차원이 올바르지 않습니다.")
-                    initial_flag = False
-                if not np.any(frame.depth):
-                    self.logger.debug("Depth 영상을 찾을 수 없습니다.")
-                    initial_flag = False
-
-                num_frames += 1
-            self.azure_device.close()
-
-        except Exception as e:
-            self.logger.debug(e)
-
-        finally:
-            self.logger.debug("카메라 연결 테스트를 종료합니다.")
-            return initial_flag

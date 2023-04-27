@@ -1,9 +1,10 @@
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import (
-    QStackedLayout, QFrame, QHBoxLayout
+    QStackedLayout, QFrame
 )
 
-from .viewer_sensors import SensorViewer
+from .viewer_sensors import SensorViewer 
+from .viewer_playback import PlaybackViewer
 from .viewer_solution import ViewerSolution
 from .asidebar import Asidebar
 
@@ -16,7 +17,7 @@ class StackedViewer(QFrame):
         self.setMaximumWidth(1300)
         self.main_layout = QStackedLayout()
         self.main_viewer = SensorViewer()
-        self.main_explorer = SensorViewer()
+        self.main_explorer = PlaybackViewer()
         self.main_solution = ViewerSolution()
         
         self.main_layout.addWidget(self.main_viewer)

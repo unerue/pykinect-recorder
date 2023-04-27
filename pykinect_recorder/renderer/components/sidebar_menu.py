@@ -1,45 +1,33 @@
 import os
-from PySide6.QtCore import Signal, QSize, Qt, Slot
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
     QVBoxLayout, QFrame, QPushButton
 )
 
 import qtawesome as qta
-from ..common_widgets import all_signals
+from ..signals import all_signals
 
 class SidebarMenus(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(60)
         self.setStyleSheet("background-color: #333333;")
-        # _root_path = "..\\pykinect-recorder\\pykinect_recorder\\renderer\\public\\"
         _root_path = os.path.abspath("./renderer/public/")
 
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
         self.recorder_option = self._make_icons(
-            _root_path, 
-            # "file.png", 
-            qta.icon("fa.file-o"),
+            qta.icon("mdi.file-multiple-outline"),
             "Recording Viewer",
-            "sidebarBtn.stylesheet",
-            # "stylesheet\\sidebarBtn.stylesheet",
         )
         self.explorer_option = self._make_icons(
-            _root_path, 
-            "search.png", 
+            qta.icon("mdi6.file-find-outline"),
             "Explorer & Playback",
-            "sidebarBtn.stylesheet"
-            # "stylesheet\\sidebarBtn.stylesheet",
         )
-        self.deeplearning_option = self._make_icons(
-            _root_path, 
-            "ai.png", 
+        self.deeplearning_option = self._make_icons( 
+            qta.icon("ph.gear"), 
             "Deep Learning Solution",
-            "sidebarBtn.stylesheet"
-            # "stylesheet\\sidebarBtn.stylesheet",
         )
 
         main_layout.addWidget(self.recorder_option)
@@ -53,14 +41,23 @@ class SidebarMenus(QFrame):
 
     def _make_icons(
             self, 
-            root_path: os.PathLike, 
-            file_path: str,
+            icon: qta,
             tooltip: str,
-            stylesheet=None
         ) -> QPushButton:
 
-        _btn = QPushButton(qta.icon("fa.file-o"), "")
+        _btn = QPushButton(icon, "")
         _btn.setFixedSize(45, 55)
+        _btn.setIconSize(QSize(45, 45))
+        _btn.setToolTip(f'<b>{tooltip}<b>')
+        _btn.setStyleSheet("""
+            QPushButton:hover {
+                border-color: white;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+        """)
+
         # print(root_path)
         # print(os.path.join(root_path, file_path))
         # tmp = QPixmap(os.path.join(root_path, file_path))
@@ -68,8 +65,6 @@ class SidebarMenus(QFrame):
         # _icon = QIcon(tmp)
         # _btn.setIcon(QIcon(os.path.join(root_path, file_path)))
         # _btn.setIcon(file_path)
-        _btn.setIconSize(QSize(45, 45))
-        _btn.setToolTip(f'<b>{tooltip}<b>')
 
         # print(os.path.abspath("./renderer/components/sidebarBtn.stylesheet"))
         # print(os.path.split(__file__))

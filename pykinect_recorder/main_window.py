@@ -11,9 +11,7 @@ from .renderer.components.sidebar_menu import SidebarMenus
 from .renderer.components.sidebar_control import StackedSidebar
 from .renderer.components.viewer_control import StackedViewer
 from .renderer.components.asidebar import Asidebar
-
-
-from .renderer.common_widgets import all_signals
+from .renderer.signals import all_signals
 
 
 class MainWindow(QMainWindow):
@@ -47,10 +45,9 @@ class MainWindow(QMainWindow):
         
         all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
         all_signals.config_viewer.connect(self.stacked_viewer.main_viewer.setConfig)
-        all_signals.config_viewer.connect(self.stacked_viewer.main_explorer.setConfig)
         all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)
         all_signals.stacked_sidebar_status.connect(self.stacked_viewer.setCurrentWidget)
-        all_signals.playback_filepath.connect(self.stacked_viewer.main_viewer.playback)
+        all_signals.playback_filepath.connect(self.stacked_viewer.main_explorer.playback)
 
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
