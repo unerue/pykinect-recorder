@@ -60,7 +60,7 @@ class ExplorerSidebar(QFrame):
             _filename = str(filedir).split("\\")[-1]
             if _filename[-4:] == '.mkv':
                 fileinfo = _FileInfo()
-                fileinfo.label_name.setText("파일 이름: \n %s" %(_filename))
+                fileinfo.label_name.setText(_filename)
                 fsize = os.path.getsize(filedir) / (2**30)  # byte -> GB
                 fileinfo.label_stor.setText("파일 크기 : %.2fGB" %(fsize))
                 layout_file.addWidget(fileinfo)
