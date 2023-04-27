@@ -9,3 +9,4 @@ main/synology_utils.py
 build
 dist
 pykinect_recorder.egg-info
+*.exe

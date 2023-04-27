@@ -1,4 +1,5 @@
 import os
+from glob import glob
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal, Slot
@@ -7,17 +8,17 @@ from PySide6.QtWidgets import (
     QPushButton, QHBoxLayout, QFileDialog
 )
 from ..common_widgets import Label, PushButton
+from ..signals import all_signals
 
 
 class ExplorerSidebar(QFrame):
-    Filepath = Signal(str)
     def __init__(self) -> None:
         super().__init__()
-        self.setStyleSheet("background-color: #242c33;")
+        self.setStyleSheet("background-color: #252526;")
         
         self.layout_main = QVBoxLayout()
         self.layout_title = QHBoxLayout()
-        self.base_path = None
+        self.base_path = os.path.join(Path.home(), "Videos/")
         # title
         self.label_dirpath = Label("")
         self.label_dirpath.setFixedSize(200, 50)
@@ -33,9 +34,10 @@ class ExplorerSidebar(QFrame):
 
         self.layout_main.addLayout(self.layout_title)
         self.layout_main.addWidget(self.layout_scroll)
-        self.setMaximumHeight(970)
+        self.setMaximumHeight(1080)
         self.setFixedWidth(300)
         self.setLayout(self.layout_main)
+        self.set_scrollarea(self.base_path)
 
     def search_file(self) -> None:
         _dirNames = QFileDialog.getExistingDirectory(
@@ -44,19 +46,21 @@ class ExplorerSidebar(QFrame):
             ".",
             QFileDialog.ShowDirsOnly
         )
+        print(_dirNames)
         self.base_path = _dirNames
         self.label_dirpath.setText(_dirNames)
-        self.set_scrollArea(_dirNames)
+        self.set_scrollarea(_dirNames)
 
-    def set_scrollArea(self, filedirs: str) -> None:
+    def set_scrollarea(self, filedirs: str) -> None:
         self._widget = QWidget()
         layout_file = QVBoxLayout()
+        layout_file.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         for filedir in Path(filedirs).iterdir():
             _filename = str(filedir).split("\\")[-1]
             if _filename[-4:] == '.mkv':
                 fileinfo = _FileInfo()
-                fileinfo.label_name.setText(_filename)
+                fileinfo.label_name.setText("파일 이름: \n %s" %(_filename))
                 fsize = os.path.getsize(filedir) / (2**30)  # byte -> GB
                 fileinfo.label_stor.setText("파일 크기 : %.2fGB" %(fsize))
                 layout_file.addWidget(fileinfo)
@@ -67,9 +71,8 @@ class ExplorerSidebar(QFrame):
 
     @Slot(str)
     def emit_file_path(self, filename) -> None:
-        tmp = f"{self.base_path}/{filename}"
-        tmp = tmp.replace('\\', '/')
-        self.Filepath.emit(tmp)
+        tmp = os.path.join(self.base_path, filename)
+        all_signals.playback_filepath.emit(tmp)
         
 
 class _FileInfo(QPushButton):
@@ -77,9 +80,12 @@ class _FileInfo(QPushButton):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedSize(240,100)
-        self.setStyleSheet(
-            "border-color: white;"
-        )
+        self.setObjectName("FileInfo")
+        self.setStyleSheet("""
+            QPushButton#FileInfo {
+                border-color: white;
+            }
+        """)
 
         layout_main = QVBoxLayout()
         self.label_name = Label("파일 이름", "Arial", 10, Qt.AlignmentFlag.AlignCenter)

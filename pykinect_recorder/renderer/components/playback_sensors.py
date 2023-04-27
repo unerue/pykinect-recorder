@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
-from ..common_widgets import all_signals
+from ..signals import all_signals
 
 
 
@@ -21,12 +21,9 @@ class PlaybackSensors(QThread):
         while self.is_run:
             start_t = time.time()
             _, current_frame = self.playback.update()
-
-            # (Success flag, numpy data)
             current_rgb_frame = current_frame.get_color_image()
             current_depth_frame = current_frame.get_depth_image()
             current_ir_frame = current_frame.get_ir_image()
-            # current_imu_data = self.playback.update_imu()
 
             if current_rgb_frame[0]:
                 rgb_frame = current_rgb_frame[1]
@@ -63,10 +60,6 @@ class PlaybackSensors(QThread):
                 all_signals.captured_fps.emit(fps)
             except:
                 pass
-
-        if cv2.waitKey(30) == ord("q"):
-            self.is_run = False
-            self.quit()
 
     def _colorize(
         self,

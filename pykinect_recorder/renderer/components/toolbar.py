@@ -1,31 +1,32 @@
 import os
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QHBoxLayout, QFrame, QWidget, QPushButton,
-    QVBoxLayout, QScrollArea, QFileDialog
+    QHBoxLayout, QFrame, QFileDialog
 )
 
 from ..common_widgets import PushButton, Label
-from ..common_widgets import all_signals
+from ..signals import all_signals
 
 class Toolbar(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setFixedSize(1900, 50)
+        self.setMaximumWidth(1980)
+        self.setMaximumHeight(50)
+        self.setContentsMargins(0, 0, 0, 0)
         self.base_path = f"C:\\Users\\{os.getenv('USERNAME')}\\Videos\\"
         self.setObjectName("Toolbar")
         self.setStyleSheet("""
             QFrame#Toolbar {
-                background-color: #3e4d59; padding: 0px; margin: 0px;
+                background-color: #323233; padding: 0px; margin: 0px;
             }
         """)
 
         self.btn_finddir = PushButton("경로 지정", "Arial", 10)
         self.btn_finddir.setFixedWidth(300)
         self.btn_finddir.clicked.connect(self.search_file)
-        self.label_dirpath = Label(f"{self.base_path}", orientation=Qt.AlignmentFlag.AlignLeft)
+        self.label_dirpath = Label(f"저장 경로 : {self.base_path}", orientation=Qt.AlignmentFlag.AlignLeft)
 
         btn_option = PushButton("옵션", "Arial", 10)
         btn_option.clicked.connect(self.option)

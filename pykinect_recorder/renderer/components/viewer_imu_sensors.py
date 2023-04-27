@@ -7,7 +7,9 @@ from ..common_widgets import Label
 class ImuSensors(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setFixedWidth(270)
+        self.setMaximumWidth(320)
+        self.setMaximumHeight(480)
+
         self.setObjectName("IMUSensor")
         self.setStyleSheet(
             " QFrame#IMUSensor { border-color: white; }"
@@ -15,9 +17,6 @@ class ImuSensors(QFrame):
 
         self.layout_main = QVBoxLayout()
         self.title = Label("IMU Sensor", orientation=Qt.AlignmentFlag.AlignCenter)
-        self.title.setStyleSheet(
-            "border-color: white;"
-        )
         self.title.setFixedHeight(60)
 
         self.layout_speed = QHBoxLayout()

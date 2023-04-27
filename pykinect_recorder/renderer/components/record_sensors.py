@@ -7,14 +7,14 @@ import soundfile as sf
 
 from numpy.typing import NDArray
 from typing import Optional, Tuple
-from PySide6.QtCore import Qt, Signal, QThread
+from PySide6.QtCore import Qt, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4a import Device
 from PySide6.QtMultimedia import (
     QAudioFormat, QAudioSource, QMediaDevices,
 )
 
-from ..common_widgets import all_signals
+from ..signals import all_signals
 
 
 RESOLUTION = 4
@@ -52,7 +52,6 @@ class RecordSensors(QThread):
                     current_frame = self.device.update()  # current_frame
                     file.write(q.get())
 
-                    # (success flag, numpy data)
                     current_rgb_frame = current_frame.get_color_image()
                     current_depth_frame = current_frame.get_depth_image()
                     current_ir_frame = current_frame.get_ir_image()
@@ -64,7 +63,7 @@ class RecordSensors(QThread):
                         
                         h, w, ch = rgb_frame.shape
                         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
-                        scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
+                        scaled_rgb_frame = rgb_frame.scaled(640, 480, Qt.KeepAspectRatio)
                         all_signals.captured_rgb.emit(scaled_rgb_frame)
 
                     if current_depth_frame[0]:
@@ -74,7 +73,7 @@ class RecordSensors(QThread):
                         h, w, ch = depth_frame.shape
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
-                        scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
+                        scaled_depth_frame = depth_frame.scaled(500, 500, Qt.KeepAspectRatio)
                         all_signals.captured_depth.emit(scaled_depth_frame)
 
                     if current_ir_frame[0]:
@@ -84,7 +83,7 @@ class RecordSensors(QThread):
                         h, w, ch = ir_frame.shape
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
-                        scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
+                        scaled_ir_frame = ir_frame.scaled(500, 500, Qt.KeepAspectRatio)
                         all_signals.captured_ir.emit(scaled_ir_frame)
 
                     end_time = time.time()

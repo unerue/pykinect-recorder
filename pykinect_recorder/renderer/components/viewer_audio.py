@@ -11,17 +11,17 @@ SAMPLE_COUNT = 10000
 class AudioSensor(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setFixedWidth(270)
+        self.setMaximumWidth(320)
+        self.setMaximumHeight(480)
+        self.setObjectName("AudioSensor")
+
         self.setStyleSheet(
-            "border-color: white;"
+            " QFrame#AudioSensor { border-color: white; }"
         )
         
         self.layout_main = QVBoxLayout()
         self.title = Label("Audio Sensor", orientation=Qt.AlignmentFlag.AlignCenter)
         self.title.setFixedHeight(60)
-        self.title.setStyleSheet(
-            "border-color: white;"
-        )
 
         self.series = QLineSeries()
         self.chart = QChart()
