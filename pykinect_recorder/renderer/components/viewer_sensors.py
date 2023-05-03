@@ -122,11 +122,11 @@ class SensorViewer(QFrame):
         self.btn_viewer.setEnabled(False)
         
         self.target = None
-        self.grid_layout.addWidget(self.frame_rgb, 0, 0)
-        self.grid_layout.addWidget(self.frame_depth, 0, 1)
-        self.grid_layout.addWidget(self.frame_ir, 1, 0)
-        self.grid_layout.addWidget(self.frame_subdata, 1, 1)
-        self.grid_layout.addLayout(layout_btn, 2, 0, 1, 2)
+        self.grid_layout.addLayout(layout_btn, 0, 0, 1, 2)
+        self.grid_layout.addWidget(self.frame_rgb, 1, 0)
+        self.grid_layout.addWidget(self.frame_depth, 1, 1)
+        self.grid_layout.addWidget(self.frame_ir, 2, 0)
+        self.grid_layout.addWidget(self.frame_subdata, 2, 1)
 
         self.setAcceptDrops(True)
         self.setLayout(self.grid_layout)
