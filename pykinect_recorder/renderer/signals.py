@@ -20,6 +20,7 @@ class AllSignals(QObject):
     playback_filepath = Signal(str)
     save_filepath = Signal(str)
     is_run = Signal(bool)
+    time_control = Signal(int)
 
     # config Signals
     config_viewer = Signal(dict)

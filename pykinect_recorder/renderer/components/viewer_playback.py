@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame, QGridLayout
 )
 
-from ..common_widgets import Frame
+from ..common_widgets import Frame, Slider
 from .playback_sensors import PlaybackSensors
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
@@ -35,8 +35,12 @@ class PlaybackViewer(QFrame):
         self.layout_subdata.addWidget(self.audio_sensor)
         self.frame_subdata = Frame("subdata", layout=self.layout_subdata)
 
-        layout_btn = QHBoxLayout()
-        layout_btn.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_top = QHBoxLayout()
+        layout_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.slider_time = Slider(Qt.Orientation.Horizontal, (55555, 1000000), 55555)
+        self.slider_time.setFixedSize(400, 40)
+        layout_top.addWidget(self.slider_time)
+
         self.btn_stop = QPushButton("Stop")
         self.btn_stop.setFixedSize(200, 40)
         self.btn_stop.setStyleSheet("""
@@ -44,11 +48,12 @@ class PlaybackViewer(QFrame):
                 border-color: "white";
             }
         """)
-        layout_btn.addWidget(self.btn_stop)
+        layout_top.addWidget(self.btn_stop)
         self.btn_stop.clicked.connect(self.stop_playback)
+        self.slider_time.valueChanged.connect(self.control_time)
         
         self.target = None
-        self.grid_layout.addLayout(layout_btn, 0, 0, 1, 2)
+        self.grid_layout.addLayout(layout_top, 0, 0, 1, 2)
         self.grid_layout.addWidget(self.frame_rgb, 1, 0)
         self.grid_layout.addWidget(self.frame_depth, 1, 1)
         self.grid_layout.addWidget(self.frame_ir, 2, 0)
@@ -114,8 +119,21 @@ class PlaybackViewer(QFrame):
             event.accept()
 
     def stop_playback(self):
-        self.th.is_run = False
-        self.th.quit()
+        if self.btn_stop.text() == "Stop":
+            self.th.is_run = False
+            self.th.quit()
+            self.btn_stop.setText("Start")
+        else:
+            self.th.is_run = True
+            self.th.start()
+            self.btn_stop.setText("Stop")
+
+    def control_time(self):
+        if self.th is not None and self.th.is_run:
+            self.th.is_run = False
+            self.btn_stop.setText("Start")
+        if self.th is not None:
+            all_signals.time_control.emit(self.slider_time.value())
 
     @Slot(str)
     def playback(self, filepath) -> None:
@@ -126,6 +144,7 @@ class PlaybackViewer(QFrame):
         initialize_libraries()
         playback = start_playback(filepath)
         playback_config = playback.get_record_configuration()
+        self.slider_time.setRange(555, playback.get_recording_length())
 
         self.th = PlaybackSensors(playback=playback)
         all_signals.captured_rgb.connect(self.setRGBImage)
@@ -137,6 +156,7 @@ class PlaybackViewer(QFrame):
         # set option
         self.th.is_run = True
         self.th.start()
+    
         
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
