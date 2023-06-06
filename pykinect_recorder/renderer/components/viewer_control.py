@@ -1,9 +1,7 @@
 from PySide6.QtCore import Slot
-from PySide6.QtWidgets import (
-    QStackedLayout, QFrame
-)
+from PySide6.QtWidgets import QStackedLayout, QFrame
 
-from .viewer_sensors import SensorViewer 
+from .viewer_sensors import SensorViewer
 from .viewer_playback import PlaybackViewer
 from .viewer_solution import ViewerSolution
 from .asidebar import Asidebar
@@ -19,7 +17,7 @@ class StackedViewer(QFrame):
         self.main_viewer = SensorViewer()
         self.main_explorer = PlaybackViewer()
         self.main_solution = ViewerSolution()
-        
+
         self.main_layout.addWidget(self.main_viewer)
         self.main_layout.addWidget(self.main_explorer)
         self.main_layout.addWidget(self.main_solution)
@@ -27,7 +25,6 @@ class StackedViewer(QFrame):
         # 현재 index
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)
-
 
     @Slot(str)
     def setCurrentWidget(self, value):

@@ -47,9 +47,7 @@ class Capture:
         return Image(_k4a.k4a_capture_get_ir_image(self._handle))
 
     def get_transformed_depth_object(self):
-        return self.camera_transform.depth_image_to_color_camera(
-            self.get_depth_image_object()
-        )
+        return self.camera_transform.depth_image_to_color_camera(self.get_depth_image_object())
 
     def get_transformed_color_object(self):
         return self.camera_transform.color_image_to_depth_camera(
@@ -57,9 +55,7 @@ class Capture:
         )
 
     def get_pointcloud_object(self, calibration_type=_k4a.K4A_CALIBRATION_TYPE_DEPTH):
-        return self.camera_transform.depth_image_to_point_cloud(
-            self.get_depth_image_object(), calibration_type
-        )
+        return self.camera_transform.depth_image_to_point_cloud(self.get_depth_image_object(), calibration_type)
 
     def get_transformed_pointcloud_object(self):
         return self.camera_transform.depth_image_to_point_cloud(

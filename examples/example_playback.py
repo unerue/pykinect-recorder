@@ -32,9 +32,7 @@ if __name__ == "__main__":
             continue
 
         # Plot the image
-        combined_image = cv2.addWeighted(
-            color_image[:, :, :3], 0.7, depth_color_image, 0.3, 0
-        )
+        combined_image = cv2.addWeighted(color_image[:, :, :3], 0.7, depth_color_image, 0.3, 0)
         cv2.imshow("Depth Image", combined_image)
 
         # Press q key to stop

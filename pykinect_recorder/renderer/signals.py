@@ -1,6 +1,7 @@
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QImage
 
+
 class AllSignals(QObject):
     # Stacked Widget signals
     stacked_sidebar_status = Signal(str)
@@ -28,6 +29,6 @@ class AllSignals(QObject):
     def __init__(self):
         super().__init__()
         pass
-        
+
 
 all_signals = AllSignals()

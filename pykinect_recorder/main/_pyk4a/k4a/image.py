@@ -31,9 +31,7 @@ class Image:
     def create(image_format, width_pixels, height_pixels, stride_bytes):
         handle = _k4a.k4a_image_t()
         _k4a.VERIFY(
-            _k4a.k4a_image_create(
-                image_format, width_pixels, height_pixels, stride_bytes, handle
-            ),
+            _k4a.k4a_image_create(image_format, width_pixels, height_pixels, stride_bytes, handle),
             "Create image failed!",
         )
 
@@ -109,27 +107,15 @@ class Image:
 
         # Parse buffer based on image formats
         if image_format == _k4a.K4A_IMAGE_FORMAT_COLOR_MJPG:
-            return True, cv2.imdecode(
-                np.frombuffer(buffer_array, dtype=np.uint8).copy(), -1
-            )
+            return True, cv2.imdecode(np.frombuffer(buffer_array, dtype=np.uint8).copy(), -1)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_COLOR_NV12:
-            yuv_image = (
-                np.frombuffer(buffer_array, dtype=np.uint8)
-                .copy()
-                .reshape(int(image_height * 1.5), image_width)
-            )
+            yuv_image = np.frombuffer(buffer_array, dtype=np.uint8).copy().reshape(int(image_height * 1.5), image_width)
             return True, cv2.cvtColor(yuv_image, cv2.COLOR_YUV2BGR_NV12)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_COLOR_YUY2:
-            yuv_image = (
-                np.frombuffer(buffer_array, dtype=np.uint8)
-                .copy()
-                .reshape(image_height, image_width, 2)
-            )
+            yuv_image = np.frombuffer(buffer_array, dtype=np.uint8).copy().reshape(image_height, image_width, 2)
             return True, cv2.cvtColor(yuv_image, cv2.COLOR_YUV2BGR_YUY2)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_COLOR_BGRA32:
-            return True, np.frombuffer(buffer_array, dtype=np.uint8).copy().reshape(
-                image_height, image_width, 4
-            )
+            return True, np.frombuffer(buffer_array, dtype=np.uint8).copy().reshape(image_height, image_width, 4)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_DEPTH16:
             return True, np.frombuffer(buffer_array, dtype="<u2").copy().reshape(
                 image_height, image_width
@@ -139,12 +125,8 @@ class Image:
                 image_height, image_width
             )  # little-endian 16 bits unsigned IR data. For more details see: https://microsoft.github.io/Azure-Kinect-Sensor-SDK/release/1.2.x/namespace_microsoft_1_1_azure_1_1_kinect_1_1_sensor_a7a3cb7a0a3073650bf17c2fef2bfbd1b.html
         elif image_format == _k4a.K4A_IMAGE_FORMAT_CUSTOM8:
-            return True, np.frombuffer(buffer_array, dtype="<u1").copy().reshape(
-                image_height, image_width
-            )
+            return True, np.frombuffer(buffer_array, dtype="<u1").copy().reshape(image_height, image_width)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_CUSTOM16:
-            return True, np.frombuffer(buffer_array, dtype="<u2").copy().reshape(
-                image_height, image_width
-            )
+            return True, np.frombuffer(buffer_array, dtype="<u2").copy().reshape(image_height, image_width)
         elif image_format == _k4a.K4A_IMAGE_FORMAT_CUSTOM:
             return True, np.frombuffer(buffer_array, dtype="<i2").copy()

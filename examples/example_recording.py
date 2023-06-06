@@ -15,9 +15,7 @@ if __name__ == "__main__":
 
     # Start device
     video_filename = "output.mkv"
-    device = pykinect.start_device(
-        config=device_config, record=True, record_filepath=video_filename
-    )
+    device = pykinect.start_device(config=device_config, record=True, record_filepath=video_filename)
 
     cv2.namedWindow("Depth Image", cv2.WINDOW_NORMAL)
     while True:

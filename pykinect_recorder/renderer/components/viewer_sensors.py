@@ -7,10 +7,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPointF
 from PySide6.QtGui import QImage, QPixmap, QDrag
-from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QVBoxLayout, 
-    QFrame, QDialog, QGridLayout
-)
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QDialog, QGridLayout
 
 from ..common_widgets import Label, Frame
 from .record_sensors import RecordSensors
@@ -33,7 +30,7 @@ class SensorViewer(QFrame):
     def __init__(self, size: tuple[int, int] = (1200, 1000)) -> None:
         super().__init__()
 
-        self.setStyleSheet("background-color: #1e1e1e;") 
+        self.setStyleSheet("background-color: #1e1e1e;")
         self.device = None
         self.config = None
         self.color_control = None
@@ -44,8 +41,8 @@ class SensorViewer(QFrame):
         self.frame_rgb = Frame("RGB Sensor")
         self.frame_depth = Frame("Depth Sensor")
         self.frame_ir = Frame("IR Sensor")
-        
-        self.layout_subdata = QHBoxLayout() # TODO => 네이밍 다시 하기
+
+        self.layout_subdata = QHBoxLayout()  # TODO => 네이밍 다시 하기
         self.imu_senser = ImuSensors()
         self.audio_sensor = AudioSensor()
         self.layout_subdata.addWidget(self.imu_senser)
@@ -61,12 +58,15 @@ class SensorViewer(QFrame):
         self.btn_record = QPushButton("●")
         self.btn_record.setFixedSize(200, 40)
 
-        self.btn_open.setStyleSheet("""
+        self.btn_open.setStyleSheet(
+            """
             QPushButton:hover {
                 border-color: "white";
             }
-        """)
-        self.btn_viewer.setStyleSheet("""
+        """
+        )
+        self.btn_viewer.setStyleSheet(
+            """
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
@@ -75,7 +75,8 @@ class SensorViewer(QFrame):
             }
             """
         )
-        self.btn_record.setStyleSheet("""
+        self.btn_record.setStyleSheet(
+            """
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
@@ -87,7 +88,6 @@ class SensorViewer(QFrame):
             }
             """
         )
-        
 
         self.btn_viewer.setToolTip("<b>Streaming Button</b>")
         self.btn_record.setToolTip("<b>Recording Button</b>")
@@ -98,10 +98,10 @@ class SensorViewer(QFrame):
         layout_btn.addStretch()
         layout_btn.addWidget(self.btn_viewer)
         layout_btn.addStretch()
-        layout_btn.addWidget(self.btn_record)      
+        layout_btn.addWidget(self.btn_record)
         layout_btn.addStretch()
         layout_btn.addStretch()
-        
+
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         self.th = RecordSensors(device=self.device)
         all_signals.captured_rgb.connect(self.setRGBImage)
@@ -112,7 +112,7 @@ class SensorViewer(QFrame):
         all_signals.captured_gyro_data.connect(self.setGyroData)
         all_signals.captured_fps.connect(self.setFps)
         all_signals.captured_audio.connect(self.setAudioData)
-            
+
         self.is_device = True
         self.is_viewer = True
         self.is_record = True
@@ -120,7 +120,7 @@ class SensorViewer(QFrame):
         self.btn_viewer.clicked.connect(self.streaming)
         self.btn_record.clicked.connect(self.recording)
         self.btn_viewer.setEnabled(False)
-        
+
         self.target = None
         self.grid_layout.addLayout(layout_btn, 0, 0, 1, 2)
         self.grid_layout.addWidget(self.frame_rgb, 1, 0)
@@ -139,7 +139,7 @@ class SensorViewer(QFrame):
         elif event.type() == QEvent.MouseButtonRelease:
             self.mouseReleaseEvent(event)
         return super().eventFilter(watched, event)
-    
+
     def get_index(self, pos):
         for i in range(self.grid_layout.count()):
             if self.grid_layout.itemAt(i).geometry().contains(pos) and i != self.target:
@@ -186,20 +186,17 @@ class SensorViewer(QFrame):
             self.grid_layout.addItem(self.grid_layout.takeAt(j), *p1)
 
             event.accept()
-        
+
     def check_device(self) -> bool:
         try:
-            self.config = Configuration()     
+            self.config = Configuration()
             initialize_libraries()
             _device = start_device(config=self.config)
             _device.close()
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
-            e_message = Label(
-                "<b>카메라 연결에 문제가 있습니다. <br> 연결을 재시도해주세요.</b>", 
-                "Arial", 20, Qt.AlignmentFlag.AlignCenter
-            )
+            e_message = Label("<b>카메라 연결에 문제가 있습니다. <br> 연결을 재시도해주세요.</b>", "Arial", 20, Qt.AlignmentFlag.AlignCenter)
             layout_modal.addWidget(e_message)
             modal.setLayout(layout_modal)
             modal.setWindowTitle("Error Message")
@@ -218,7 +215,7 @@ class SensorViewer(QFrame):
             self.is_device = True
             self.btn_open.setText("Device open")
             self.device = None
-    
+
     # TODO Streaming 이랑 Recording 겹치는 코드가 많음.
     def streaming(self) -> None:
         if self.is_viewer:
@@ -227,14 +224,11 @@ class SensorViewer(QFrame):
             for k, v in self.emit_configs["color"].items():
                 setattr(self.config, k, v)
             setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-            self.device = start_device(config=self.config, record=False)   
+            self.device = start_device(config=self.config, record=False)
 
             for k, v in self.emit_configs["color_option"].items():
                 k4a_device_set_color_control(
-                    self.device._handle,
-                    color_command_dict[k],
-                    K4A_COLOR_CONTROL_MODE_MANUAL,
-                    ctypes.c_int32(int(v))
+                    self.device._handle, color_command_dict[k], K4A_COLOR_CONTROL_MODE_MANUAL, ctypes.c_int32(int(v))
                 )
 
             self.th.device = self.device
@@ -254,8 +248,8 @@ class SensorViewer(QFrame):
             self.is_viewer = True
             self.device.close()
             self.th.quit()
-            time.sleep(1)   
-        
+            time.sleep(1)
+
     def recording(self) -> None:
         if self.is_record:
             self.set_filename()
@@ -263,20 +257,13 @@ class SensorViewer(QFrame):
             for k, v in self.emit_configs["color"].items():
                 setattr(self.config, k, v)
             setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-            self.device = start_device(
-                config=self.config, 
-                record_filepath=self.filename_video,
-                record=True
-            )   
+            self.device = start_device(config=self.config, record_filepath=self.filename_video, record=True)
 
             for k, v in self.emit_configs["color_option"].items():
                 k4a_device_set_color_control(
-                    self.device._handle,
-                    color_command_dict[k],
-                    K4A_COLOR_CONTROL_MODE_MANUAL,
-                    ctypes.c_int32(int(v))
+                    self.device._handle, color_command_dict[k], K4A_COLOR_CONTROL_MODE_MANUAL, ctypes.c_int32(int(v))
                 )
-            
+
             self.th.device = self.device
             self.th.audio_record = True
             self.th.audio_file = self.filename_audio
@@ -316,43 +303,43 @@ class SensorViewer(QFrame):
     @Slot(str)
     def setBasePath(self, value: str) -> None:
         self.base_path = value
-        
+
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
         self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))
-    
+
     @Slot(QImage)
     def setDepthImage(self, image: QImage) -> None:
         self.frame_depth.frame.setPixmap(QPixmap.fromImage(image))
-        
+
     @Slot(QImage)
     def setIRImage(self, image: QImage) -> None:
         self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
 
     @Slot(float)
     def setTime(self, time) -> None:
-        self.imu_senser.label_time.setText("Time(s) : %.3f" %time)
+        self.imu_senser.label_time.setText("Time(s) : %.3f" % time)
 
     @Slot(float)
     def setFps(self, value) -> None:
-        self.imu_senser.label_fps.setText("FPS : %.2f" %value)
+        self.imu_senser.label_fps.setText("FPS : %.2f" % value)
 
     @Slot(list)
     def setAccData(self, values) -> None:
-        self.imu_senser.acc_x.setText("X : %.5f" %values[0])
-        self.imu_senser.acc_y.setText("Y : %.5f" %values[1])
-        self.imu_senser.acc_z.setText("Z : %.5f" %values[2])
+        self.imu_senser.acc_x.setText("X : %.5f" % values[0])
+        self.imu_senser.acc_y.setText("Y : %.5f" % values[1])
+        self.imu_senser.acc_z.setText("Z : %.5f" % values[2])
 
     @Slot(float)
     def setGyroData(self, values) -> None:
-        self.imu_senser.gyro_x.setText("X : %.5f" %values[0])
-        self.imu_senser.gyro_y.setText("Y : %.5f" %values[1])
-        self.imu_senser.gyro_z.setText("Z : %.5f" %values[2])
+        self.imu_senser.gyro_x.setText("X : %.5f" % values[0])
+        self.imu_senser.gyro_y.setText("Y : %.5f" % values[1])
+        self.imu_senser.gyro_z.setText("Z : %.5f" % values[2])
 
     @Slot(list)
     def setAudioData(self, values) -> None:
         start = 0
-        if (values[1] < SAMPLE_COUNT):
+        if values[1] < SAMPLE_COUNT:
             start = SAMPLE_COUNT - values[1]
             for s in range(start):
                 self.buffer[s].setY(self.buffer[s + values[1]].y())
@@ -362,5 +349,5 @@ class SensorViewer(QFrame):
             value = (ord(values[0][data_index]) - 128) / 128
             self.buffer[s].setY(value)
             data_index = data_index + RESOLUTION
-        
+
         self.audio_sensor.series.replace(self.buffer)

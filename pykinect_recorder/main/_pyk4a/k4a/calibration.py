@@ -6,12 +6,8 @@ from . import _k4a
 class Calibration:
     def __init__(self, calibration_handle: _k4a.k4a_calibration_t):
         self._handle = calibration_handle
-        self.color_params = (
-            self._handle.color_camera_calibration.intrinsics.parameters.param
-        )
-        self.depth_params = (
-            self._handle.depth_camera_calibration.intrinsics.parameters.param
-        )
+        self.color_params = self._handle.color_camera_calibration.intrinsics.parameters.param
+        self.depth_params = self._handle.depth_camera_calibration.intrinsics.parameters.param
 
     def __del__(self):
         self.reset()
@@ -61,7 +57,7 @@ class Calibration:
         if self.is_valid():
             self._handle = None
 
-    # 3D point of source_camera to 3D point of target_camera  
+    # 3D point of source_camera to 3D point of target_camera
     def convert_3d_to_3d(
         self,
         source_point3d: _k4a.k4a_float3_t(),
@@ -159,7 +155,7 @@ class Calibration:
 
         return target_point2d
 
-    # 2D pixel of color_camera to 2D pixel of depth camera 
+    # 2D pixel of color_camera to 2D pixel of depth camera
     def convert_color_2d_to_depth_2d(
         self, source_point2d: _k4a.k4a_float2_t, depth_image: _k4a.k4a_image_t
     ) -> _k4a.k4a_float2_t():
@@ -167,9 +163,7 @@ class Calibration:
         valid = ctypes.c_int()
 
         _k4a.VERIFY(
-            _k4a.k4a_calibration_color_2d_to_depth_2d(
-                self._handle, source_point2d, depth_image, target_point2d, valid
-            ),
+            _k4a.k4a_calibration_color_2d_to_depth_2d(self._handle, source_point2d, depth_image, target_point2d, valid),
             "Failed to convert from Color 2D to Depth 2D",
         )
 

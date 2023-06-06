@@ -2,9 +2,7 @@ import os
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QIcon, QImage
-from PySide6.QtWidgets import (
-    QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
-)
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
 
 from .renderer.components.toolbar import Toolbar
 from .renderer.components.sidebar_menu import SidebarMenus
@@ -42,7 +40,7 @@ class MainWindow(QMainWindow):
         self.stacked_sidebar = StackedSidebar()
         self.stacked_viewer = StackedViewer()
         self.asidebar = Asidebar()
-        
+
         all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
         all_signals.config_viewer.connect(self.stacked_viewer.main_viewer.setConfig)
         all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)

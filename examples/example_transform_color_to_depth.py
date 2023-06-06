@@ -31,9 +31,7 @@ if __name__ == "__main__":
         ret, depth_image = capture.get_colored_depth_image()
 
         # Combine both images
-        combined_image = cv2.addWeighted(
-            color_image[:, :, :3], 0.7, depth_image, 0.3, 0
-        )
+        combined_image = cv2.addWeighted(color_image[:, :, :3], 0.7, depth_image, 0.3, 0)
 
         # Overlay body segmentation on depth image
         cv2.imshow("Transformed Color Image", combined_image)

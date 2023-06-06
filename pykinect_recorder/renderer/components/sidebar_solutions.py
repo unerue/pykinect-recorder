@@ -1,7 +1,4 @@
-
-from PySide6.QtWidgets import (
-    QFrame
-)
+from PySide6.QtWidgets import QFrame
 
 
 class SolutionSidebar(QFrame):

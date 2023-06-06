@@ -7,6 +7,7 @@ class _handle_k4a_device_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
+
 # handling device open/close/start/capture
 k4a_device_t = ctypes.POINTER(_handle_k4a_device_t)
 
@@ -16,6 +17,7 @@ class _handle_k4a_capture_t(ctypes.Structure):
     _fields_ = [
         ("_rsvd", ctypes.c_size_t),
     ]
+
 
 # after capturing image by device.open(), handling captured image
 k4a_capture_t = ctypes.POINTER(_handle_k4a_capture_t)
@@ -27,6 +29,7 @@ class _handle_k4a_image_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
+
 # handling image's metadata (exposure, h, w, size, timestamp, ...)
 k4a_image_t = ctypes.POINTER(_handle_k4a_image_t)
 
@@ -36,6 +39,7 @@ class _handle_k4a_transformation_t(ctypes.Structure):
     _fields_ = [
         ("_rsvd", ctypes.c_size_t),
     ]
+
 
 # format transformation like color_to_depth, depth_to_pts
 k4a_transformation_t = ctypes.POINTER(_handle_k4a_transformation_t)
@@ -98,7 +102,7 @@ K4A_IMAGE_FORMAT_CUSTOM8 = 6
 K4A_IMAGE_FORMAT_CUSTOM16 = 7
 K4A_IMAGE_FORMAT_CUSTOM = 8
 
-# depth_image to color interpolation 
+# depth_image to color interpolation
 # class k4a_transformation_interpolation_type_t(CtypeIntEnum):
 k4a_transformation_interpolation_type_t = ctypes.c_int
 K4A_TRANSFORMATION_INTERPOLATION_TYPE_NEAREST = 0
@@ -173,6 +177,7 @@ def K4A_SUCCEEDED(result):
 def K4A_FAILED(result):
     return not K4A_SUCCEEDED(result)
 
+
 # Callback Function
 """
 typedef void(k4a_logging_message_cb_t)(
@@ -211,6 +216,7 @@ class _k4a_calibration_extrinsics_t(ctypes.Structure):
         ("rotation", ctypes.c_float * 9),
         ("translation", ctypes.c_float * 3),
     ]
+
 
 # rotation => 3x3(9) rotation, translation => Vector(x, y, z)
 k4a_calibration_extrinsics_t = _k4a_calibration_extrinsics_t
@@ -251,7 +257,7 @@ class _k4a_calibration_intrinsics_t(ctypes.Structure):
     ]
 
 
-#v => Parameter counts (_params)
+# v => Parameter counts (_params)
 k4a_calibration_intrinsics_t = _k4a_calibration_intrinsics_t
 
 
@@ -267,6 +273,7 @@ class _k4a_calibration_camera_t(ctypes.Structure):
 
 k4a_calibration_camera_t = _k4a_calibration_camera_t
 
+
 # k4a_calibration_extrinsics_t[4][4] => 3D 변환을 가능하게 해줌.
 class _k4a_calibration_t(ctypes.Structure):
     _fields_ = [
@@ -274,8 +281,7 @@ class _k4a_calibration_t(ctypes.Structure):
         ("color_camera_calibration", k4a_calibration_camera_t),
         (
             "extrinsics",
-            (k4a_calibration_extrinsics_t * K4A_CALIBRATION_TYPE_NUM)
-            * K4A_CALIBRATION_TYPE_NUM,
+            (k4a_calibration_extrinsics_t * K4A_CALIBRATION_TYPE_NUM) * K4A_CALIBRATION_TYPE_NUM,
         ),
         ("depth_mode", ctypes.c_int),
         ("color_resolution", ctypes.c_int),
@@ -322,6 +328,7 @@ class _xy(ctypes.Structure):
     def __str__(self):
         return str(self.__iter__())
 
+
 # Two dimensional floating point vector
 class k4a_float2_t(ctypes.Union):
     _fields_ = [("xy", _xy), ("v", ctypes.c_float * 2)]
@@ -351,6 +358,7 @@ class _xyz(ctypes.Structure):
 
     def __str__(self):
         return str(self.__iter__())
+
 
 # Three dimensional floating point vector
 class k4a_float3_t(ctypes.Union):
@@ -395,5 +403,5 @@ color_command_dict = {
     "K4A_COLOR_CONTROL_WHITEBALANCE": 6,
     "K4A_COLOR_CONTROL_BACKLIGHT_COMPENSATION": 7,
     "K4A_COLOR_CONTROL_GAIN": 8,
-    "K4A_COLOR_CONTROL_POWERLINE_FREQUENCY": 9
+    "K4A_COLOR_CONTROL_POWERLINE_FREQUENCY": 9,
 }

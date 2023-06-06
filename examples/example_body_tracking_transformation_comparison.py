@@ -46,29 +46,15 @@ if __name__ == "__main__":
         # Get the transformed point cloud
         ret_transformed_point, transformed_points = capture.get_transformed_pointcloud()
 
-        if (
-            not ret_color
-            or not ret_depth
-            or not ret_point
-            or not ret_transformed_point
-            or not ret_transformed_color
-        ):
+        if not ret_color or not ret_depth or not ret_point or not ret_transformed_point or not ret_transformed_color:
             continue
 
-        points_map = points.reshape(
-            (transformed_color_image.shape[0], transformed_color_image.shape[1], 3)
-        )
-        transformed_points_map = transformed_points.reshape(
-            (color_image.shape[0], color_image.shape[1], 3)
-        )
+        points_map = points.reshape((transformed_color_image.shape[0], transformed_color_image.shape[1], 3))
+        transformed_points_map = transformed_points.reshape((color_image.shape[0], color_image.shape[1], 3))
 
         for body_id in range(body_frame.get_num_bodies()):
-            color_skeleton_2d = body_frame.get_body2d(
-                body_id, pykinect.K4A_CALIBRATION_TYPE_COLOR
-            ).numpy()
-            depth_skeleton_2d = body_frame.get_body2d(
-                body_id, pykinect.K4A_CALIBRATION_TYPE_DEPTH
-            ).numpy()
+            color_skeleton_2d = body_frame.get_body2d(body_id, pykinect.K4A_CALIBRATION_TYPE_COLOR).numpy()
+            depth_skeleton_2d = body_frame.get_body2d(body_id, pykinect.K4A_CALIBRATION_TYPE_DEPTH).numpy()
             skeleton_3d = body_frame.get_body(body_id).numpy()
 
             color_neck_2d = color_skeleton_2d[pykinect.K4ABT_JOINT_NECK, :]
@@ -88,9 +74,7 @@ if __name__ == "__main__":
                 depth_neck_float3.xyz.z,
             ]
 
-            color_neck_3d = transformed_points_map[
-                int(color_neck_2d[1]), int(color_neck_2d[0]), :
-            ]
+            color_neck_3d = transformed_points_map[int(color_neck_2d[1]), int(color_neck_2d[0]), :]
             depth_neck_3d = points_map[int(depth_neck_2d[1]), int(depth_neck_2d[0]), :]
             neck_3d = skeleton_3d[pykinect.K4ABT_JOINT_NECK, :3]
             print(
@@ -98,9 +82,7 @@ if __name__ == "__main__":
             )
 
         # Draw the skeletons into the color image
-        color_skeleton = body_frame.draw_bodies(
-            color_image, pykinect.K4A_CALIBRATION_TYPE_COLOR
-        )
+        color_skeleton = body_frame.draw_bodies(color_image, pykinect.K4A_CALIBRATION_TYPE_COLOR)
         transformed_color_skeleton = body_frame.draw_bodies(
             transformed_color_image, pykinect.K4A_CALIBRATION_TYPE_DEPTH
         )

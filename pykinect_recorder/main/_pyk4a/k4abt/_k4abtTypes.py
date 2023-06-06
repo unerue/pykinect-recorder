@@ -203,9 +203,7 @@ class _k4abt_joint_t(ctypes.Structure):
         ("confidence_level", ctypes.c_int),
     ]
 
-    def __init__(
-        self, position=(0, 0, 0), orientation=(0, 0, 0, 0), confidence_level=0
-    ):
+    def __init__(self, position=(0, 0, 0), orientation=(0, 0, 0, 0), confidence_level=0):
         super().__init__()
         self.position = k4a_float3_t(position)
         self.orientation = k4a_quaternion_t(orientation)
@@ -307,9 +305,7 @@ K4ABT_DEFAULT_MODEL = 0
 K4ABT_LITE_MODEL = 1
 
 k4abt_tracker_default_configuration = k4abt_tracker_configuration_t()
-k4abt_tracker_default_configuration.sensor_orientation = (
-    K4ABT_SENSOR_ORIENTATION_DEFAULT
-)
+k4abt_tracker_default_configuration.sensor_orientation = K4ABT_SENSOR_ORIENTATION_DEFAULT
 k4abt_tracker_default_configuration.processing_mode = K4ABT_TRACKER_PROCESSING_MODE_GPU
 k4abt_tracker_default_configuration.gpu_device_id = 0
 

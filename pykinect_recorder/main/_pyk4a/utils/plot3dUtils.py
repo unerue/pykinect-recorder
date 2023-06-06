@@ -21,9 +21,7 @@ class Open3dVisualizer:
             colors = cv2.cvtColor(rgb_image, cv2.COLOR_BGRA2RGB).reshape(-1, 3) / 255
             self.point_cloud.colors = o3d.utility.Vector3dVector(colors)
 
-        self.point_cloud.transform(
-            [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]]
-        )
+        self.point_cloud.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
 
         # Add geometries if it is the first time
         if not self.o3d_started:

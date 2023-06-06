@@ -33,9 +33,7 @@ if __name__ == "__main__":
             continue
 
         # Draw the skeletons into the color image
-        color_skeleton = body_frame.draw_bodies(
-            color_image, pykinect.K4A_CALIBRATION_TYPE_COLOR
-        )
+        color_skeleton = body_frame.draw_bodies(color_image, pykinect.K4A_CALIBRATION_TYPE_COLOR)
 
         # Overlay body segmentation on depth image
         cv2.imshow("Color image with skeleton", color_skeleton)

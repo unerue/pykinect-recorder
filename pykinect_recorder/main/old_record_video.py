@@ -86,9 +86,7 @@ class Thread(QThread):
         config = CONFIG
         azure_device = PyK4A(config=config, device_id=0)
         azure_device.start()
-        record = PyK4ARecord(
-            device=azure_device, config=config, path=self.filename_video
-        )
+        record = PyK4ARecord(device=azure_device, config=config, path=self.filename_video)
         record.create()
         print(self.status)
         while self.status:
@@ -105,9 +103,7 @@ class Thread(QThread):
                 self.rgb_updated_frame.emit(scaled_img)
 
             if np.any(current_frame.depth):
-                depth_frame = self.colorize(
-                    current_frame.depth, (None, 5000), cv2.COLORMAP_HSV
-                )
+                depth_frame = self.colorize(current_frame.depth, (None, 5000), cv2.COLORMAP_HSV)
                 h, w, ch = depth_frame.shape
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -122,9 +118,7 @@ class MainWindow(QMainWindow):
         self.logger.setLevel(logging.DEBUG)
 
         fileHandler = logging.FileHandler("tools/pyk4a/example/outputs/log.txt")
-        formatter = logging.Formatter(
-            "[%(levelname)s] [%(asctime)s] (%(filename)s:%(lineno)d) > %(message)s"
-        )
+        formatter = logging.Formatter("[%(levelname)s] [%(asctime)s] (%(filename)s:%(lineno)d) > %(message)s")
         fileHandler.setFormatter(formatter)
         self.logger.addHandler(fileHandler)
 

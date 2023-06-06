@@ -29,9 +29,7 @@ def setup_onnx_provider():
 
 
 def setup_onnx_provider_linux():
-    k4abt_tracker_default_configuration.processing_mode = (
-        K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA
-    )
+    k4abt_tracker_default_configuration.processing_mode = K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA
     try:
         ctypes.cdll.LoadLibrary("libonnxruntime_providers_cuda.so")
     except Exception as e:
@@ -40,21 +38,15 @@ def setup_onnx_provider_linux():
 
 def setup_onnx_provider_windows():
     try:
-        ctypes.cdll.LoadLibrary(
-            "C:/Program Files/Azure Kinect Body Tracking SDK/tools/directml.dll"
-        )
+        ctypes.cdll.LoadLibrary("C:/Program Files/Azure Kinect Body Tracking SDK/tools/directml.dll")
     except Exception as e:
         try:
             ctypes.cdll.LoadLibrary(
                 "C:/Program Files/Azure Kinect Body Tracking SDK/sdk/windows-desktop/amd64/release/bin/onnxruntime_providers_cuda.dll"
             )
-            k4abt_tracker_default_configuration.processing_mode = (
-                K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA
-            )
+            k4abt_tracker_default_configuration.processing_mode = K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA
         except Exception as e:
-            k4abt_tracker_default_configuration.processing_mode = (
-                K4ABT_TRACKER_PROCESSING_MODE_CPU
-            )
+            k4abt_tracker_default_configuration.processing_mode = K4ABT_TRACKER_PROCESSING_MODE_CPU
 
 
 def k4abt_tracker_create(sensor_calibration, config, tracker_handle):
@@ -86,9 +78,7 @@ def k4abt_tracker_destroy(tracker_handle):
 def k4abt_tracker_set_temporal_smoothing(tracker_handle, smoothing_factor):
     # K4ABT_EXPORT void k4abt_tracker_set_temporal_smoothing(k4abt_tracker_t tracker_handle, float smoothing_factor);
 
-    _k4abt_tracker_set_temporal_smoothing = (
-        k4abt_dll.k4abt_tracker_set_temporal_smoothing
-    )
+    _k4abt_tracker_set_temporal_smoothing = k4abt_dll.k4abt_tracker_set_temporal_smoothing
     _k4abt_tracker_set_temporal_smoothing.argtypes = (k4abt_tracker_t, ctypes.c_float)
 
     _k4abt_tracker_set_temporal_smoothing(tracker_handle, smoothing_factor)
@@ -109,9 +99,7 @@ def k4abt_tracker_enqueue_capture(tracker_handle, sensor_capture_handle, timeout
         ctypes.c_int32,
     )
 
-    return _k4abt_tracker_enqueue_capture(
-        tracker_handle, sensor_capture_handle, timeout_in_ms
-    )
+    return _k4abt_tracker_enqueue_capture(tracker_handle, sensor_capture_handle, timeout_in_ms)
 
 
 def k4abt_tracker_pop_result(tracker_handle, body_frame_handle, timeout_in_ms):
@@ -197,9 +185,7 @@ def k4abt_frame_get_body_id(body_frame_handle, index):
 def k4abt_frame_get_device_timestamp_usec(body_frame_handle):
     # K4ABT_EXPORT uint64_t k4abt_frame_get_device_timestamp_usec(k4abt_frame_t body_frame_handle);
 
-    _k4abt_frame_get_device_timestamp_usec = (
-        k4abt_dll.k4abt_frame_get_device_timestamp_usec
-    )
+    _k4abt_frame_get_device_timestamp_usec = k4abt_dll.k4abt_frame_get_device_timestamp_usec
     _k4abt_frame_get_device_timestamp_usec.restype = ctypes.c_uint64
     _k4abt_frame_get_device_timestamp_usec.argtypes = (k4abt_frame_t,)
 

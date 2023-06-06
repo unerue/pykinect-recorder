@@ -47,9 +47,7 @@ if __name__ == "__main__":
         pos3d_depth = device.calibration.convert_2d_to_3d(
             pixels, rgb_depth, K4A_CALIBRATION_TYPE_COLOR, K4A_CALIBRATION_TYPE_DEPTH
         )
-        print(
-            f"RGB depth: {rgb_depth}, RGB pos3D: {pos3d_color}, Depth pos3D: {pos3d_depth}"
-        )
+        print(f"RGB depth: {rgb_depth}, RGB pos3D: {pos3d_color}, Depth pos3D: {pos3d_depth}")
 
         # Overlay body segmentation on depth image
         cv2.imshow("Transformed Color Image", color_image)
