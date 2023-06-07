@@ -11,7 +11,9 @@ from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4a import Device
 from PySide6.QtMultimedia import (
-    QAudioFormat, QAudioSource, QMediaDevices,
+    QAudioFormat,
+    QAudioSource,
+    QMediaDevices,
 )
 
 
@@ -37,17 +39,17 @@ class Pyk4aThread(QThread):
     gyro_data = Signal(list)
     Fps = Signal(float)
     Audio = Signal(list)
-    
-    def __init__(self, device: Device, audio_record = None, parent=None) -> None:
+
+    def __init__(self, device: Device, audio_record=None, parent=None) -> None:
         QThread.__init__(self, parent)
         self.device = device
         self.is_run = None
-        
+
         self.input_devices = QMediaDevices.audioInputs()
         self.audio_input = None
         self.audio_file = None
         self.audio_record = audio_record
-    
+
     def run(self):
         self.readyAudio()
         self.io_device = self.audio_input.start()
@@ -78,16 +80,14 @@ class Pyk4aThread(QThread):
                     if current_rgb_frame[0]:
                         rgb_frame = current_rgb_frame[1]
                         rgb_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
-                        
+
                         h, w, ch = rgb_frame.shape
                         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
                         scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
                         self.rgb_updated_frame.emit(scaled_rgb_frame)
 
                     if current_depth_frame[0]:
-                        depth_frame = self._colorize(
-                            current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV
-                        )
+                        depth_frame = self._colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
                         h, w, ch = depth_frame.shape
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -95,9 +95,7 @@ class Pyk4aThread(QThread):
                         self.depth_updated_frame.emit(scaled_depth_frame)
 
                     if current_ir_frame[0]:
-                        ir_frame = self._colorize(
-                            current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE
-                        )
+                        ir_frame = self._colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                         h, w, ch = ir_frame.shape
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -108,10 +106,10 @@ class Pyk4aThread(QThread):
                     acc_time = current_imu_data.acc_time
                     acc_data = current_imu_data.acc
                     gyro_data = current_imu_data.gyro
-                    fps = 1/(end_time-start_t)
+                    fps = 1 / (end_time - start_t)
 
                     self.Fps.emit(fps)
-                    self.Time.emit(acc_time/1e6)
+                    self.Time.emit(acc_time / 1e6)
                     self.AccData.emit(acc_data)
                     self.gyro_data.emit(gyro_data)
 
@@ -122,6 +120,7 @@ class Pyk4aThread(QThread):
 
         if self.audio_record is None:
             import os
+
             os.remove(self.audio_file)
 
         self.audio_input.stop()
@@ -140,7 +139,7 @@ class Pyk4aThread(QThread):
         img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         img = cv2.applyColorMap(img, colormap)
         return img
-    
+
     def readyAudio(self) -> None:
         format_audio = QAudioFormat()
         format_audio.setSampleRate(44200)

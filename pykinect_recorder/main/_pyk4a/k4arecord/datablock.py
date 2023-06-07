@@ -21,9 +21,7 @@ class Datablock:
             self._handle = None
 
     def get_device_timestamp_usec(self):
-        return int(
-            _k4arecord.k4a_playback_data_block_get_device_timestamp_usec(self._handle)
-        )
+        return int(_k4arecord.k4a_playback_data_block_get_device_timestamp_usec(self._handle))
 
     def get_buffer_size(self):
         return int(_k4arecord.k4a_playback_data_block_get_buffer_size(self._handle))

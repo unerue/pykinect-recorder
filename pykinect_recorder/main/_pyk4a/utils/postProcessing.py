@@ -23,8 +23,6 @@ def smooth_depth_image(depth_image, max_hole_size=10):
     erosion = cv2.erode(mask, kernel, iterations=1)
     mask = mask - erosion
 
-    smoothed_depth_image = cv2.inpaint(
-        depth_image.astype(np.uint16), mask, max_hole_size, cv2.INPAINT_NS
-    )
+    smoothed_depth_image = cv2.inpaint(depth_image.astype(np.uint16), mask, max_hole_size, cv2.INPAINT_NS)
 
     return smoothed_depth_image

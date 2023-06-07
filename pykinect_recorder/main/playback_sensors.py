@@ -17,13 +17,13 @@ class PlaybackSensors(QThread):
     AccData = Signal(list)
     gyro_data = Signal(list)
     Fps = Signal(float)
-    
+
     def __init__(self, playback: Playback, parent=None) -> None:
         QThread.__init__(self, parent)
         self.playback = playback
         self.is_run = None
 
-    def run(self):      
+    def run(self):
         while self.is_run:
             start_t = time.time()
             _, current_frame = self.playback.update()
@@ -37,16 +37,14 @@ class PlaybackSensors(QThread):
             if current_rgb_frame[0]:
                 rgb_frame = current_rgb_frame[1]
                 rgb_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
-                
+
                 h, w, ch = rgb_frame.shape
                 rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
                 scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
                 self.rgb_updated_frame.emit(scaled_rgb_frame)
 
             if current_depth_frame[0]:
-                depth_frame = self._colorize(
-                    current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV
-                )
+                depth_frame = self._colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
                 h, w, ch = depth_frame.shape
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -54,9 +52,7 @@ class PlaybackSensors(QThread):
                 self.depth_updated_frame.emit(scaled_depth_frame)
 
             if current_ir_frame[0]:
-                ir_frame = self._colorize(
-                    current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE
-                )
+                ir_frame = self._colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                 h, w, ch = ir_frame.shape
 
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -67,7 +63,7 @@ class PlaybackSensors(QThread):
             # acc_time = current_imu_data.acc_time
             # acc_data = current_imu_data.acc
             # gyro_data = current_imu_data.gyro
-            fps = 1/(end_time-start_t)
+            fps = 1 / (end_time - start_t)
 
             self.Fps.emit(fps)
             # self.Time.emit(acc_time/1e6)

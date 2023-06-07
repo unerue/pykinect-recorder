@@ -102,15 +102,11 @@ def test_skeleton_t():
     skeleton_quat_array = [rand_int(4) for i in range(pykinect.K4ABT_JOINT_COUNT)]
     skeleton_conf_array = rand_int(pykinect.K4ABT_JOINT_COUNT)
     joints = [
-        pykinect.k4abt_joint_t(
-            skeleton_pos_array[i], skeleton_quat_array[i], skeleton_conf_array[i]
-        )
+        pykinect.k4abt_joint_t(skeleton_pos_array[i], skeleton_quat_array[i], skeleton_conf_array[i])
         for i in range(pykinect.K4ABT_JOINT_COUNT)
     ]
     skeleton_val = pykinect.k4abt_skeleton_t(joints)
-    check_skeleton_t(
-        skeleton_val, skeleton_pos_array, skeleton_quat_array, skeleton_conf_array
-    )
+    check_skeleton_t(skeleton_val, skeleton_pos_array, skeleton_quat_array, skeleton_conf_array)
 
 
 def test_skeleton2d_t():
@@ -130,17 +126,13 @@ def test_body_t():
     skeleton_quat_array = [rand_int(4) for i in range(pykinect.K4ABT_JOINT_COUNT)]
     skeleton_conf_array = rand_int(pykinect.K4ABT_JOINT_COUNT)
     joints = [
-        pykinect.k4abt_joint_t(
-            skeleton_pos_array[i], skeleton_quat_array[i], skeleton_conf_array[i]
-        )
+        pykinect.k4abt_joint_t(skeleton_pos_array[i], skeleton_quat_array[i], skeleton_conf_array[i])
         for i in range(pykinect.K4ABT_JOINT_COUNT)
     ]
     skeleton_val = pykinect.k4abt_skeleton_t(joints)
     body_val = pykinect.k4abt_body_t(body_id, skeleton_val)
     assert body_val.id == body_id
-    check_skeleton_t(
-        body_val.skeleton, skeleton_pos_array, skeleton_quat_array, skeleton_conf_array
-    )
+    check_skeleton_t(body_val.skeleton, skeleton_pos_array, skeleton_quat_array, skeleton_conf_array)
 
 
 def test_body2d_t():

@@ -57,9 +57,7 @@ class Body2d:
             point1 = self.joints[segment_pair[0]].get_coordinates()
             point2 = self.joints[segment_pair[1]].get_coordinates()
 
-            if (point1[0] == 0 and point1[1] == 0) or (
-                point2[0] == 0 and point2[1] == 0
-            ):
+            if (point1[0] == 0 and point1[1] == 0) or (point2[0] == 0 and point2[1] == 0):
                 continue
             image = cv2.line(image, point1, point2, color, 2)
 
@@ -80,9 +78,7 @@ class Body2d:
             skeleton2d_handle.joints2D[jointID].position = calibration.convert_3d_to_2d(
                 joint.position, K4A_CALIBRATION_TYPE_DEPTH, dest_camera
             )
-            skeleton2d_handle.joints2D[
-                jointID
-            ].confidence_level = joint.confidence_level
+            skeleton2d_handle.joints2D[jointID].confidence_level = joint.confidence_level
 
         body2d_handle.skeleton = skeleton2d_handle
         body2d_handle.id = bodyIdx

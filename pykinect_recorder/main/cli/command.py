@@ -2,9 +2,9 @@ import click
 from pykinect_recorder.renderer import MainWindow
 import qdarktheme
 from PySide6.QtWidgets import QApplication
- 
 
-CONTEXT_SETTINGS = dict(help_option_names=['-h','--help'])
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -28,5 +28,5 @@ def main():
     app.exec()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

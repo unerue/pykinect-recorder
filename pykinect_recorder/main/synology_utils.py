@@ -18,9 +18,7 @@ def upload(args: argparse.ArgumentParser):
             args.otp_code,
         )
 
-        success = f1.upload_file(
-            args.dest_path, args.file_path, verify=args.cert_verify
-        )
+        success = f1.upload_file(args.dest_path, args.file_path, verify=args.cert_verify)
         if type(success) == tuple:
             raise ConnectionAbortedError
         else:
@@ -56,9 +54,7 @@ if __name__ == "__main__":
     parser.add_argument("--Synology_Port", type=str, default="", help="")
     parser.add_argument("--Username", type=str, default="", help="")
     parser.add_argument("--Password", type=str, default="", help="")
-    parser.add_argument(
-        "--secure", type=bool, default=True, help="Set True if https is required"
-    )
+    parser.add_argument("--secure", type=bool, default=True, help="Set True if https is required")
     parser.add_argument(
         "--cert_verify",
         type=bool,
@@ -75,9 +71,7 @@ if __name__ == "__main__":
         default="/dataset/test",
         help="Destination path in synology nas",
     )
-    parser.add_argument(
-        "--file_path", type=str, default="ecord_with_mic.py", help="Upload file path"
-    )
+    parser.add_argument("--file_path", type=str, default="ecord_with_mic.py", help="Upload file path")
 
     args = parser.parse_args()
     # upload(args)

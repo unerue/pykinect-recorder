@@ -38,9 +38,7 @@ if __name__ == "__main__":
             continue
 
         # Combine both images
-        combined_image = cv2.addWeighted(
-            depth_color_image, 0.6, body_image_color, 0.4, 0
-        )
+        combined_image = cv2.addWeighted(depth_color_image, 0.6, body_image_color, 0.4, 0)
 
         # Overlay body segmentation on depth image
         cv2.imshow("Segmented Depth Image", combined_image)

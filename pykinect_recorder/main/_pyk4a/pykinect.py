@@ -10,9 +10,7 @@ from .utils import (
 )
 
 
-def initialize_libraries(
-    module_k4a_path=None, module_k4abt_path=None, track_body=False
-) -> bool:
+def initialize_libraries(module_k4a_path=None, module_k4abt_path=None, track_body=False) -> bool:
     # Search the module path for k4a if not available
     if module_k4a_path is None:
         module_k4a_path = get_k4a_module_path()
@@ -36,7 +34,7 @@ def initialize_libraries(
     except:
         print("Can not setting .dll")
         _flag = False
-    
+
     finally:
         return _flag
 
@@ -64,7 +62,7 @@ def start_device(
 
     # Start device
     device.start(config, record, record_filepath)
-    
+
     return device
 
 

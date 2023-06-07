@@ -1,10 +1,14 @@
 import time
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
 from PySide6.QtGui import QImage, QPixmap, QDrag
+<<<<<<< HEAD
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame, QGridLayout,
     QDialog, QVBoxLayout
 )
+=======
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QFrame, QGridLayout
+>>>>>>> 27eb1a90afc7642116df82f337d1e0f66550594b
 
 from ..common_widgets import Frame, Slider, Label
 from .playback_sensors import PlaybackSensors
@@ -28,8 +32,8 @@ class PlaybackViewer(QFrame):
         self.frame_rgb = Frame("RGB Sensor")
         self.frame_depth = Frame("Depth Sensor")
         self.frame_ir = Frame("IR Sensor")
-        
-        self.layout_subdata = QHBoxLayout() # TODO => 네이밍 다시 하기
+
+        self.layout_subdata = QHBoxLayout()  # TODO => 네이밍 다시 하기
         self.imu_senser = ImuSensors()
         self.audio_sensor = AudioSensor()
         self.layout_subdata.addWidget(self.imu_senser)
@@ -45,15 +49,17 @@ class PlaybackViewer(QFrame):
 
         self.btn_stop = QPushButton("Stop")
         self.btn_stop.setFixedSize(200, 40)
-        self.btn_stop.setStyleSheet("""
+        self.btn_stop.setStyleSheet(
+            """
             QPushButton:hover {
                 border-color: "white";
             }
-        """)
+        """
+        )
         layout_top.addWidget(self.btn_stop)
         self.btn_stop.clicked.connect(self.stop_playback)
         self.slider_time.valueChanged.connect(self.control_time)
-        
+
         self.target = None
         self.grid_layout.addLayout(layout_top, 0, 0, 1, 2)
         self.grid_layout.addWidget(self.frame_rgb, 1, 0)
@@ -72,7 +78,7 @@ class PlaybackViewer(QFrame):
         elif event.type() == QEvent.MouseButtonRelease:
             self.mouseReleaseEvent(event)
         return super().eventFilter(watched, event)
-    
+
     def get_index(self, pos):
         for i in range(self.grid_layout.count()):
             if self.grid_layout.itemAt(i).geometry().contains(pos) and i != self.target:
@@ -177,19 +183,19 @@ class PlaybackViewer(QFrame):
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
         self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))
-    
+
     @Slot(QImage)
     def setDepthImage(self, image: QImage) -> None:
         self.frame_depth.frame.setPixmap(QPixmap.fromImage(image))
-        
+
     @Slot(QImage)
     def setIRImage(self, image: QImage) -> None:
         self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
 
     @Slot(float)
     def setTime(self, time) -> None:
-        self.imu_senser.label_time.setText("Time(s) : %.3f" %time)
+        self.imu_senser.label_time.setText("Time(s) : %.3f" % time)
 
     @Slot(float)
     def setFps(self, value) -> None:
-        self.imu_senser.label_fps.setText("FPS : %.2f" %value)
+        self.imu_senser.label_fps.setText("FPS : %.2f" % value)

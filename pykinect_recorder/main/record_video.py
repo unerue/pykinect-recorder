@@ -51,9 +51,7 @@ class RecordVideo(QThread):
     def run(self):
         azure_device = PyK4A(config=self.config, device_id=0)
         azure_device.start()
-        record = PyK4ARecord(
-            device=azure_device, config=self.config, path=self.filename_video
-        )
+        record = PyK4ARecord(device=azure_device, config=self.config, path=self.filename_video)
         record.create()
         while self.status:
             current_frame = azure_device.get_capture()
@@ -71,9 +69,7 @@ class RecordVideo(QThread):
                 self.rgb_updated_frame.emit(scaled_img)
 
             if np.any(current_frame.depth):
-                depth_frame = self.colorize(
-                    current_frame.depth, (None, 5000), cv2.COLORMAP_HSV
-                )
+                depth_frame = self.colorize(current_frame.depth, (None, 5000), cv2.COLORMAP_HSV)
                 h, w, ch = depth_frame.shape
                 if sys.flags.debug:
                     print(h, w)

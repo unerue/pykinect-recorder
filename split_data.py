@@ -22,19 +22,19 @@ def colorize(
     return img
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(Path.home())
     initialize_libraries()
     file_paths = glob(os.path.join(Path.home(), "Downloads", "*.mkv"))
-    root_path = 'datas'
+    root_path = "datas"
     if not os.path.exists(root_path):
         os.mkdir(root_path)
     offsets = [56000000 for _ in range(len(file_paths))]  ## micro time
 
-    for i, file_path in enumerate(file_paths):    
+    for i, file_path in enumerate(file_paths):
         playback = Playback(file_path)
         playback.seek_timestamp(offset=offsets[i], origin=K4A_PLAYBACK_SEEK_BEGIN)
-        file_name = file_path.split('\\')[-1][:-4]
+        file_name = file_path.split("\\")[-1][:-4]
         cnt = 0
         frame = 100
         color_h, color_w = None, None
@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 cnt += 1
             else:
                 break
-        
+
         df = pd.read_csv("metadata.csv")
         length = df.shape[0]
         df.loc[length] = [file_name, offsets[i], frame, f"'({color_h}, {color_w})'", f"'({depth_h}, {depth_w})'"]

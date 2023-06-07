@@ -35,9 +35,7 @@ class Record:
 
     def flush(self):
         if self.is_valid():
-            _k4arecord.VERIFY(
-                _k4arecord.k4a_record_flush(self.record_handle), "Failed to flush!"
-            )
+            _k4arecord.VERIFY(_k4arecord.k4a_record_flush(self.record_handle), "Failed to flush!")
 
     def write_header(self):
         if self.is_valid():

@@ -46,9 +46,7 @@ class Playback:
         calibration_handle = _k4arecord.k4a_calibration_t()
         if self.is_valid():
             _k4arecord.VERIFY(
-                _k4arecord.k4a_playback_get_calibration(
-                    self._handle, calibration_handle
-                ),
+                _k4arecord.k4a_playback_get_calibration(self._handle, calibration_handle),
                 "Failed to read device calibration from recording!",
             )
 
@@ -74,10 +72,7 @@ class Playback:
         else:
             self._capture = Capture(capture_handle, self.calibration)
 
-        ret = (
-            _k4arecord.k4a_playback_get_next_capture(self._handle, capture_handle)
-            != _k4arecord.K4A_STREAM_RESULT_EOF
-        )
+        ret = _k4arecord.k4a_playback_get_next_capture(self._handle, capture_handle) != _k4arecord.K4A_STREAM_RESULT_EOF
 
         return ret, self._capture
 
@@ -100,9 +95,7 @@ class Playback:
     def get_next_imu_sample(self):
         imu_sample_struct = _k4a.k4a_imu_sample_t()
         _k4a.VERIFY(
-            _k4arecord.k4a_playback_get_next_imu_sample(
-                self._handle, imu_sample_struct
-            ),
+            _k4arecord.k4a_playback_get_next_imu_sample(self._handle, imu_sample_struct),
             "Get next imu sample failed!",
         )
 
@@ -114,9 +107,7 @@ class Playback:
     def get_previous_imu_sample(self):
         imu_sample_struct = _k4a.k4a_imu_sample_t()
         _k4a.VERIFY(
-            _k4arecord.k4a_playback_get_previous_imu_sample(
-                self._handle, imu_sample_struct
-            ),
+            _k4arecord.k4a_playback_get_previous_imu_sample(self._handle, imu_sample_struct),
             "Get previous imu sample failed!",
         )
 
@@ -143,9 +134,7 @@ class Playback:
     def get_next_data_block(self, track):
         block_handle = _k4arecord.k4a_playback_data_block_t()
         _k4a.VERIFY(
-            _k4arecord.k4a_playback_get_next_data_block(
-                self._handle, track, block_handle
-            ),
+            _k4arecord.k4a_playback_get_next_data_block(self._handle, track, block_handle),
             "Get next data block failed!",
         )
 
@@ -159,9 +148,7 @@ class Playback:
     def get_previous_data_block(self, track):
         block_handle = _k4arecord.k4a_playback_data_block_t()
         _k4a.VERIFY(
-            _k4arecord.k4a_playback_get_previous_data_block(
-                self._handle, track, block_handle
-            ),
+            _k4arecord.k4a_playback_get_previous_data_block(self._handle, track, block_handle),
             "Get previous data block failed!",
         )
 

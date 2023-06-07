@@ -100,6 +100,7 @@ def k4a_playback_close(playback_handle):
 
     _k4a_playback_close(playback_handle)
 
+
 # get vs get raw?
 def k4a_playback_get_raw_calibration(playback_handle, data, data_size):
     """
@@ -144,9 +145,7 @@ def k4a_playback_get_record_configuration(playback_handle, config):
         k4a_record_configuration_t *config
     );
     """
-    _k4a_playback_get_record_configuration = (
-        record_dll.k4a_playback_get_record_configuration
-    )
+    _k4a_playback_get_record_configuration = record_dll.k4a_playback_get_record_configuration
     _k4a_playback_get_record_configuration.restype = k4a_result_t
     _k4a_playback_get_record_configuration.argtypes = (
         k4a_playback_t,
@@ -155,11 +154,12 @@ def k4a_playback_get_record_configuration(playback_handle, config):
 
     return _k4a_playback_get_record_configuration(playback_handle, config)
 
+
 # Check for files with the same name
 def k4a_playback_check_track_exists(playback_handle, track_name):
     """
     K4ARECORD_EXPORT bool k4a_playback_check_track_exists(
-        k4a_playback_t playback_handle, 
+        k4a_playback_t playback_handle,
         const char *track_name
     );
     """
@@ -184,10 +184,8 @@ def k4a_playback_get_track_count(playback_handle):
     return _k4a_playback_get_track_count(playback_handle)
 
 
-#extract video with filename 
-def k4a_playback_get_track_name(
-    playback_handle, track_index, track_name, track_name_size
-):
+# extract video with filename
+def k4a_playback_get_track_name(playback_handle, track_index, track_name, track_name_size):
     """
     K4ARECORD_EXPORT k4a_buffer_result_t k4a_playback_get_track_name(
         k4a_playback_t playback_handle,
@@ -205,17 +203,13 @@ def k4a_playback_get_track_name(
         ctypes.POINTER(ctypes.c_size_t),
     )
 
-    return _k4a_playback_get_track_name(
-        playback_handle, track_index, track_name, track_name_size
-    )
+    return _k4a_playback_get_track_name(playback_handle, track_index, track_name, track_name_size)
 
 
-def k4a_playbk4a_playback_track_is_builtinack_get_track_name(
-    playback_handle, track_name
-):
+def k4a_playbk4a_playback_track_is_builtinack_get_track_name(playback_handle, track_name):
     """
     K4ARECORD_EXPORT bool k4a_playback_track_is_builtin(
-        k4a_playback_t playback_handle, 
+        k4a_playback_t playback_handle,
         const char *track_name
     );
     """
@@ -237,9 +231,7 @@ def k4a_playback_track_get_video_settings(playback_handle, track_name, video_set
         k4a_record_video_settings_t *video_settings
     );
     """
-    _k4a_playback_track_get_video_settings = (
-        record_dll.k4a_playback_track_get_video_settings
-    )
+    _k4a_playback_track_get_video_settings = record_dll.k4a_playback_track_get_video_settings
     _k4a_playback_track_get_video_settings.restype = k4a_result_t
     _k4a_playback_track_get_video_settings.argtypes = (
         k4a_playback_t,
@@ -247,14 +239,10 @@ def k4a_playback_track_get_video_settings(playback_handle, track_name, video_set
         ctypes.POINTER(k4a_record_video_settings_t),
     )
 
-    return _k4a_playback_track_get_video_settings(
-        playback_handle, track_name, video_settings
-    )
+    return _k4a_playback_track_get_video_settings(playback_handle, track_name, video_settings)
 
 
-def k4a_playback_track_get_codec_id(
-    playback_handle, track_name, codec_id, codec_id_size
-):
+def k4a_playback_track_get_codec_id(playback_handle, track_name, codec_id, codec_id_size):
     """
     K4ARECORD_EXPORT k4a_buffer_result_t k4a_playback_track_get_codec_id(
         k4a_playback_t playback_handle,
@@ -272,14 +260,10 @@ def k4a_playback_track_get_codec_id(
         ctypes.POINTER(ctypes.c_size_t),
     )
 
-    return _k4a_playback_track_get_codec_id(
-        playback_handle, track_name, codec_id, codec_id_size
-    )
+    return _k4a_playback_track_get_codec_id(playback_handle, track_name, codec_id, codec_id_size)
 
 
-def k4a_playback_track_get_codec_context(
-    playback_handle, track_name, codec_context, codec_context_size
-):
+def k4a_playback_track_get_codec_context(playback_handle, track_name, codec_context, codec_context_size):
     """
     K4ARECORD_EXPORT k4a_buffer_result_t k4a_playback_track_get_codec_context(
         k4a_playback_t playback_handle,
@@ -288,9 +272,7 @@ def k4a_playback_track_get_codec_context(
         size_t *codec_context_size
     );
     """
-    _k4a_playback_track_get_codec_context = (
-        record_dll.k4a_playback_track_get_codec_context
-    )
+    _k4a_playback_track_get_codec_context = record_dll.k4a_playback_track_get_codec_context
     _k4a_playback_track_get_codec_context.restype = k4a_buffer_result_t
     _k4a_playback_track_get_codec_context.argtypes = (
         k4a_playback_t,
@@ -299,9 +281,7 @@ def k4a_playback_track_get_codec_context(
         ctypes.POINTER(ctypes.c_size_t),
     )
 
-    return _k4a_playback_track_get_codec_context(
-        playback_handle, track_name, codec_context, codec_context_size
-    )
+    return _k4a_playback_track_get_codec_context(playback_handle, track_name, codec_context, codec_context_size)
 
 
 def k4a_playback_get_tag(playback_handle, name, value, value_size):
@@ -325,7 +305,7 @@ def k4a_playback_get_tag(playback_handle, name, value, value_size):
     return _k4a_playback_get_tag(playback_handle, name, value, value_size)
 
 
-# convert 
+# convert
 def k4a_playback_set_color_conversion(playback_handle, target_format):
     """
     K4ARECORD_EXPORT k4a_result_t k4a_playback_set_color_conversion(
@@ -419,9 +399,7 @@ def k4a_playback_get_previous_imu_sample(playback_handle, imu_sample):
         k4a_imu_sample_t *imu_sample
     );
     """
-    _k4a_playback_get_previous_imu_sample = (
-        record_dll.k4a_playback_get_previous_imu_sample
-    )
+    _k4a_playback_get_previous_imu_sample = record_dll.k4a_playback_get_previous_imu_sample
     _k4a_playback_get_previous_imu_sample.restype = k4a_stream_result_t
     _k4a_playback_get_previous_imu_sample.argtypes = (
         k4a_playback_t,
@@ -447,14 +425,10 @@ def k4a_playback_get_next_data_block(playback_handle, track_name, data_block_han
         ctypes.POINTER(k4a_playback_data_block_t),
     )
 
-    return _k4a_playback_get_next_data_block(
-        playback_handle, track_name, data_block_handle
-    )
+    return _k4a_playback_get_next_data_block(playback_handle, track_name, data_block_handle)
 
 
-def k4a_playback_get_previous_data_block(
-    playback_handle, track_name, data_block_handle
-):
+def k4a_playback_get_previous_data_block(playback_handle, track_name, data_block_handle):
     """
     K4ARECORD_EXPORT k4a_stream_result_t k4a_playback_get_previous_data_block(
         k4a_playback_t playback_handle,
@@ -462,9 +436,7 @@ def k4a_playback_get_previous_data_block(
         k4a_playback_data_block_t *data_block_handle
     );
     """
-    _k4a_playback_get_previous_data_block = (
-        record_dll.k4a_playback_get_previous_data_block
-    )
+    _k4a_playback_get_previous_data_block = record_dll.k4a_playback_get_previous_data_block
     _k4a_playback_get_previous_data_block.restype = k4a_stream_result_t
     _k4a_playback_get_previous_data_block.argtypes = (
         k4a_playback_t,
@@ -472,9 +444,7 @@ def k4a_playback_get_previous_data_block(
         ctypes.POINTER(k4a_playback_data_block_t),
     )
 
-    return _k4a_playback_get_previous_data_block(
-        playback_handle, track_name, data_block_handle
-    )
+    return _k4a_playback_get_previous_data_block(playback_handle, track_name, data_block_handle)
 
 
 # Gets the last timestamp in a recording, relative to the start of the recording.
@@ -484,27 +454,21 @@ def k4a_playback_data_block_get_device_timestamp_usec(data_block_handle):
         k4a_playback_data_block_t data_block_handle
     );
     """
-    _k4a_playback_data_block_get_device_timestamp_usec = (
-        record_dll.k4a_playback_data_block_get_device_timestamp_usec
-    )
+    _k4a_playback_data_block_get_device_timestamp_usec = record_dll.k4a_playback_data_block_get_device_timestamp_usec
     _k4a_playback_data_block_get_device_timestamp_usec.restype = ctypes.c_uint64
-    _k4a_playback_data_block_get_device_timestamp_usec.argtypes = (
-        k4a_playback_data_block_t,
-    )
+    _k4a_playback_data_block_get_device_timestamp_usec.argtypes = (k4a_playback_data_block_t,)
 
     return _k4a_playback_data_block_get_device_timestamp_usec(data_block_handle)
 
 
-# 
+#
 def k4a_playback_data_block_get_buffer_size(data_block_handle):
     """
     K4ARECORD_EXPORT size_t k4a_playback_data_block_get_buffer_size(
         k4a_playback_data_block_t data_block_handle
     );
     """
-    _k4a_playback_data_block_get_buffer_size = (
-        record_dll.k4a_playback_data_block_get_buffer_size
-    )
+    _k4a_playback_data_block_get_buffer_size = record_dll.k4a_playback_data_block_get_buffer_size
     _k4a_playback_data_block_get_buffer_size.restype = ctypes.c_size_t
     _k4a_playback_data_block_get_buffer_size.argtypes = (k4a_playback_data_block_t,)
 
@@ -562,9 +526,7 @@ def k4a_playback_get_recording_length_usec(playback_handle):
         k4a_playback_t playback_handle
     );
     """
-    _k4a_playback_get_recording_length_usec = (
-        record_dll.k4a_playback_get_recording_length_usec
-    )
+    _k4a_playback_get_recording_length_usec = record_dll.k4a_playback_get_recording_length_usec
     _k4a_playback_get_recording_length_usec.restype = ctypes.c_uint64
     _k4a_playback_get_recording_length_usec.argtypes = (k4a_playback_t,)
 
@@ -577,9 +539,7 @@ def k4a_playback_get_last_timestamp_usec(playback_handle):
         k4a_playback_t playback_handle
     );
     """
-    _k4a_playback_get_last_timestamp_usec = (
-        record_dll.k4a_playback_get_last_timestamp_usec
-    )
+    _k4a_playback_get_last_timestamp_usec = record_dll.k4a_playback_get_last_timestamp_usec
     _k4a_playback_get_last_timestamp_usec.restype = ctypes.c_uint64
     _k4a_playback_get_last_timestamp_usec.argtypes = (k4a_playback_t,)
 

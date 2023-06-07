@@ -93,9 +93,7 @@ class Frame:
         num_bodies = self.get_num_bodies()
 
         for body_id in range(num_bodies):
-            destination_image = self.draw_body2d(
-                destination_image, body_id, dest_camera, only_segments
-            )
+            destination_image = self.draw_body2d(destination_image, body_id, dest_camera, only_segments)
 
         return destination_image
 
@@ -106,9 +104,7 @@ class Frame:
         dest_camera=K4A_CALIBRATION_TYPE_DEPTH,
         only_segments=False,
     ):
-        return self.get_body2d(bodyIdx, dest_camera).draw(
-            destination_image, only_segments
-        )
+        return self.get_body2d(bodyIdx, dest_camera).draw(destination_image, only_segments)
 
     def get_device_timestamp_usec(self):
         return _k4abt.k4abt_frame_get_device_timestamp_usec(self._handle)
@@ -121,9 +117,7 @@ class Frame:
 
     def get_transformed_body_index_map(self):
         depth_image = self.get_capture().get_depth_image_object()
-        return self.transformation.depth_image_to_color_camera_custom(
-            depth_image, self.get_body_index_map()
-        )
+        return self.transformation.depth_image_to_color_camera_custom(depth_image, self.get_body_index_map())
 
     def get_transformed_body_index_map_image(self):
         transformed_body_index_map = self.get_transformed_body_index_map()
@@ -131,17 +125,11 @@ class Frame:
 
     def get_segmentation_image(self):
         ret, body_index_map = self.get_body_index_map_image()
-        return ret, np.dstack(
-            [cv2.LUT(body_index_map, body_colors[:, i]) for i in range(3)]
-        )
+        return ret, np.dstack([cv2.LUT(body_index_map, body_colors[:, i]) for i in range(3)])
 
     def get_transformed_segmentation_image(self):
         ret, transformed_body_index_map = self.get_transformed_body_index_map_image()
-        return ret, np.dstack(
-            [cv2.LUT(transformed_body_index_map, body_colors[:, i]) for i in range(3)]
-        )
+        return ret, np.dstack([cv2.LUT(transformed_body_index_map, body_colors[:, i]) for i in range(3)])
 
     def get_capture(self):
-        return Capture(
-            _k4abt.k4abt_frame_get_capture(self._handle), self.calibration._handle
-        )
+        return Capture(_k4abt.k4abt_frame_get_capture(self._handle), self.calibration._handle)

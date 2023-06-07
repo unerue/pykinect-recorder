@@ -40,21 +40,13 @@ class Device:
     def handle(self) -> None:
         return self._handle
 
-    def start(
-        self, 
-        configuration: Configuration,
-        record=False,
-        record_filepath="output.mkv"
-    ) -> None:
-        
+    def start(self, configuration: Configuration, record=False, record_filepath="output.mkv") -> None:
         self.configuration = configuration
         self.start_cameras(configuration)
         self.start_imu()
-        
+
         if record:
-            self.record = Record(
-                self._handle, self.configuration.handle(), record_filepath
-            )
+            self.record = Record(self._handle, self.configuration.handle(), record_filepath)
             self.recording = True
 
     def close(self) -> None:
@@ -68,11 +60,7 @@ class Device:
             self.record = None
             self.recording = False
 
-    def update(
-        self, 
-        timeout_in_ms: int = K4A_WAIT_INFINITE
-    ) -> Capture:
-        
+    def update(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> Capture:
         # Get cameras capture
         capture_handle = self.get_capture(timeout_in_ms)
 
@@ -87,11 +75,7 @@ class Device:
 
         return Device.capture
 
-    def update_imu(
-        self,
-        timeout_in_ms: int = K4A_WAIT_INFINITE
-    ) -> ImuSample:
-        
+    def update_imu(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> ImuSample:
         # Get imu sample
         imu_sample = self.get_imu_sample(timeout_in_ms)
 
@@ -104,11 +88,7 @@ class Device:
         return Device.imu_sample
 
     # TODO _k4a.K4A_WAIT_INFINITE는 없는데 ?
-    def get_capture(
-        self,
-        timeout_in_ms: int = K4A_WAIT_INFINITE
-    ) -> _k4a.ctypes.POINTER:
-        
+    def get_capture(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> _k4a.ctypes.POINTER:
         # Release current handle
         if self.is_capture_initialized():
             Device.capture.release_handle()
@@ -121,11 +101,7 @@ class Device:
 
         return capture_handle
 
-    def get_imu_sample(
-        self,
-        timeout_in_ms: int = K4A_WAIT_INFINITE
-    ) -> _k4a.k4a_imu_sample_t:
-        
+    def get_imu_sample(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> _k4a.k4a_imu_sample_t:
         imu_sample = _k4a.k4a_imu_sample_t()
 
         _k4a.VERIFY(
@@ -135,14 +111,8 @@ class Device:
 
         return imu_sample
 
-    def start_cameras(
-        self,
-        device_config: Configuration
-    ) -> None:
-
-        Device.calibration = self.get_calibration(
-            device_config.depth_mode, device_config.color_resolution
-        )
+    def start_cameras(self, device_config: Configuration) -> None:
+        Device.calibration = self.get_calibration(device_config.depth_mode, device_config.color_resolution)
 
         _k4a.VERIFY(
             _k4a.k4a_device_start_cameras(self._handle, device_config.handle()),
@@ -160,7 +130,6 @@ class Device:
 
     # get device serial number
     def get_serialnum(self) -> ctypes.c_int:
-        
         serial_number_size = ctypes.c_size_t()
         result = _k4a.k4a_device_get_serialnum(self._handle, None, serial_number_size)
 
@@ -168,26 +137,18 @@ class Device:
             serial_number = ctypes.create_string_buffer(serial_number_size.value)
 
         _k4a.VERIFY(
-            _k4a.k4a_device_get_serialnum(
-                self._handle, serial_number, serial_number_size
-            ),
+            _k4a.k4a_device_get_serialnum(self._handle, serial_number, serial_number_size),
             "Read serial number failed!",
         )
 
         return serial_number.value.decode("utf-8")
 
     # ctypes.c_int => Configuration에 있는 Enum type
-    def get_calibration(
-        self,
-        depth_mode: ctypes.c_int,
-        color_resolution: ctypes.c_int
-    ) -> Calibration:
+    def get_calibration(self, depth_mode: ctypes.c_int, color_resolution: ctypes.c_int) -> Calibration:
         calibration_handle = _k4a.k4a_calibration_t()
 
         _k4a.VERIFY(
-            _k4a.k4a_device_get_calibration(
-                self._handle, depth_mode, color_resolution, calibration_handle
-            ),
+            _k4a.k4a_device_get_calibration(self._handle, depth_mode, color_resolution, calibration_handle),
             "Get calibration failed!",
         )
 
@@ -196,9 +157,7 @@ class Device:
     def get_version(self):
         version = _k4a.k4a_hardware_version_t()
 
-        _k4a.VERIFY(
-            _k4a.k4a_device_get_version(self._handle, version), "Get version failed!"
-        )
+        _k4a.VERIFY(_k4a.k4a_device_get_version(self._handle, version), "Get version failed!")
 
         return version
 
@@ -206,9 +165,7 @@ class Device:
     def open(index=0):
         device_handle = _k4a.k4a_device_t()
 
-        _k4a.VERIFY(
-            _k4a.k4a_device_open(index, device_handle), "Open K4A Device failed!"
-        )
+        _k4a.VERIFY(_k4a.k4a_device_open(index, device_handle), "Open K4A Device failed!")
 
         return device_handle
 

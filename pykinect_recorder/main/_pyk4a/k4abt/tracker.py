@@ -40,9 +40,7 @@ class Tracker:
 
     def enqueue_capture(self, capture_handle, timeout_in_ms=K4A_WAIT_INFINITE):
         _k4abt.VERIFY(
-            _k4abt.k4abt_tracker_enqueue_capture(
-                self._handle, capture_handle, timeout_in_ms
-            ),
+            _k4abt.k4abt_tracker_enqueue_capture(self._handle, capture_handle, timeout_in_ms),
             "Body tracker capture enqueue failed!",
         )
 
@@ -50,17 +48,13 @@ class Tracker:
         if self.is_frame_initialized():
             self.frame.release()
             _k4abt.VERIFY(
-                _k4abt.k4abt_tracker_pop_result(
-                    self._handle, self.frame.handle(), timeout_in_ms
-                ),
+                _k4abt.k4abt_tracker_pop_result(self._handle, self.frame.handle(), timeout_in_ms),
                 "Body tracker get body frame failed!",
             )
         else:
             frame_handle = _k4abt.k4abt_frame_t()
             _k4abt.VERIFY(
-                _k4abt.k4abt_tracker_pop_result(
-                    self._handle, frame_handle, timeout_in_ms
-                ),
+                _k4abt.k4abt_tracker_pop_result(self._handle, frame_handle, timeout_in_ms),
                 "Body tracker get body frame failed!",
             )
             self.frame = Frame(frame_handle, self.calibration)
@@ -78,9 +72,7 @@ class Tracker:
 
         tracker_handle = _k4abt.k4abt_tracker_t()
         _k4abt.VERIFY(
-            _k4abt.k4abt_tracker_create(
-                self.calibration.handle(), tracker_config, tracker_handle
-            ),
+            _k4abt.k4abt_tracker_create(self.calibration.handle(), tracker_config, tracker_handle),
             "Body tracker initialization failed!",
         )
 

@@ -3,19 +3,11 @@ from typing import Tuple, Union, List
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics
 
-from PySide6.QtWidgets import (
-    QLabel, QComboBox, QPushButton, QSlider, 
-    QFrame, QVBoxLayout, QHBoxLayout
-)
+from PySide6.QtWidgets import QLabel, QComboBox, QPushButton, QSlider, QFrame, QVBoxLayout, QHBoxLayout
 
 
 class ComboBox(QComboBox):
-    def __init__(
-        self, 
-        items: List[str], 
-        current_index: int,
-        stylesheet: Union[str, os.PathLike] = None
-    ) -> None:
+    def __init__(self, items: List[str], current_index: int, stylesheet: Union[str, os.PathLike] = None) -> None:
         super().__init__()
         self.addItems(items)
         self.setCurrentIndex(current_index)
@@ -30,18 +22,12 @@ class ComboBox(QComboBox):
 
 class PushButton(QPushButton):
     def __init__(
-        self, 
-        text: str = "",
-        font: str = "Arial", 
-        fontsize: int = 10, 
-        stylesheet: Union[str, os.PathLike] = None
+        self, text: str = "", font: str = "Arial", fontsize: int = 10, stylesheet: Union[str, os.PathLike] = None
     ) -> None:
         super().__init__()
         self.setText(text)
         self.setFont(QFont(f"{font}", fontsize))
-        self.setStyleSheet(
-            "color: white;"
-        )
+        self.setStyleSheet("color: white;")
 
         if stylesheet is not None:
             with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
@@ -52,10 +38,10 @@ class PushButton(QPushButton):
 
 class Slider(QSlider):
     def __init__(
-        self, 
-        orientation, 
-        set_range_values: Tuple[int], 
-        set_value: int, 
+        self,
+        orientation,
+        set_range_values: Tuple[int],
+        set_value: int,
     ) -> None:
         super().__init__(orientation)
         self.setRange(*set_range_values)
@@ -105,7 +91,7 @@ class Slider(QSlider):
 
         rect = self.geometry()
         if self.orientation() == Qt.Horizontal:
-            horizontal_x_pos = rect.width()//2 - font_width//2 - 5
+            horizontal_x_pos = rect.width() // 2 - font_width // 2 - 5
             horizontal_y_pos = rect.height() * 0.7
             painter.drawText(QPoint(horizontal_x_pos, horizontal_y_pos), curr_value)
         else:
@@ -114,12 +100,12 @@ class Slider(QSlider):
 
 class Label(QLabel):
     def __init__(
-        self, 
+        self,
         text: str = "",
-        font: str = "Arial", 
-        fontsize: int = 10, 
-        orientation = None,
-        stylesheet: Union[str, os.PathLike] = None
+        font: str = "Arial",
+        fontsize: int = 10,
+        orientation=None,
+        stylesheet: Union[str, os.PathLike] = None,
     ) -> None:
         super().__init__()
         self.setText(text)
@@ -149,7 +135,7 @@ class Frame(QFrame):
                 border-color: white;
             }"""
         )
-        
+
         if layout is None:
             self.layout_main = QVBoxLayout()
             self.frame = Label(text, orientation=Qt.AlignmentFlag.AlignCenter)

@@ -7,7 +7,8 @@ class _handle_k4a_record_t(ctypes.Structure):
         ("_rsvd", ctypes.c_size_t),
     ]
 
-# streaming frame record 
+
+# streaming frame record
 k4a_record_t = ctypes.POINTER(_handle_k4a_record_t)
 
 
@@ -16,6 +17,7 @@ class _handle_k4a_playback_t(ctypes.Structure):
     _fields_ = [
         ("_rsvd", ctypes.c_size_t),
     ]
+
 
 # watching video which recorded by k4a_record
 k4a_playback_t = ctypes.POINTER(_handle_k4a_playback_t)
@@ -26,6 +28,7 @@ class _handle_k4a_playback_data_block_t(ctypes.Structure):
     _fields_ = [
         ("_rsvd", ctypes.c_size_t),
     ]
+
 
 # Handle to a block of data read from k4a_playback
 k4a_playback_data_block_t = ctypes.POINTER(_handle_k4a_playback_data_block_t)

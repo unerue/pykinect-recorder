@@ -15,10 +15,8 @@ class AudioSensor(QFrame):
         self.setMaximumHeight(480)
         self.setObjectName("AudioSensor")
 
-        self.setStyleSheet(
-            " QFrame#AudioSensor { border-color: white; }"
-        )
-        
+        self.setStyleSheet(" QFrame#AudioSensor { border-color: white; }")
+
         self.layout_main = QVBoxLayout()
         self.title = Label("Audio Sensor", orientation=Qt.AlignmentFlag.AlignCenter)
         self.title.setFixedHeight(60)

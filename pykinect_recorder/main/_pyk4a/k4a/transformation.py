@@ -105,9 +105,7 @@ class Transformation:
 
         return transformed_color_image
 
-    def depth_image_to_point_cloud(
-        self, depth_image, calibration_type=_k4a.K4A_CALIBRATION_TYPE_DEPTH
-    ):
+    def depth_image_to_point_cloud(self, depth_image, calibration_type=_k4a.K4A_CALIBRATION_TYPE_DEPTH):
         if not depth_image.is_valid():
             return Image()
 

@@ -30,14 +30,10 @@ if __name__ == "__main__":
         # Get the smooth depth image using Navier-Stokes based inpainting. maximum_hole_size defines
         # the maximum hole size to be filled, bigger hole size will take longer time to process
         maximum_hole_size = 10
-        ret, smooth_depth_color_image = capture.get_smooth_colored_depth_image(
-            maximum_hole_size
-        )
+        ret, smooth_depth_color_image = capture.get_smooth_colored_depth_image(maximum_hole_size)
 
         # Concatenate images for comparison
-        comparison_image = np.concatenate(
-            (raw_depth_image, smooth_depth_color_image), axis=1
-        )
+        comparison_image = np.concatenate((raw_depth_image, smooth_depth_color_image), axis=1)
         comparison_image = cv2.putText(
             comparison_image,
             "Original",
