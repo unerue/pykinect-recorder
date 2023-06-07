@@ -1,14 +1,10 @@
 import time
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
 from PySide6.QtGui import QImage, QPixmap, QDrag
-<<<<<<< HEAD
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame, QGridLayout,
     QDialog, QVBoxLayout
 )
-=======
-from PySide6.QtWidgets import QHBoxLayout, QPushButton, QFrame, QGridLayout
->>>>>>> 27eb1a90afc7642116df82f337d1e0f66550594b
 
 from ..common_widgets import Frame, Slider, Label
 from .playback_sensors import PlaybackSensors
