@@ -23,6 +23,7 @@ class ExplorerSidebar(QFrame):
         self.label_dirpath = Label("")
         self.label_dirpath.setFixedSize(200, 50)
         self.btn_search = PushButton("경로\n탐색")
+
         self.btn_search.setFixedSize(50, 50)
         self.layout_title.addWidget(self.label_dirpath)
         self.layout_title.addWidget(self.btn_search)
@@ -84,6 +85,9 @@ class _FileInfo(QPushButton):
         self.setStyleSheet("""
             QPushButton#FileInfo {
                 border-color: white;
+            }
+            QPushButton#FileInfo:hover {
+                border-color: red;
             }
         """)
 

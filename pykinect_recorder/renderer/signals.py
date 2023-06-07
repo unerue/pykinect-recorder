@@ -21,6 +21,7 @@ class AllSignals(QObject):
     save_filepath = Signal(str)
     is_run = Signal(bool)
     time_control = Signal(int)
+    time_value = Signal(int)
 
     # config Signals
     config_viewer = Signal(dict)

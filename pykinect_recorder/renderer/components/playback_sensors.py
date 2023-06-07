@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
+from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_image_get_device_timestamp_usec
 from ..signals import all_signals
 
 
@@ -16,6 +17,8 @@ class PlaybackSensors(QThread):
         QThread.__init__(self, parent)
         self.playback = playback
         self.is_run = None
+        self.odd = True
+        self.time_tick = 33322
         all_signals.time_control.connect(self.change_timestamp)
 
     def change_timestamp(self, time: int):
@@ -59,7 +62,14 @@ class PlaybackSensors(QThread):
 
     def run(self):      
         while self.is_run:
-            self.update_next_frame()
+            all_signals.time_value.emit(self.time_tick)
+            if self.odd:
+                self.odd = False
+                self.time_tick = 33345
+            else:
+                self.odd = True
+                self.time_tick = 33322
+            time.sleep(0.033)
 
     def _colorize(
         self,

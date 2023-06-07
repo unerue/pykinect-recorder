@@ -2,10 +2,11 @@ import time
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
 from PySide6.QtGui import QImage, QPixmap, QDrag
 from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QFrame, QGridLayout
+    QHBoxLayout, QPushButton, QFrame, QGridLayout,
+    QDialog, QVBoxLayout
 )
 
-from ..common_widgets import Frame, Slider
+from ..common_widgets import Frame, Slider, Label
 from .playback_sensors import PlaybackSensors
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
@@ -37,8 +38,9 @@ class PlaybackViewer(QFrame):
 
         layout_top = QHBoxLayout()
         layout_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.slider_time = Slider(Qt.Orientation.Horizontal, (55555, 1000000), 55555)
+        self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
         self.slider_time.setFixedSize(400, 40)
+        self.slider_time.setTickInterval(33322)
         layout_top.addWidget(self.slider_time)
 
         self.btn_stop = QPushButton("Stop")
@@ -129,34 +131,48 @@ class PlaybackViewer(QFrame):
             self.btn_stop.setText("Stop")
 
     def control_time(self):
-        if self.th is not None and self.th.is_run:
-            self.th.is_run = False
-            self.btn_stop.setText("Start")
         if self.th is not None:
             all_signals.time_control.emit(self.slider_time.value())
+
+    def set_slider_value(self, value):
+        _time = self.slider_time.value() + value
+        self.slider_time.setValue(_time)
 
     @Slot(str)
     def playback(self, filepath) -> None:
         if self.th is not None and self.th.is_run:
             self.stop_playback()
             time.sleep(0.01)
-
+            
         initialize_libraries()
-        playback = start_playback(filepath)
-        playback_config = playback.get_record_configuration()
-        self.slider_time.setRange(555, playback.get_recording_length())
+        try:
+            playback = start_playback(filepath)
+            playback_config = playback.get_record_configuration()
+            self.slider_time.setRange(333555, playback.get_recording_length())
 
-        self.th = PlaybackSensors(playback=playback)
-        all_signals.captured_rgb.connect(self.setRGBImage)
-        all_signals.captured_depth.connect(self.setDepthImage)
-        all_signals.captured_ir.connect(self.setIRImage)
-        all_signals.captured_time.connect(self.setTime)
-        all_signals.captured_fps.connect(self.setFps)
+            self.th = PlaybackSensors(playback=playback)
+            all_signals.captured_rgb.connect(self.setRGBImage)
+            all_signals.captured_depth.connect(self.setDepthImage)
+            all_signals.captured_ir.connect(self.setIRImage)
+            all_signals.captured_time.connect(self.setTime)
+            all_signals.captured_fps.connect(self.setFps)
+            all_signals.time_value.connect(self.set_slider_value)
 
-        # set option
-        self.th.is_run = True
-        self.th.start()
-    
+            # set option
+            self.th.is_run = True
+            self.th.start()
+        except:
+            modal = QDialog()
+            layout_modal = QVBoxLayout()
+            e_message = Label(
+                "<b>영상을 불러올 수 없습니다. <br>다른 영상을 실행해주세요.</b>", 
+                "Arial", 20, Qt.AlignmentFlag.AlignCenter
+            )
+            layout_modal.addWidget(e_message)
+            modal.setLayout(layout_modal)
+            modal.setWindowTitle("Error Message")
+            modal.resize(400, 200)
+            modal.exec()
         
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:

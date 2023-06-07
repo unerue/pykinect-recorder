@@ -87,7 +87,6 @@ class SensorViewer(QFrame):
             }
             """
         )
-        
 
         self.btn_viewer.setToolTip("<b>Streaming Button</b>")
         self.btn_record.setToolTip("<b>Recording Button</b>")
@@ -205,10 +204,12 @@ class SensorViewer(QFrame):
             modal.setWindowTitle("Error Message")
             modal.resize(400, 200)
             modal.exec()
+            return False
 
     def open_device(self) -> None:
         if self.is_device is True:
-            self.check_device()
+            if self.check_device() is False:
+                return
             self.is_device = False
             self.btn_open.setText("Device close")
         else:
