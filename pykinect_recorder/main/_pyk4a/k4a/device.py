@@ -47,6 +47,7 @@ class Device:
 
         if record:
             self.record = Record(self._handle, self.configuration.handle(), record_filepath)
+            self.record.add_imu_track()
             self.recording = True
 
     def close(self) -> None:
@@ -84,6 +85,9 @@ class Device:
             Device.imu_sample.parse_data()
         else:
             Device.imu_sample = ImuSample(imu_sample)
+
+        if self.recording:
+            self.record.write_imu(imu_sample)
 
         return Device.imu_sample
 

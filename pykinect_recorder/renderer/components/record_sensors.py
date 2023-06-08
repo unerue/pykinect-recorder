@@ -58,12 +58,12 @@ class RecordSensors(QThread):
                 while self.is_run:
                     start_t = time.time()  # start_time
                     current_frame = self.device.update()  # current_frame
+                    current_imu_data = self.device.update_imu()
                     file.write(q.get())
 
                     current_rgb_frame = current_frame.get_color_image()
                     current_depth_frame = current_frame.get_depth_image()
                     current_ir_frame = current_frame.get_ir_image()
-                    current_imu_data = self.device.update_imu()
 
                     if current_rgb_frame[0]:
                         rgb_frame = current_rgb_frame[1]

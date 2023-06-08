@@ -4,6 +4,7 @@ import traceback
 
 from ._k4arecordTypes import *
 from ..k4a._k4atypes import *
+from ..k4a import _k4atypes
 
 record_dll = None
 
@@ -47,6 +48,16 @@ def k4a_record_write_header(recording_handle):
 
     return _k4a_record_write_header(recording_handle)
 
+def k4a_record_write_imu_sample(recording_handle, imu_sample):
+    _k4a_record_write_imu_sample = record_dll.k4a_record_write_imu_sample
+    _k4a_record_write_imu_sample.restype = k4a_result_t
+    _k4a_record_write_imu_sample.argtypes = (
+        k4a_record_t,
+        k4a_imu_sample_t
+    )
+
+    return _k4a_record_write_imu_sample(recording_handle, imu_sample)
+
 
 def k4a_record_write_capture(recording_handle, capture_handle):
     # K4ARECORD_EXPORT k4a_result_t k4a_record_write_capture(k4a_record_t recording_handle, k4a_capture_t capture_handle);
@@ -73,6 +84,14 @@ def k4a_record_close(recording_handle):
     _k4a_record_close.argtypes = (k4a_record_t,)
 
     _k4a_record_close(recording_handle)
+
+
+def k4a_record_add_imu_track(recording_handle):
+    _k4a_record_add_imu_track = record_dll.k4a_record_add_imu_track
+    _k4a_record_add_imu_track.restype = k4a_result_t
+    _k4a_record_add_imu_track.argtypes = (k4a_record_t,)
+
+    return _k4a_record_add_imu_track(recording_handle)
 
 
 ###########################
