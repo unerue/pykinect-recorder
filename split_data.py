@@ -1,5 +1,6 @@
 import os
 import cv2
+import sys
 import pandas as pd
 from glob import glob
 from pathlib import Path
@@ -23,24 +24,28 @@ def colorize(
 
 
 if __name__ == "__main__":
-    print(Path.home())
     initialize_libraries()
-    file_paths = glob(os.path.join(Path.home(), "Downloads", "*.mkv"))
+    # with open("dataset_list.txt", "r", encoding="utf-8") as f:
+    #     file_paths = f.readlines()
+    file_paths = glob(os.path.join(Path.home(), "Desktop/baby", "*.mkv"))
     root_path = "datas"
     if not os.path.exists(root_path):
         os.mkdir(root_path)
-    offsets = [56000000 for _ in range(len(file_paths))]  ## micro time
-
+    print(len(file_paths))
+    
     for i, file_path in enumerate(file_paths):
-        playback = Playback(file_path)
-        playback.seek_timestamp(offset=offsets[i], origin=K4A_PLAYBACK_SEEK_BEGIN)
+        print(i, file_path)
         file_name = file_path.split("\\")[-1][:-4]
+        os.makedirs(os.path.join(root_path, file_name, "rgb"), exist_ok=True)
+        os.makedirs(os.path.join(root_path, file_name, "ir"), exist_ok=True)
+        playback = Playback(file_path)
+        playback.seek_timestamp(offset=333555, origin=K4A_PLAYBACK_SEEK_BEGIN)
         cnt = 0
-        frame = 100
+        # frame = 100
         color_h, color_w = None, None
         depth_h, depth_w = None, None
 
-        while cnt < frame:
+        while True:
             ret, current_frame = playback.update()
             if ret:
                 current_rgb_frame = current_frame.get_color_image()
@@ -48,18 +53,23 @@ if __name__ == "__main__":
                 if current_ir_frame[0]:
                     ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                     depth_h, depth_w, _ = ir_frame.shape
-                    cv2.imwrite(os.path.join(root_path, f"{file_name}_ir_{str(cnt).zfill(6)}.png"), ir_frame)
+                    cv2.imwrite(os.path.join(
+                        root_path, file_name, "ir", f"{file_name}_ir_{str(cnt).zfill(6)}.png"), ir_frame,
+                    )
 
                 if current_rgb_frame[0]:
                     rgb_frame = current_rgb_frame[1]
                     color_h, color_w, _ = rgb_frame.shape
-                    cv2.imwrite(os.path.join(root_path, f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"), rgb_frame)
+                    cv2.imwrite(os.path.join(
+                        root_path, file_name, "rgb", f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"), rgb_frame,
+                        [cv2.IMWRITE_JPEG_QUALITY, 100]
+                    )
                 cnt += 1
             else:
                 break
 
         df = pd.read_csv("metadata.csv")
         length = df.shape[0]
-        df.loc[length] = [file_name, offsets[i], frame, f"'({color_h}, {color_w})'", f"'({depth_h}, {depth_w})'"]
+        df.loc[length] = [file_name, 333555, cnt, f"'({color_h}, {color_w})'", f"'({depth_h}, {depth_w})'"]
         df.to_csv("metadata.csv", index=False)
         print(file_name)

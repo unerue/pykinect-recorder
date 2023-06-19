@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         all_signals.config_viewer.connect(self.stacked_viewer.main_viewer.setConfig)
         all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)
         all_signals.stacked_sidebar_status.connect(self.stacked_viewer.setCurrentWidget)
-        all_signals.playback_filepath.connect(self.stacked_viewer.main_explorer.playback)
+        all_signals.playback_filepath.connect(self.stacked_viewer.main_explorer.start_playback)
 
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)

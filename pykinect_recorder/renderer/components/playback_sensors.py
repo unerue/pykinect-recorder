@@ -4,20 +4,21 @@ import time
 from numpy.typing import NDArray
 from typing import Optional, Tuple
 
-from PySide6.QtCore import Qt, Signal, QThread
+from PySide6.QtCore import Qt, Signal, QThread, QTimer
 from PySide6.QtGui import QImage
 from pykinect_recorder.main._pyk4a.k4arecord.playback import Playback
 from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_image_get_device_timestamp_usec
 from ..signals import all_signals
 
 
-class PlaybackSensors(QThread):
-    def __init__(self, playback: Playback, parent=None) -> None:
-        QThread.__init__(self, parent)
+class PlaybackSensors:
+    def __init__(self, playback: Playback) -> None:
         self.playback = playback
-        self.is_run = None
         self.odd = True
         self.time_tick = 33322
+        self.timer = QTimer()
+        self.timer.setInterval(30)
+        self.timer.timeout.connect(self.run)
         all_signals.time_control.connect(self.change_timestamp)
 
     def change_timestamp(self, time: int):
@@ -56,15 +57,13 @@ class PlaybackSensors(QThread):
             all_signals.captured_ir.emit(scaled_ir_frame)
 
     def run(self):
-        while self.is_run:
-            all_signals.time_value.emit(self.time_tick)
-            if self.odd:
-                self.odd = False
-                self.time_tick = 33345
-            else:
-                self.odd = True
-                self.time_tick = 33322
-            time.sleep(0.033)
+        all_signals.time_value.emit(self.time_tick)
+        if self.odd:
+            self.odd = False
+            self.time_tick = 33345
+        else:
+            self.odd = True
+            self.time_tick = 33322
 
     def _colorize(
         self,

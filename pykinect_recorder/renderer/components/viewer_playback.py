@@ -24,6 +24,7 @@ class PlaybackViewer(QFrame):
 
         self.setStyleSheet("background-color: #1e1e1e;")
         self.th = None
+        self.playback = None
         self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
         self.frame_depth = Frame("Depth Sensor")
@@ -52,8 +53,19 @@ class PlaybackViewer(QFrame):
             }
         """
         )
+        self.btn_clip = QPushButton("Clipping")
+        self.btn_clip.setFixedSize(200, 40)
+        self.btn_clip.setStyleSheet(
+            """
+            QPushButton:hover {
+                border-color: "white";
+            }
+        """
+        )
         layout_top.addWidget(self.btn_stop)
+        layout_top.addWidget(self.btn_clip)
         self.btn_stop.clicked.connect(self.stop_playback)
+        self.btn_clip.clicked.connect(self.stop_playback)
         self.slider_time.valueChanged.connect(self.control_time)
 
         self.target = None
@@ -63,6 +75,13 @@ class PlaybackViewer(QFrame):
         self.grid_layout.addWidget(self.frame_ir, 2, 0)
         self.grid_layout.addWidget(self.frame_subdata, 2, 1)
 
+        all_signals.captured_rgb.connect(self.setRGBImage)
+        all_signals.captured_depth.connect(self.setDepthImage)
+        all_signals.captured_ir.connect(self.setIRImage)
+        all_signals.captured_time.connect(self.setTime)
+        all_signals.captured_fps.connect(self.setFps)
+        all_signals.time_value.connect(self.set_slider_value)
+        
         self.setAcceptDrops(True)
         self.setLayout(self.grid_layout)
 
@@ -124,12 +143,10 @@ class PlaybackViewer(QFrame):
 
     def stop_playback(self):
         if self.btn_stop.text() == "Stop":
-            self.th.is_run = False
-            self.th.quit()
+            self.th.timer.stop()
             self.btn_stop.setText("Start")
         else:
-            self.th.is_run = True
-            self.th.start()
+            self.th.timer.start()
             self.btn_stop.setText("Stop")
 
     def control_time(self):
@@ -141,28 +158,21 @@ class PlaybackViewer(QFrame):
         self.slider_time.setValue(_time)
 
     @Slot(str)
-    def playback(self, filepath) -> None:
-        if self.th is not None and self.th.is_run:
-            self.stop_playback()
-            time.sleep(0.01)
-            
-        initialize_libraries()
+    def start_playback(self, filepath) -> None:
+        if self.th is not None:
+            time.sleep(0.5)
+            self.th.timer.stop()
+            self.btn_stop.setText("Stop")
+            self.playback.close()
         try:
-            playback = start_playback(filepath)
-            playback_config = playback.get_record_configuration()
-            self.slider_time.setRange(333555, playback.get_recording_length())
-
-            self.th = PlaybackSensors(playback=playback)
-            all_signals.captured_rgb.connect(self.setRGBImage)
-            all_signals.captured_depth.connect(self.setDepthImage)
-            all_signals.captured_ir.connect(self.setIRImage)
-            all_signals.captured_time.connect(self.setTime)
-            all_signals.captured_fps.connect(self.setFps)
-            all_signals.time_value.connect(self.set_slider_value)
-
-            # set option
-            self.th.is_run = True
-            self.th.start()
+            initialize_libraries()
+            self.playback = start_playback(filepath)
+            playback_config = self.playback.get_record_configuration()
+            
+            self.th = PlaybackSensors(playback=self.playback)
+            self.slider_time.setRange(333555, self.playback.get_recording_length())
+            self.slider_time.setValue(333555)
+            self.th.timer.start()
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
@@ -195,3 +205,6 @@ class PlaybackViewer(QFrame):
     @Slot(float)
     def setFps(self, value) -> None:
         self.imu_senser.label_fps.setText("FPS : %.2f" % value)
+
+    def extract_video_to_frame(self):
+        pass
