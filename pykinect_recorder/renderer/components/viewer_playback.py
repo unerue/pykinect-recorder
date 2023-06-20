@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 
 from ..common_widgets import Frame, Slider, Label
 from .playback_sensors import PlaybackSensors
+from .viewer_video_clipping import VideoClippingDialog
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
 from pykinect_recorder.main._pyk4a.pykinect import initialize_libraries, start_playback
@@ -25,6 +26,7 @@ class PlaybackViewer(QFrame):
         self.setStyleSheet("background-color: #1e1e1e;")
         self.th = None
         self.playback = None
+        self.file_path = None
         self.grid_layout = QGridLayout()
         self.frame_rgb = Frame("RGB Sensor")
         self.frame_depth = Frame("Depth Sensor")
@@ -65,7 +67,7 @@ class PlaybackViewer(QFrame):
         layout_top.addWidget(self.btn_stop)
         layout_top.addWidget(self.btn_clip)
         self.btn_stop.clicked.connect(self.stop_playback)
-        self.btn_clip.clicked.connect(self.stop_playback)
+        self.btn_clip.clicked.connect(self.extract_video_to_frame)
         self.slider_time.valueChanged.connect(self.control_time)
 
         self.target = None
@@ -165,6 +167,7 @@ class PlaybackViewer(QFrame):
             self.btn_stop.setText("Stop")
             self.playback.close()
         try:
+            self.file_path = filepath
             initialize_libraries()
             self.playback = start_playback(filepath)
             playback_config = self.playback.get_record_configuration()
@@ -207,4 +210,7 @@ class PlaybackViewer(QFrame):
         self.imu_senser.label_fps.setText("FPS : %.2f" % value)
 
     def extract_video_to_frame(self):
-        pass
+        self.th.timer.stop()
+        video_clip_dialog = VideoClippingDialog(self.file_path)
+        video_clip_dialog.exec_()
+        self.th.timer.start()

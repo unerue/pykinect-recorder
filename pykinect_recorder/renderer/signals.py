@@ -27,6 +27,10 @@ class AllSignals(QObject):
     # config Signals
     config_viewer = Signal(dict)
 
+    # video extract signal
+    video_total_frame = Signal(int)
+    current_frame_cnt = Signal(int)
+
     def __init__(self):
         super().__init__()
         pass
