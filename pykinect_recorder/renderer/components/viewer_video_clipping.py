@@ -22,6 +22,7 @@ class VideoClippingDialog(QDialog):
         self.file_name = file_name
         self.save_file_name = self.file_name.split('/')[-1][:-4]
         self.left, self.right = None, None
+        self.progress_dialog = ProgressBarDialog()
 
         self.main_widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -102,9 +103,6 @@ class VideoClippingDialog(QDialog):
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
 
-        progress_modal = CustomProgressBar()
-        progress_modal.show()
-
     def close_dialog(self):
         self.close()
 
@@ -159,13 +157,11 @@ class VideoClippingDialog(QDialog):
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=True)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "depth"), exist_ok=True)
         
-        progress_modal = CustomProgressBar()
-        progress_modal.show()
-
         self.timer = QTimer()
-        self.timer.setInterval(0.5)
+        self.timer.setInterval(0.033)
         self.timer.timeout.connect(self.save_frame)
         self.timer.start()
+        self.progress_dialog.exec()
 
     def save_frame(self):
         if self.cnt == self.total_frame:
@@ -198,16 +194,19 @@ class VideoClippingDialog(QDialog):
         all_signals.current_frame_cnt.emit(self.cnt)
 
 
-class CustomProgressBar(QDialog):
+class ProgressBarDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setFixedSize(QSize(500, 200))
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        self.total_frame = 1024
+        self.total_frame = None
 
-        self.main_layout = QHBoxLayout()
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignCenter)
+        self.title_label = QLabel("Extract Frames...")
         self.progress_bar = QProgressBar()
         self.progress_bar.setFixedSize(QSize(450, 100))
+        self.main_layout.addWidget(self.title_label)
         self.main_layout.addWidget(self.progress_bar)
 
         all_signals.current_frame_cnt.connect(self.set_value)
@@ -216,7 +215,7 @@ class CustomProgressBar(QDialog):
 
     @Slot(int)
     def set_total_frame(self, total):
-        self.total_frame = int(total)
+        self.total_frame = total
 
     @Slot(int)
     def set_value(self, value):
