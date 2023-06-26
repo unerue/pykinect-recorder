@@ -11,6 +11,7 @@ from .calibration import Calibration
 from .configuration import Configuration
 from ..k4arecord.record import Record
 from ..k4a._k4atypes import K4A_WAIT_INFINITE
+from ..k4arecord._k4arecord import k4a_playback_get_next_capture, K4A_STREAM_RESULT_EOF
 
 
 class Device:
@@ -90,8 +91,7 @@ class Device:
             self.record.write_imu(imu_sample)
 
         return Device.imu_sample
-
-    # TODO _k4a.K4A_WAIT_INFINITE는 없는데 ?
+    
     def get_capture(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> _k4a.ctypes.POINTER:
         # Release current handle
         if self.is_capture_initialized():
@@ -176,3 +176,25 @@ class Device:
     @staticmethod
     def device_get_installed_count():
         return int(_k4a.k4a_device_get_installed_count())
+
+    def get_playback_capture(self, playback_handle):
+        capture_handle = _k4a.k4a_capture_t()
+        ret = k4a_playback_get_next_capture(playback_handle, capture_handle)!= K4A_STREAM_RESULT_EOF
+        if ret:
+            return capture_handle
+        else:
+            return None
+
+    def save_frame_for_clip(self, playback_handle, playback_calibration):
+        capture_handle = self.get_playback_capture(playback_handle)
+
+        if self.is_capture_initialized():
+            Device.capture.release_handle()
+            Device.capture._handle = capture_handle
+        else:
+            Device.capture = Capture(capture_handle, playback_calibration)
+        
+        if self.recording:
+            self.record.write_capture(Device.capture.handle())
+
+        return Device.capture

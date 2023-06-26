@@ -28,6 +28,7 @@ class AllSignals(QObject):
     config_viewer = Signal(dict)
 
     # video extract signal
+    clip_option = Signal(str)
     video_total_frame = Signal(int)
     current_frame_cnt = Signal(int)
 

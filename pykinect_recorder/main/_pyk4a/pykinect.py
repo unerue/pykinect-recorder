@@ -65,7 +65,6 @@ def start_device(
 
     return device
 
-
 # def start_body_tracker(model_type=_k4abt.K4ABT_DEFAULT_MODEL, calibration=None):
 #     if calibration:
 #         return Tracker(calibration, model_type)

@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
 
 from ..signals import all_signals
 from superqt import QLabeledRangeSlider
-from pykinect_recorder.main._pyk4a.pykinect import start_playback
+from pykinect_recorder.main._pyk4a.pykinect import start_playback, start_device, initialize_libraries
+from pykinect_recorder.main._pyk4a.k4a.configuration import default_configuration
 
 
 class VideoClippingDialog(QDialog):
@@ -20,6 +21,7 @@ class VideoClippingDialog(QDialog):
         self.cnt = 0
         self.root_path = None
         self.file_name = file_name
+        self.clip_option = None
         self.save_file_name = self.file_name.split('/')[-1][:-4]
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
@@ -102,6 +104,7 @@ class VideoClippingDialog(QDialog):
         self.save_btn.clicked.connect(self.select_root_path)
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
+        all_signals.clip_option.connect(self.set_clip_option)
 
     def close_dialog(self):
         self.close()
@@ -145,9 +148,43 @@ class VideoClippingDialog(QDialog):
         img = cv2.applyColorMap(img, colormap)
         return img
     
+    @Slot(str)
+    def set_clip_option(self, value):
+        self.clip_option = value
+
     def select_root_path(self):
+        option_dialog = SelectClipOptionDialog()
+        option_dialog.exec()
         self.root_path = QFileDialog.getExistingDirectory(self, "Open Data Files", ".", QFileDialog.ShowDirsOnly)
-        self.extract_frame()
+        if self.clip_option == "mkv":
+            self.extract_mkv()
+        elif self.clip_option == "jpg":
+            self.extract_frame()
+
+    def extract_mkv(self):
+        self.total_frame = self.right - self.left
+        all_signals.video_total_frame.emit(int(self.total_frame))
+        self.playback.seek_timestamp(self.left)
+        self.device = start_device(
+            config=self.playback.get_record_configuration(),
+            record=True,
+            record_filepath=os.path.join(self.root_path, self.save_file_name+"_extract.mkv")
+        )
+        print(self.device.configuration)
+
+        self.timer = QTimer()
+        self.timer.setInterval(0.033)
+        self.timer.timeout.connect(self.save_to_mkv)
+        self.timer.start()
+        self.progress_dialog.exec()
+        
+    def save_to_mkv(self):
+        if self.cnt == self.total_frame:
+            self.timer.stop()
+
+        frame = self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
+        self.cnt += 1
+        all_signals.current_frame_cnt.emit(self.cnt)
 
     def extract_frame(self):
         self.total_frame = self.right - self.left
@@ -224,3 +261,35 @@ class ProgressBarDialog(QDialog):
         tmp = (value / self.total_frame) * 100
         self.progress_bar.setValue(tmp)
         self.progress_bar.setFormat("%.02f %%" % tmp)
+
+
+class SelectClipOptionDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setFixedSize(QSize(500, 200))
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignCenter)
+        self.title_label = QLabel("Save To")
+
+        self.btn_layout = QHBoxLayout()
+        self.btn_mkv = QPushButton("video as '.mkv'")
+        self.btn_mkv.setObjectName("btn_mkv")
+        self.btn_jpg = QPushButton("rgb/ir/depth frame as '.jpg'")
+        self.btn_jpg.setObjectName("btn_jpg")
+        self.btn_layout.addWidget(self.btn_mkv)
+        self.btn_layout.addWidget(self.btn_jpg)
+        self.main_layout.addWidget(self.title_label)
+        self.main_layout.addLayout(self.btn_layout)
+
+        self.setLayout(self.main_layout)
+        self.btn_mkv.clicked.connect(self.emit_status)
+        self.btn_jpg.clicked.connect(self.emit_status)
+
+    def emit_status(self):
+        if self.sender().objectName() == "btn_mkv":
+            all_signals.clip_option.emit("mkv")
+        else:
+            all_signals.clip_option.emit("jpg")
+        self.close()

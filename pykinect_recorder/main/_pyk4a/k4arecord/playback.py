@@ -5,6 +5,8 @@ from ..k4a import _k4a
 from ..k4a.capture import Capture
 from ..k4a.calibration import Calibration
 from ..k4a.imu_sample import ImuSample
+from .record import Record
+from ..k4a.configuration import Configuration
 
 
 class Playback:
@@ -12,6 +14,7 @@ class Playback:
         self._handle = _k4arecord.k4a_playback_t()
         self._capture = None
         self._datablock = None
+        self.clipping = None
 
         self.open(filepath)
         self.calibration = self.get_calibration()
@@ -26,7 +29,7 @@ class Playback:
         )
 
     def update(self):
-        return self.get_next_capture()
+        return self.get_next_capture() if self.clipping is None else self.get_next_capture_with_record()
 
     def is_valid(self):
         return self._handle != None
@@ -73,6 +76,20 @@ class Playback:
             self._capture = Capture(capture_handle, self.calibration)
 
         ret = _k4arecord.k4a_playback_get_next_capture(self._handle, capture_handle) != _k4arecord.K4A_STREAM_RESULT_EOF
+
+        return ret, self._capture
+    
+    def get_next_capture_with_record(self):
+        if self.is_capture_initialized():
+            self._capture.release_handle()
+
+        capture_handle = _k4a.k4a_capture_t()
+        ret = _k4arecord.k4a_playback_get_next_capture(self._handle, capture_handle) != _k4arecord.K4A_STREAM_RESULT_EOF
+
+        if self.is_capture_initialized():
+            self._capture._handle = capture_handle
+        else:
+            self._capture = Capture(capture_handle, self.calibration)
 
         return ret, self._capture
 

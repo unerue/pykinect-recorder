@@ -45,9 +45,10 @@ def k4a_device_close(device_handle):
 
 def k4a_device_get_capture(device_handle, capture_handle, timeout):
     """
-    K4A_EXPORT k4a_wait_result_t k4a_device_get_capture(k4a_device_t device_handle,
-                                                                                                            k4a_capture_t *capture_handle,
-                                                                                                            int32_t timeout_in_ms);
+    K4A_EXPORT k4a_wait_result_t k4a_device_get_capture(
+        k4a_device_t device_handle,
+        k4a_capture_t *capture_handle,
+        int32_t timeout_in_ms);
     """
 
     _k4a_device_get_capture = k4a_dll.k4a_device_get_capture
