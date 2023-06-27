@@ -65,10 +65,26 @@ class Calibration:
     # 3D point of source_camera to 3D point of target_camera
     def convert_3d_to_3d(
         self,
-        source_point3d: _k4a.k4a_float3_t(),
+        source_point3d: _k4a.k4a_float3_t,
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float3_t:
+        """
+        Transform a 3d point of a source coordinate system into a 3d point of the target coordinate system.
+
+        Throws error on failure.
+
+        Note:
+            See also `k4a_calibration_3d_to_3d()`.
+
+        Args:
+            source_point3d (k4a_float3_t): :func:\`some_func\`
+            source_camera (k4a_calibration_type_t): _description_
+            target_camera (k4a_calibration_type_t): _description_
+
+        Returns:
+            k4a_float3_t: _description_
+        """
         target_point3d = _k4a.k4a_float3_t()
 
         _k4a.VERIFY(
