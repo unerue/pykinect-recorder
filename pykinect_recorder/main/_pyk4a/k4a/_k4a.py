@@ -2041,7 +2041,6 @@ def k4a_transformation_color_image_to_depth_camera(
         color_image (k4a_image_t): Handle to input color image.
         transformed_color_image (k4a_image_t): Handle to output transformed color image.
 
-
     Returns:
         k4a_result_t: `K4A_RESULT_SUCCEEDED` if `transformed_color_image` was successfully written 
             and `K4A_RESULT_FAILED` otherwise.
