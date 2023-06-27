@@ -146,6 +146,29 @@ K4ABT_TRACKER_PROCESSING_MODE_GPU_DIRECTML = 4
 
 
 class _k4abt_tracker_configuration_t(ctypes.Structure):
+    """
+    Configuration parameters for a k4abt body tracker.
+
+    Used by k4abt_tracker_create() to specify the configuration of the k4abt tracker.
+
+    Attributes:
+        sensor_orientation (c_int): The sensor mounting orientation type. Setting the correct 
+            orientation can help the body tracker to achieve more accurate body tracking results.
+        processing_mode (c_int): Specify whether to use CPU only mode or GPU mode to run the tracker. 
+            The CPU only mode doesn't require the machine to have a GPU to run this SDK. But it will 
+            be much slower than the GPU mode.
+        gpu_device_id (c_int32): Specify the GPU device ID to run the tracker. The setting is not 
+            effective if the processing_mode setting is set to K4ABT_TRACKER_PROCESSING_MODE_CPU.
+            For K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA and K4ABT_TRACKER_PROCESSING_MODE_GPU_TENSORRT 
+            modes, ID of the graphic card can be retrieved using the CUDA API. In case when 
+            processing_mode is K4ABT_TRACKER_PROCESSING_MODE_GPU_DIRECTML, the device ID corresponds 
+            to the enumeration order of hardware adapters as given by IDXGIFactory::EnumAdapters. 
+            A device_id of 0 always corresponds to the default adapter, which is typically the primary 
+            display GPU installed on the system. More information can be found in the ONNX Runtime 
+            Documentation.
+        model_path (c_char_p): Specify the model file name and location used by the tracker. If specified, 
+            the tracker will use this model instead of the default one.
+    """
     _fields_ = [
         ("sensor_orientation", ctypes.c_int),
         ("processing_mode", ctypes.c_int),
@@ -158,6 +181,15 @@ k4abt_tracker_configuration_t = _k4abt_tracker_configuration_t
 
 
 class _wxyz(ctypes.Structure):
+    """
+    WXYZ or array representation of quaternion.
+
+    Attributes:
+        w (c_float): W representation of a quaternion.
+        x (c_float): X representation of a quaternion.
+        y (c_float): Y representation of a quaternion.
+        z (c_float): Z representation of a quaternion.
+    """
     _fields_ = [
         ("w", ctypes.c_float),
         ("x", ctypes.c_float),
@@ -173,6 +205,11 @@ class _wxyz(ctypes.Structure):
 
 
 class k4a_quaternion_t(ctypes.Union):
+    """
+    Attributes:
+        wxyz (_wxyz): W, X, Y, Z representation of a quaternion.
+        v (c_float[4]): Array representation of a quaternion.
+    """
     _fields_ = [("wxyz", _wxyz), ("v", ctypes.c_float * 4)]
 
     def __init__(self, q=(0, 0, 0, 0)):
@@ -197,6 +234,17 @@ K4ABT_JOINT_CONFIDENCE_LEVELS_COUNT = 4
 
 
 class _k4abt_joint_t(ctypes.Structure):
+    """
+    Structure to define a single joint.
+
+    The position and orientation together defines the coordinate system for the given joint.
+    They are defined relative to the sensor global coordinate system.
+
+    Attributes:
+        position (k4a_float3_t): The position of the joint specified in millimeters.
+        orientation (k4a_quaternion_t): The orientation of the joint specified in normalized quaternion.
+        confidence_level (c_int): The confidence level of the joint.
+    """
     _fields_ = [
         ("position", k4a_float3_t),
         ("orientation", k4a_quaternion_t),
@@ -221,6 +269,12 @@ k4abt_joint_t = _k4abt_joint_t
 
 
 class k4abt_skeleton_t(ctypes.Structure):
+    """
+    Structure to define joints for skeleton.
+
+    Attributes:
+        joints (_k4abt_joint_t[K4ABT_JOINT_COUNT]): The joints for the body.
+    """
     _fields_ = [
         ("joints", _k4abt_joint_t * K4ABT_JOINT_COUNT),
     ]
@@ -234,6 +288,13 @@ class k4abt_skeleton_t(ctypes.Structure):
 
 
 class k4abt_body_t(ctypes.Structure):
+    """
+    Structure to define body.
+
+    Attributes:
+        id (c_uint32): An id for the body that can be used for frame-to-frame correlation.
+        skeleton (k4abt_skeleton_t): The skeleton information for the body.
+    """
     _fields_ = [
         ("id", ctypes.c_uint32),
         ("skeleton", k4abt_skeleton_t),
@@ -249,6 +310,7 @@ class k4abt_body_t(ctypes.Structure):
 
 
 class _k4abt_joint2D_t(ctypes.Structure):
+    # https://microsoft.github.io/Azure-Kinect-Body-Tracking/release/1.1.x/struct_microsoft_1_1_azure_1_1_kinect_1_1_body_tracking_1_1_joint.html
     _fields_ = [
         ("position", k4a_float2_t),
         ("confidence_level", ctypes.c_int),
@@ -270,6 +332,7 @@ k4abt_joint2D_t = _k4abt_joint2D_t
 
 
 class k4abt_skeleton2D_t(ctypes.Structure):
+    # https://microsoft.github.io/Azure-Kinect-Body-Tracking/release/1.1.x/struct_microsoft_1_1_azure_1_1_kinect_1_1_body_tracking_1_1_skeleton.html
     _fields_ = [
         ("joints2D", _k4abt_joint2D_t * K4ABT_JOINT_COUNT),
     ]
@@ -283,6 +346,7 @@ class k4abt_skeleton2D_t(ctypes.Structure):
 
 
 class k4abt_body2D_t(ctypes.Structure):
+    # https://microsoft.github.io/Azure-Kinect-Body-Tracking/release/1.1.x/struct_microsoft_1_1_azure_1_1_kinect_1_1_body_tracking_1_1_body.html
     _fields_ = [
         ("id", ctypes.c_uint32),
         ("skeleton", k4abt_skeleton2D_t),
