@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 from ..signals import all_signals
 from superqt import QLabeledRangeSlider
 from pykinect_recorder.main._pyk4a.pykinect import start_playback, start_device, initialize_libraries
-from pykinect_recorder.main._pyk4a.k4a.configuration import default_configuration
+from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
 
 
 class VideoClippingDialog(QDialog):
@@ -164,25 +164,39 @@ class VideoClippingDialog(QDialog):
     def extract_mkv(self):
         self.total_frame = self.right - self.left
         all_signals.video_total_frame.emit(int(self.total_frame))
-        self.playback.seek_timestamp(self.left)
+        config = self.record_config_to_config()
+        
+        initialize_libraries()
         self.device = start_device(
-            config=self.playback.get_record_configuration(),
+            config=config,
             record=True,
             record_filepath=os.path.join(self.root_path, self.save_file_name+"_extract.mkv")
         )
-        print(self.device.configuration)
+        self.playback.seek_timestamp(self.left)
 
         self.timer = QTimer()
-        self.timer.setInterval(0.033)
+        self.timer.setInterval(0.001)
         self.timer.timeout.connect(self.save_to_mkv)
         self.timer.start()
         self.progress_dialog.exec()
+        self.device.close()
+
+    def record_config_to_config(self):
+        record_config = self.playback.get_record_configuration()
+        config = Configuration()
+
+        setattr(config, "color_format", record_config._handle.color_format)
+        setattr(config, "depth_mode", record_config._handle.depth_mode)
+        setattr(config, "color_resolution", record_config._handle.color_resolution)
+        setattr(config, "camera_fps", record_config._handle.camera_fps)
+        return config
         
     def save_to_mkv(self):
         if self.cnt == self.total_frame:
             self.timer.stop()
 
-        frame = self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
+        self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
+        # self.playback.update()
         self.cnt += 1
         all_signals.current_frame_cnt.emit(self.cnt)
 
