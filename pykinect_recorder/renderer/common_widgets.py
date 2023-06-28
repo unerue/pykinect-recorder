@@ -5,6 +5,12 @@ from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics
 
 from PySide6.QtWidgets import QLabel, QComboBox, QPushButton, QSlider, QFrame, QVBoxLayout, QHBoxLayout
 
+"""
+In script file, There are many custom widgets to use frequently in this project.
+
+Using custom widget can manage QWidget module more efficient.
+"""
+
 
 class ComboBox(QComboBox):
     def __init__(self, items: List[str], current_index: int, stylesheet: Union[str, os.PathLike] = None) -> None:
@@ -12,7 +18,6 @@ class ComboBox(QComboBox):
         self.addItems(items)
         self.setCurrentIndex(current_index)
 
-        # TODO: 외부 함수화 또는 PySide6에서 이런 함수 있는지 찾아보셈
         if stylesheet is not None:
             with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
                 stylesheet = f.read()

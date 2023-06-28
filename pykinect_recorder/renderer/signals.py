@@ -3,11 +3,15 @@ from PySide6.QtGui import QImage
 
 
 class AllSignals(QObject):
-    # Stacked Widget signals
+    """
+    This class manages all signals used throughout this project
+    """
+
+    # Sidebar stacked widget signals
     stacked_sidebar_status = Signal(str)
     stacked_status = Signal(str)
 
-    # Thread Signals
+    # Sensor viewer signals
     captured_rgb = Signal(QImage)
     captured_depth = Signal(QImage)
     captured_ir = Signal(QImage)
@@ -17,17 +21,17 @@ class AllSignals(QObject):
     captured_fps = Signal(float)
     captured_audio = Signal(list)
 
-    # playback/save_path Signals
+    # Playback signals
     playback_filepath = Signal(str)
     save_filepath = Signal(str)
     is_run = Signal(bool)
     time_control = Signal(int)
     time_value = Signal(int)
 
-    # config Signals
+    # Config signals
     config_viewer = Signal(dict)
 
-    # video extract signal
+    # Video clipping signals
     clip_option = Signal(str)
     video_total_frame = Signal(int)
     current_frame_cnt = Signal(int)
