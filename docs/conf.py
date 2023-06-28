@@ -7,7 +7,6 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx_search.extension',
-    'myst-parser',
 ]
 
 intersphinx_mapping = {
