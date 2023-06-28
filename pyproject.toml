@@ -35,6 +35,7 @@ pandas = "^2.0.2"
 qtrangeslider = "^0.1.5"
 superqt = "^0.4.1"
 
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
 flake8 = "^6.0.0"
@@ -42,9 +43,12 @@ black = "^23.1.0"
 isort = "^5.12.0"
 mypy = "^1.1.1"
 pyinstaller = "^5.10.1"
+# sphinx = "^4.5.0"
+# sphinx-rtd-theme = "^1.0.0"
+# readthedocs-sphinx-search = "^0.3.1"
 
 [tool.poetry.group.docs.dependencies]
-Sphinx = "^4.5.0"
+sphinx = "^4.5.0"
 sphinx-rtd-theme = "^1.0.0"
 readthedocs-sphinx-search = "^0.3.1"
 
