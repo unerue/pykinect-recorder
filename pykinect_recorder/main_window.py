@@ -1,22 +1,19 @@
-import os
-
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtGui import QIcon, QImage
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
 
 from .renderer.components.toolbar import Toolbar
 from .renderer.components.sidebar_menu import SidebarMenus
 from .renderer.components.sidebar_control import StackedSidebar
 from .renderer.components.viewer_control import StackedViewer
-from .renderer.components.asidebar import Asidebar
 from .renderer.signals import all_signals
 
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("Azure Kinect Camera DK")
-        self.setWindowIcon(QIcon(os.path.abspath("./renderer/public/kinect-sensor.ico")))
+        self.setWindowTitle("pykinect recorder")
+        self.setWindowIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
         self.initial_window()
 
     def initial_window(self) -> None:
@@ -39,7 +36,6 @@ class MainWindow(QMainWindow):
         self.sidebar_menus = SidebarMenus()
         self.stacked_sidebar = StackedSidebar()
         self.stacked_viewer = StackedViewer()
-        self.asidebar = Asidebar()
 
         all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
         all_signals.config_viewer.connect(self.stacked_viewer.main_viewer.setConfig)
@@ -50,7 +46,6 @@ class MainWindow(QMainWindow):
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
         main_sub_layout.addWidget(self.stacked_viewer)
-        main_sub_layout.addWidget(self.asidebar)
         main_sub_layout.addStretch()
 
         main_layout.addLayout(main_sub_layout)

@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QStackedLayout, QFrame
 from .viewer_sensors import SensorViewer
 from .viewer_playback import PlaybackViewer
 from .viewer_solution import ViewerSolution
-from .asidebar import Asidebar
 
 
 class StackedViewer(QFrame):

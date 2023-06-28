@@ -1,5 +1,4 @@
-from PySide6.QtGui import QColor, QBrush
-from PySide6.QtCore import Slot, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from ..common_widgets import Label
@@ -15,9 +14,7 @@ class AudioSensor(QFrame):
         self.setMaximumHeight(480)
         self.setObjectName("AudioSensor")
 
-        self.setStyleSheet(" QFrame#AudioSensor { border-color: white; }")
-
-        self.layout_main = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
         self.title = Label("Audio Sensor", orientation=Qt.AlignmentFlag.AlignCenter)
         self.title.setFixedHeight(60)
 
@@ -35,6 +32,6 @@ class AudioSensor(QFrame):
         self.chart.legend().hide()
         self.chart_view = QChartView(self.chart)
 
-        self.layout_main.addWidget(self.title)
-        self.layout_main.addWidget(self.chart_view)
-        self.setLayout(self.layout_main)
+        self.main_layout.addWidget(self.title)
+        self.main_layout.addWidget(self.chart_view)
+        self.setLayout(self.main_layout)
