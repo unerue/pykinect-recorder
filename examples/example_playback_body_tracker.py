@@ -43,12 +43,8 @@ if __name__ == "__main__":
             continue
 
         # Combine both images
-        combined_image = cv2.addWeighted(
-            depth_color_image, 0.6, body_image_color, 0.4, 0
-        )
-        combined_image = cv2.addWeighted(
-            color_image[:, :, :3], 0.7, combined_image, 0.3, 0
-        )
+        combined_image = cv2.addWeighted(depth_color_image, 0.6, body_image_color, 0.4, 0)
+        combined_image = cv2.addWeighted(color_image[:, :, :3], 0.7, combined_image, 0.3, 0)
 
         # Draw the skeletons
         combined_image = body_frame.draw_bodies(combined_image)

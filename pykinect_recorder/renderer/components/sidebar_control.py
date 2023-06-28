@@ -1,7 +1,5 @@
 from PySide6.QtCore import Slot
-from PySide6.QtWidgets import (
-    QStackedLayout, QFrame
-)
+from PySide6.QtWidgets import QStackedLayout, QFrame
 
 from .sidebar_solutions import SolutionSidebar
 from .sidebar_record_control import ViewerSidebar
@@ -16,15 +14,14 @@ class StackedSidebar(QFrame):
         self.sidebar_viewer = ViewerSidebar()
         self.sidebar_explorer = ExplorerSidebar()
         self.sidebar_solution = SolutionSidebar()
-        
-        self.main_layout.addWidget(self.sidebar_viewer) 
-        self.main_layout.addWidget(self.sidebar_explorer) 
-        self.main_layout.addWidget(self.sidebar_solution) 
-        
+
+        self.main_layout.addWidget(self.sidebar_viewer)
+        self.main_layout.addWidget(self.sidebar_explorer)
+        self.main_layout.addWidget(self.sidebar_solution)
+
         # 현재 index
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)
-
 
     @Slot(str)
     def setCurrentWidget(self, value):

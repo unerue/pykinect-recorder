@@ -1,6 +1,7 @@
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QImage
 
+
 class AllSignals(QObject):
     # Stacked Widget signals
     stacked_sidebar_status = Signal(str)
@@ -20,13 +21,20 @@ class AllSignals(QObject):
     playback_filepath = Signal(str)
     save_filepath = Signal(str)
     is_run = Signal(bool)
+    time_control = Signal(int)
+    time_value = Signal(int)
 
     # config Signals
     config_viewer = Signal(dict)
 
+    # video extract signal
+    clip_option = Signal(str)
+    video_total_frame = Signal(int)
+    current_frame_cnt = Signal(int)
+
     def __init__(self):
         super().__init__()
         pass
-        
+
 
 all_signals = AllSignals()

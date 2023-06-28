@@ -1,6 +1,5 @@
-from PySide6.QtWidgets import (
-    QFrame
-)
+from PySide6.QtWidgets import QFrame
+
 
 class ViewerSolution(QFrame):
     def __init__(self):

@@ -11,9 +11,7 @@ class ImuSensors(QFrame):
         self.setMaximumHeight(480)
 
         self.setObjectName("IMUSensor")
-        self.setStyleSheet(
-            " QFrame#IMUSensor { border-color: white; }"
-        )
+        self.setStyleSheet(" QFrame#IMUSensor { border-color: white; }")
 
         self.layout_main = QVBoxLayout()
         self.title = Label("IMU Sensor", orientation=Qt.AlignmentFlag.AlignCenter)
@@ -33,7 +31,7 @@ class ImuSensors(QFrame):
         self.acc_y = Label("Y : ")
         self.acc_z = Label("Z : ")
 
-        self.layout_gyro = QVBoxLayout() 
+        self.layout_gyro = QVBoxLayout()
         self.gyro_title = Label("Gyroscope")
         self.gyro_x = Label("X : ")
         self.gyro_y = Label("Y : ")
@@ -56,5 +54,3 @@ class ImuSensors(QFrame):
         self.layout_main.addLayout(self.layout_gyro)
 
         self.setLayout(self.layout_main)
-
-

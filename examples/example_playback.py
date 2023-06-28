@@ -1,6 +1,6 @@
 import cv2
 
-from pykinect_recorder.main._pyk4a.pykinect import initialize_libraries, start_playback
+from pykinect_recorder.main.pyk4a.pykinect import initialize_libraries, start_playback
 
 if __name__ == "__main__":
     video_filename = "C:/Users/zeroone/Videos/2023_03_21_10_57_05.mkv"
@@ -32,9 +32,7 @@ if __name__ == "__main__":
             continue
 
         # Plot the image
-        combined_image = cv2.addWeighted(
-            color_image[:, :, :3], 0.7, depth_color_image, 0.3, 0
-        )
+        combined_image = cv2.addWeighted(color_image[:, :, :3], 0.7, depth_color_image, 0.3, 0)
         cv2.imshow("Depth Image", combined_image)
 
         # Press q key to stop

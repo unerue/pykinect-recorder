@@ -6,12 +6,15 @@
 import sys
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PySide6.QtCore import QPointF, Slot, QUrl
-from PySide6.QtMultimedia import (QAudioDevice, QAudioFormat,
-        QAudioSource, QMediaDevices)
+from PySide6.QtMultimedia import QAudioDevice, QAudioFormat, QAudioSource, QMediaDevices
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PySide6.QtMultimedia import (
-    QAudioFormat, QAudioSource, QMediaDevices,
-    QMediaCaptureSession, QMediaRecorder, QAudioInput, 
+    QAudioFormat,
+    QAudioSource,
+    QMediaDevices,
+    QMediaCaptureSession,
+    QMediaRecorder,
+    QAudioInput,
 )
 
 SAMPLE_COUNT = 2000
@@ -63,7 +66,7 @@ class MainWindow(QMainWindow):
         data = self._io_device.readAll()
         available_samples = data.size() // RESOLUTION
         start = 0
-        if (available_samples < SAMPLE_COUNT):
+        if available_samples < SAMPLE_COUNT:
             start = SAMPLE_COUNT - available_samples
             for s in range(start):
                 self._buffer[s].setY(self._buffer[s + available_samples].y())
@@ -76,7 +79,7 @@ class MainWindow(QMainWindow):
         self._series.replace(self._buffer)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # app = QApplication(sys.argv)
 
     # input_devices = QMediaDevices.audioInputs()

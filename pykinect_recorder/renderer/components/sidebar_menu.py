@@ -1,11 +1,10 @@
 import os
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import (
-    QVBoxLayout, QFrame, QPushButton
-)
+from PySide6.QtWidgets import QVBoxLayout, QFrame, QPushButton
 
 import qtawesome as qta
 from ..signals import all_signals
+
 
 class SidebarMenus(QFrame):
     def __init__(self) -> None:
@@ -25,8 +24,8 @@ class SidebarMenus(QFrame):
             qta.icon("mdi6.file-find-outline"),
             "Explorer & Playback",
         )
-        self.deeplearning_option = self._make_icons( 
-            qta.icon("ph.gear"), 
+        self.deeplearning_option = self._make_icons(
+            qta.icon("ph.gear"),
             "Deep Learning Solution",
         )
 
@@ -40,23 +39,24 @@ class SidebarMenus(QFrame):
         self.deeplearning_option.clicked.connect(self.clicked_solution)
 
     def _make_icons(
-            self, 
-            icon: qta,
-            tooltip: str,
-        ) -> QPushButton:
-
+        self,
+        icon: qta,
+        tooltip: str,
+    ) -> QPushButton:
         _btn = QPushButton(icon, "")
         _btn.setFixedSize(45, 55)
         _btn.setIconSize(QSize(45, 45))
-        _btn.setToolTip(f'<b>{tooltip}<b>')
-        _btn.setStyleSheet("""
+        _btn.setToolTip(f"<b>{tooltip}<b>")
+        _btn.setStyleSheet(
+            """
             QPushButton:hover {
                 border-color: white;
             }
             QToolTip {
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
-        """)
+        """
+        )
 
         # print(root_path)
         # print(os.path.join(root_path, file_path))
@@ -75,7 +75,7 @@ class SidebarMenus(QFrame):
         #     _btn.setStyleSheet(str(stylesheet))
 
         return _btn
-    
+
     def clicked_recorder(self):
         all_signals.stacked_sidebar_status.emit("recorder")
 

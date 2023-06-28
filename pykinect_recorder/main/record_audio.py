@@ -65,9 +65,7 @@ class Thread(QThread):
     def set_filename(self):
         filename = datetime.datetime.now()
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
-        base_path = (
-            "C:\\Program Files\\Azure Kinect SDK v1.4.1\\tools\\pyk4a\\example\\outputs"
-        )
+        base_path = "C:\\Program Files\\Azure Kinect SDK v1.4.1\\tools\\pyk4a\\example\\outputs"
 
         self.filename_video = f"{base_path}\\{filename}.mkv"
         self.filename_audio = f"{base_path}\\{filename}.wav"
@@ -84,9 +82,7 @@ class Thread(QThread):
         )
         azure_device = PyK4A(config=config, device_id=0)
         azure_device.start()
-        record = PyK4ARecord(
-            device=azure_device, config=config, path=self.filename_video
-        )
+        record = PyK4ARecord(device=azure_device, config=config, path=self.filename_video)
         record.create()
 
         with sf.SoundFile(
