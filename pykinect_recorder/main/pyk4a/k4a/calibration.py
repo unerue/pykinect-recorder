@@ -161,7 +161,7 @@ class Calibration:
 
         Args:
             source_point3d (_k4a.k4a_float3_t): The 3D coordinates in millimeters representing 
-            a point in source_camera.
+                a point in source_camera.
             source_camera (_k4a.k4a_calibration_type_t): _description_
             target_camera (_k4a.k4a_calibration_type_t): _description_
 
@@ -193,6 +193,18 @@ class Calibration:
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float2_t:
+        """
+        
+
+        Args:
+            source_point2d (_k4a.k4a_float2_t): _description_
+            source_depth (float): _description_
+            source_camera (_k4a.k4a_calibration_type_t): _description_
+            target_camera (_k4a.k4a_calibration_type_t): _description_
+
+        Returns:
+            _k4a.k4a_float2_t: _description_
+        """
         target_point2d = _k4a.k4a_float2_t()
         valid = ctypes.c_int()
 
