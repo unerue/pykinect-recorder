@@ -65,10 +65,27 @@ class Calibration:
     # 3D point of source_camera to 3D point of target_camera
     def convert_3d_to_3d(
         self,
-        source_point3d: _k4a.k4a_float3_t(),
+        source_point3d: _k4a.k4a_float3_t,
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float3_t:
+        """
+        Transform a 3d point of a source coordinate system into a 3d point of the target coordinate system.
+
+        Throws error on failure.
+
+        Note:
+            See also `k4a_calibration_3d_to_3d()`.
+
+        Args:
+            source_point3d (k4a_float3_t): The 3D coordinates in millimeters representing a point 
+                in `source_camera`.
+            source_camera (k4a_calibration_type_t): The current camera.
+            target_camera (k4a_calibration_type_t): The target camera.
+
+        Returns:
+            k4a_float3_t: Three dimensional floating point vector.
+        """
         target_point3d = _k4a.k4a_float3_t()
 
         _k4a.VERIFY(
@@ -92,6 +109,24 @@ class Calibration:
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float3_t:
+        """
+        Transform a 2d pixel coordinate with an associated depth value of the source camera 
+        into a 3d point of the target coordinate system.
+
+        Returns false if the point is invalid in the target coordinate system 
+        (and therefore target_point3d should not be used) Throws error if calibration contains 
+        invalid data.
+
+        Args:
+            source_point2d (_k4a.k4a_float2_t): The 2D pixel in `source_camera` coordinates.
+            source_depth (float): The depth of `source_point2d` in millimeters. One way to derive the 
+                depth value in the color camera geometry is to use the function `k4a_transformation_depth_image_to_color_camera()`.
+            source_camera (_k4a.k4a_calibration_type_t): The current camera.
+            target_camera (_k4a.k4a_calibration_type_t): The target camera.
+
+        Returns:
+            _k4a.k4a_float3_t: Three dimensional floating point vector.
+        """
         target_point3d = _k4a.k4a_float3_t()
         valid = ctypes.c_int()
 
@@ -117,6 +152,22 @@ class Calibration:
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float2_t:
+        """
+        Transform a 3d point of a source coordinate system into a 2d pixel coordinate of the target 
+        camera.
+
+        Returns false if the point is invalid in the target coordinate system 
+        (and therefore target_point2d should not be used) Throws error if calibration contains invalid data.
+
+        Args:
+            source_point3d (_k4a.k4a_float3_t): The 3D coordinates in millimeters representing 
+                a point in source_camera.
+            source_camera (_k4a.k4a_calibration_type_t): _description_
+            target_camera (_k4a.k4a_calibration_type_t): _description_
+
+        Returns:
+            _k4a.k4a_float2_t: _description_
+        """
         target_point2d = _k4a.k4a_float2_t()
         valid = ctypes.c_int()
 
@@ -142,6 +193,18 @@ class Calibration:
         source_camera: _k4a.k4a_calibration_type_t,
         target_camera: _k4a.k4a_calibration_type_t,
     ) -> _k4a.k4a_float2_t:
+        """
+        
+
+        Args:
+            source_point2d (_k4a.k4a_float2_t): _description_
+            source_depth (float): _description_
+            source_camera (_k4a.k4a_calibration_type_t): _description_
+            target_camera (_k4a.k4a_calibration_type_t): _description_
+
+        Returns:
+            _k4a.k4a_float2_t: _description_
+        """
         target_point2d = _k4a.k4a_float2_t()
         valid = ctypes.c_int()
 
