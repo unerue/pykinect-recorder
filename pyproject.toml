@@ -5,7 +5,8 @@ description = ""
 license = "MIT"
 authors = [
     "Kyung-Su Kang <unerue@me.com>",
-    "Young-Il Kim <qhdrmfdl123@gmail.com>"
+    "Young-Il Kim <qhdrmfdl123@gmail.com>",
+    "Yeo-Reum Lee <leeyeoreum01@gmail.com>",
 ]
 readme = ["README.md", "LICENSE"]
 packages = [{include = "pykinect_recorder"}]

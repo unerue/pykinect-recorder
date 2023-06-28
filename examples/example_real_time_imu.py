@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pykinect_recorder.main._pyk4a import pykinect as pykinect
+from pykinect_recorder.main.pyk4a import pykinect as pykinect
 
 
 def handle_close(evt):

@@ -9,8 +9,8 @@ from PySide6.QtWidgets import (
 
 from ..signals import all_signals
 from superqt import QLabeledRangeSlider
-from pykinect_recorder.main._pyk4a.pykinect import start_playback, start_device, initialize_libraries
-from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
+from pykinect_recorder.main.pyk4a.pykinect import start_playback, start_device, initialize_libraries
+from pykinect_recorder.main.pyk4a.k4a.configuration import Configuration
 
 
 class VideoClippingDialog(QDialog):
