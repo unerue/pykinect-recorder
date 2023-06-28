@@ -11,7 +11,7 @@ from .playback_sensors import PlaybackSensors
 from .viewer_video_clipping import VideoClippingDialog
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
-from pykinect_recorder.main._pyk4a.pykinect import initialize_libraries, start_playback
+from pykinect_recorder.main.pyk4a.pykinect import initialize_libraries, start_playback
 from ..signals import all_signals
 
 

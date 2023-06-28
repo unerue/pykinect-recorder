@@ -14,10 +14,10 @@ from .record_sensors import RecordSensors
 from .playback_sensors import PlaybackSensors
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
-from pykinect_recorder.main._pyk4a.k4a._k4a import k4a_device_set_color_control
-from pykinect_recorder.main._pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL
-from pykinect_recorder.main._pyk4a.k4a.configuration import Configuration
-from pykinect_recorder.main._pyk4a.pykinect import start_device, initialize_libraries, start_playback
+from pykinect_recorder.main.pyk4a.k4a._k4a import k4a_device_set_color_control
+from pykinect_recorder.main.pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL
+from pykinect_recorder.main.pyk4a.k4a.configuration import Configuration
+from pykinect_recorder.main.pyk4a.pykinect import start_device, initialize_libraries, start_playback
 from .sidebar_record_control import _config_sidebar
 from ..signals import all_signals
 

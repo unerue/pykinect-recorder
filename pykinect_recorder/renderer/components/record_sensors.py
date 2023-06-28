@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from typing import Optional, Tuple
 from PySide6.QtCore import Qt, QThread
 from PySide6.QtGui import QImage
-from pykinect_recorder.main._pyk4a.k4a import Device
+from pykinect_recorder.main.pyk4a.k4a import Device
 from PySide6.QtMultimedia import (
     QAudioFormat,
     QAudioSource,
