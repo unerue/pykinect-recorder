@@ -32,19 +32,19 @@ class PlaybackViewer(QFrame):
         self.frame_depth = Frame("Depth Sensor")
         self.frame_ir = Frame("IR Sensor")
 
-        self.layout_subdata = QHBoxLayout()  # TODO => 네이밍 다시 하기
+        self.sensor_data_layout = QHBoxLayout()
         self.imu_senser = ImuSensors()
         self.audio_sensor = AudioSensor()
-        self.layout_subdata.addWidget(self.imu_senser)
-        self.layout_subdata.addWidget(self.audio_sensor)
-        self.frame_subdata = Frame("subdata", layout=self.layout_subdata)
+        self.sensor_data_layout.addWidget(self.imu_senser)
+        self.sensor_data_layout.addWidget(self.audio_sensor)
+        self.frame_subdata = Frame("subdata", layout=self.sensor_data_layout)
 
-        layout_top = QHBoxLayout()
-        layout_top.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        top_layout = QHBoxLayout()
+        top_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
         self.slider_time.setFixedSize(400, 40)
         self.slider_time.setTickInterval(33322)
-        layout_top.addWidget(self.slider_time)
+        top_layout.addWidget(self.slider_time)
 
         self.btn_stop = QPushButton("Stop")
         self.btn_stop.setFixedSize(200, 40)
@@ -64,14 +64,14 @@ class PlaybackViewer(QFrame):
             }
         """
         )
-        layout_top.addWidget(self.btn_stop)
-        layout_top.addWidget(self.btn_clip)
+        top_layout.addWidget(self.btn_stop)
+        top_layout.addWidget(self.btn_clip)
         self.btn_stop.clicked.connect(self.stop_playback)
         self.btn_clip.clicked.connect(self.extract_video_to_frame)
         self.slider_time.valueChanged.connect(self.control_time)
 
         self.target = None
-        self.grid_layout.addLayout(layout_top, 0, 0, 1, 2)
+        self.grid_layout.addLayout(top_layout, 0, 0, 1, 2)
         self.grid_layout.addWidget(self.frame_rgb, 1, 0)
         self.grid_layout.addWidget(self.frame_depth, 1, 1)
         self.grid_layout.addWidget(self.frame_ir, 2, 0)

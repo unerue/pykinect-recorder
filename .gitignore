@@ -14,3 +14,4 @@ dataset_list.txt
 .pytest_cache
 metadata.csv
 .vscode
+*.mkv
