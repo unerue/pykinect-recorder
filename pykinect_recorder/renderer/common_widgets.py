@@ -1,6 +1,6 @@
 import os
 from typing import Tuple, Union, List
-from PySide6.QtCore import Qt, QPoint, QRect
+from PySide6.QtCore import Qt, QPoint, QRect, QSize
 from PySide6.QtGui import (
     QFont, QPen, QPainter, QFontMetrics, 
     QPalette, QBrush, QColor
@@ -123,11 +123,15 @@ class Frame(QFrame):
     def __init__(
         self,
         text: str,
+        min_size: Tuple[int, int],
+        max_size: Tuple[int, int],
         layout: Union[QVBoxLayout, QHBoxLayout] = None,
     ) -> None:
         super().__init__()
-        self.setMaximumHeight(480)
-        self.setFixedWidth(640)
+        self.setMinimumSize(QSize(min_size[0], min_size[1]))
+        self.setMaximumSize(QSize(max_size[0], max_size[1]))
+        # self.setMaximumHeight(480)
+        # self.setFixedWidth(640)
         self.setContentsMargins(0, 0, 0, 0)
 
         self.setObjectName("Frame")
@@ -183,6 +187,7 @@ class ToggleButton(QPushButton):
         self.setCheckable(True)
         self.setMinimumWidth(55)  # 55
         self.setMinimumHeight(22)  # 22
+        self.clicked.connect(self._toggle)
 
     def paintEvent(self, event) -> None:
         self.bg_color = QColor(255, 40, 40) if self.isChecked() else QColor(0, 188, 248)
@@ -209,3 +214,6 @@ class ToggleButton(QPushButton):
         if not self.isChecked():
             sw_rect.moveLeft(width - radius * 2)
         painter.drawRoundedRect(sw_rect, 3, 3)
+
+    def _toggle(self):
+        self.toggle()

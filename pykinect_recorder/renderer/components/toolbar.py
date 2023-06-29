@@ -2,19 +2,20 @@ import os
 import cv2
 import platform
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QFrame, QFileDialog
 
-from ..common_widgets import PushButton, Label
+from ..common_widgets import PushButton, Label, VLine
 from ..signals import all_signals
 
 
 class Toolbar(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setMaximumWidth(1980)
-        self.setMaximumHeight(50)
+        self.setFixedHeight(50)
+        self.setMaximumWidth(4000)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         self.user_name = os.getenv('USERNAME')
         
         # check execution environment.
@@ -31,24 +32,22 @@ class Toolbar(QFrame):
         """)
 
         self.label_device_status = Label("Azure Kinect Camera", orientation=Qt.AlignCenter)
-        self.label_device_status.setStyleSheet(" border-color: #3f4042; ")
-        self.label_device_status.setFixedWidth(170)
-
-        self.label_user_name = Label(" ".join(["User name:", self.user_name]), orientation=Qt.AlignCenter)
-        self.label_user_name.setStyleSheet(" border-color: #3f4042; ")
-        self.label_user_name.setFixedWidth(170)
-
-        self.btn_finddir = PushButton("Select save path", "Arial", 10)
-        self.btn_finddir.setFixedWidth(170)
-        self.btn_finddir.clicked.connect(self.search_file)
-        self.label_dirpath = Label(f"Save path: {self.base_path}", orientation=Qt.AlignLeft)
+        self.label_device_status.setFixedSize(170, 50)
+        self.btn_finddir = PushButton("select save path", "Arial", 10)
+        self.btn_finddir.setFixedSize(170, 50)
+        self.label_dirpath = Label(f"  save path: {self.base_path}", orientation=Qt.AlignVCenter)
 
         main_layout = QHBoxLayout()
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addWidget(self.label_device_status)
-        main_layout.addWidget(self.label_user_name)
+        main_layout.addWidget(VLine())
         main_layout.addWidget(self.btn_finddir)
+        main_layout.addWidget(VLine())
         main_layout.addWidget(self.label_dirpath)
         self.setLayout(main_layout)
+
+        self.btn_finddir.clicked.connect(self.search_file)
 
     def search_file(self) -> None:
         _dirNames = QFileDialog.getExistingDirectory(

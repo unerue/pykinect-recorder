@@ -1,9 +1,8 @@
-from PySide6.QtGui import QPainter, QPen, QColor
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QVBoxLayout, QRadioButton, QWidget,
     QGridLayout, QCheckBox, QPushButton, QFrame,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from ..common_widgets import ComboBox, Slider, HLine, ToggleButton
 from ..signals import all_signals
 
@@ -12,23 +11,27 @@ class ViewerSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet("background-color: #252526;")
+        self.setMinimumSize(QSize(200, 670))
+        self.setMaximumSize(QSize(300, 2160))
 
         main_layout = QVBoxLayout()
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setAlignment(Qt.AlignTop)
+
         main_layout.addWidget(RgbCameraPanel())
         main_layout.addWidget(DepthCameraPanel())
         main_layout.addWidget(IRCameraPanel())
         main_layout.addWidget(AudioPanel())
         self.setLayout(main_layout)
 
-        self.setMaximumHeight(1080)
-        self.setMaximumWidth(300)
-
 
 class RgbCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("RgbCameraPanel")
-        self.setFixedHeight(550)
+        self.setMinimumHeight(380)
+        self.setMaximumHeight(760)
         self.setStyleSheet("""
             QFrame#RgbCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
@@ -43,9 +46,8 @@ class RgbCameraPanel(QFrame):
         # toggle btn
         self.is_change = True
         self.btn_switch = ToggleButton()
-        self.btn_switch.clicked.connect(self._toggle)
         title_layout.addWidget(QLabel("<b>RGB Camera Option<b>"))
-        title_layout.addWidget(QLabel(""))
+        title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)
         top_layout.addLayout(title_layout)
         top_layout.addWidget(HLine())
@@ -74,7 +76,10 @@ class RgbCameraPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_switch.clicked.connect(self._toggle)
+
     def _toggle(self) -> None:
+        self.btn_switch.toggle()
         if self.is_change:
             self.btn_resolutions.setDisabled(True)
             self.btn_rgbformat.setDisabled(True)
@@ -177,6 +182,8 @@ class DepthCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("DepthCameraPanel")
+        self.setMinimumHeight(110)
+        self.setMaximumHeight(220)
         self.setStyleSheet("""
             QFrame#DepthCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
@@ -190,9 +197,8 @@ class DepthCameraPanel(QFrame):
 
         self.is_change = True
         self.btn_switch = ToggleButton()
-        self.btn_switch.clicked.connect(self._toggle)
         title_layout.addWidget(QLabel("<b>Depth Camera Option<b>"))
-        title_layout.addWidget(QLabel(""))
+        title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)
         top_layout.addLayout(title_layout)
         top_layout.addWidget(HLine())
@@ -213,7 +219,10 @@ class DepthCameraPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_switch.clicked.connect(self._toggle)
+
     def _toggle(self) -> None:
+        self.btn_switch.toggle()
         if self.is_change:
             self.btn_depth.setDisabled(True)
             self.btn_fps.setDisabled(True)
@@ -232,27 +241,30 @@ class IRCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("IRCameraPanel")
-        self.setFixedHeight(100)
+        self.setMinimumHeight(40)
+        self.setMaximumHeight(80)
         self.setStyleSheet("""
             QFrame#IRCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
         """)
 
-        grid_layout = QGridLayout()
+        main_layout = QVBoxLayout()
         title_layout = QHBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+
         self.is_change = True
-
-        grid_layout.addWidget(QLabel("<b>IR Camera Option<b>"), 0, 0)
         self.btn_switch = ToggleButton()
-        self.btn_switch.clicked.connect(self._toggle)
-        title_layout.addWidget(QLabel(""))
+        title_layout.addWidget(QLabel("<b>IR Camera Option<b>"))
+        title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)
-        grid_layout.addLayout(title_layout, 0, 1)
+        main_layout.addLayout(title_layout)
+        self.setLayout(main_layout)
 
-        self.setLayout(grid_layout)
+        self.btn_switch.clicked.connect(self._toggle)
 
     def _toggle(self) -> None:
+        self.btn_switch.toggle()
         if self.is_change:
             self.is_change = False
         else:
@@ -263,6 +275,8 @@ class AudioPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("AudioPanel")
+        self.setMinimumHeight(140)
+        self.setMaximumHeight(280)
         self.setStyleSheet("""
             QFrame#AudioPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
@@ -276,9 +290,8 @@ class AudioPanel(QFrame):
 
         self.is_change = True
         self.btn_switch = ToggleButton()
-        self.btn_switch.clicked.connect(self._toggle)
         title_layout.addWidget(QLabel("<b>Audio Option<b>"))
-        title_layout.addWidget(QLabel(""))
+        title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)
         top_layout.addLayout(title_layout)
         top_layout.addWidget(HLine())
@@ -304,7 +317,10 @@ class AudioPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_switch.clicked.connect(self._toggle)
+
     def _toggle(self) -> None:
+        self.btn_switch.toggle()
         if self.is_change:
             self.btn_samplerate.setDisabled(True)
             self.btn_channel.setDisabled(True)

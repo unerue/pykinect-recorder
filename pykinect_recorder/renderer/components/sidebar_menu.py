@@ -10,6 +10,8 @@ class SidebarMenus(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setFixedWidth(55)
+        self.setMinimumHeight(670)
+        self.setMaximumHeight(2160)
         self.setStyleSheet("background-color: #333333;")
 
         main_layout = QVBoxLayout()

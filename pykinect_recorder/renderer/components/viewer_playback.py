@@ -1,12 +1,12 @@
 import time
-from PySide6.QtCore import Qt, Slot, QEvent, QMimeData
+from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QSize
 from PySide6.QtGui import QImage, QPixmap, QDrag
 from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame, QGridLayout,
     QDialog, QVBoxLayout
 )
 
-from ..common_widgets import Frame, Slider, Label
+from ..common_widgets import Frame, Slider, Label, VLine
 from .playback_sensors import PlaybackSensors
 from .viewer_video_clipping import VideoClippingDialog
 from .viewer_imu_sensors import ImuSensors
@@ -20,34 +20,62 @@ RESOLUTION = 4
 
 
 class PlaybackViewer(QFrame):
-    def __init__(self, size: tuple[int, int] = (1200, 1000)) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
+        self.setMinimumSize(QSize(920, 670))
+        self.setMaximumSize(QSize(2000, 2000))
         self.setStyleSheet("background-color: #1e1e1e;")
         self.th = None
         self.playback = None
         self.file_path = None
+
         self.grid_layout = QGridLayout()
-        self.frame_rgb = Frame("RGB Sensor")
-        self.frame_depth = Frame("Depth Sensor")
-        self.frame_ir = Frame("IR Sensor")
+        self.grid_layout.setSpacing(0)
+        self.grid_layout.setContentsMargins(0, 0, 0, 0)
+        self.grid_layout.setAlignment(Qt.AlignTop)
+
+        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 310), max_size=(925, 620))
+        self.frame_depth = Frame("Depth Sensor", min_size=(460, 310), max_size=(925, 620))
+        self.frame_ir = Frame("IR Sensor", min_size=(460, 310), max_size=(925, 620))
 
         self.sensor_data_layout = QHBoxLayout()
-        self.imu_senser = ImuSensors()
-        self.audio_sensor = AudioSensor()
+        self.sensor_data_layout.setSpacing(0)
+        self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
+        self.imu_senser = ImuSensors(min_size=(230, 310), max_size=(460, 620))
+        self.audio_sensor = AudioSensor(min_size=(230, 310), max_size=(460, 620))
+
+        self.v_line = QVBoxLayout()
+        self.v_line.setSpacing(0)
+        self.v_line.setContentsMargins(0, 0, 0, 0)
+        self.v_line.addWidget(VLine())
+
         self.sensor_data_layout.addWidget(self.imu_senser)
+        self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
-        self.frame_subdata = Frame("subdata", layout=self.sensor_data_layout)
+        self.frame_subdata = Frame(
+            "IMU & Audio Sensor", 
+            layout=self.sensor_data_layout, 
+            min_size=(460, 310),
+            max_size=(920, 620)
+        )
 
         top_layout = QHBoxLayout()
+        top_layout.setSpacing(5)
+        top_layout.setContentsMargins(0, 0, 0, 0)
         top_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
-        self.slider_time.setFixedSize(400, 40)
+        self.slider_time.setFixedHeight(50)
+        self.slider_time.setMinimumWidth(400)
+        self.slider_time.setMaximumWidth(800)
         self.slider_time.setTickInterval(33322)
         top_layout.addWidget(self.slider_time)
 
         self.btn_stop = QPushButton("Stop")
-        self.btn_stop.setFixedSize(200, 40)
+        self.btn_stop.setFixedHeight(50)
+        self.btn_stop.setMinimumWidth(200)
+        self.btn_stop.setMaximumWidth(400)
         self.btn_stop.setStyleSheet(
             """
             QPushButton:hover {
@@ -56,7 +84,9 @@ class PlaybackViewer(QFrame):
         """
         )
         self.btn_clip = QPushButton("Clipping")
-        self.btn_clip.setFixedSize(200, 40)
+        self.btn_clip.setFixedHeight(50)
+        self.btn_clip.setMinimumWidth(200)
+        self.btn_clip.setMaximumWidth(400)
         self.btn_clip.setStyleSheet(
             """
             QPushButton:hover {

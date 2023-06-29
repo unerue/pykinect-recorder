@@ -27,11 +27,14 @@ RESOLUTION = 4
 
 
 class SensorViewer(QFrame):
-    def __init__(self, size: tuple[int, int] = (1200, 1000)) -> None:
+    def __init__(self) -> None:
         super().__init__()
+        
+        self.setMinimumSize(QSize(920, 670))
+        self.setMaximumSize(QSize(2000, 2000))
         self.setContentsMargins(0, 0, 0, 0)
-
         self.setStyleSheet("background-color: #1e1e1e;")
+
         self.device = None
         self.config = None
         self.color_control = None
@@ -41,8 +44,12 @@ class SensorViewer(QFrame):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
+        
         btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(5)
+        btn_layout.setContentsMargins(0, 0, 0, 0)
         btn_layout.setAlignment(Qt.AlignCenter)
+
         self.btn_open = self.make_icons(qta.icon("mdi6.camera-plus-outline"),"Device open")
         self.btn_viewer = self.make_icons(qta.icon("fa.play"),"Streaming Button", scale=0.7)
         self.btn_record = self.make_icons(qta.icon("mdi.record"),"Recording Button", scale=0.7)
@@ -216,19 +223,31 @@ class CapturedImageViewer(QFrame):
         self.setContentsMargins(0, 0, 0, 0)
 
         self.grid_layout = QGridLayout()
-        self.frame_rgb = Frame("RGB Sensor")
-        self.frame_depth = Frame("Depth Sensor")
-        self.frame_ir = Frame("IR Sensor")
+        self.grid_layout.setSpacing(0)
+        self.grid_layout.setContentsMargins(0, 0, 0, 0)
+        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 310), max_size=(920, 620))
+        self.frame_depth = Frame("Depth Sensor", min_size=(460, 310), max_size=(920, 620))
+        self.frame_ir = Frame("IR Sensor", min_size=(460, 310), max_size=(920, 620))
 
-        self.layout_subdata = QHBoxLayout()
-        self.imu_senser = ImuSensors()
-        self.audio_sensor = AudioSensor()
+        self.sensor_data_layout = QHBoxLayout()
+        self.sensor_data_layout.setSpacing(0)
+        self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
+        self.imu_senser = ImuSensors(min_size=(230, 310), max_size=(460, 620))
+        self.audio_sensor = AudioSensor(min_size=(230, 310), max_size=(460, 620))
+
         self.v_line = QVBoxLayout()
+        self.v_line.setSpacing(0)
+        self.v_line.setContentsMargins(0, 0, 0, 0)
         self.v_line.addWidget(VLine())
-        self.layout_subdata.addWidget(self.imu_senser)
-        self.layout_subdata.addLayout(self.v_line)
-        self.layout_subdata.addWidget(self.audio_sensor)
-        self.frame_subdata = Frame("IMU & Audio Sensor", layout=self.layout_subdata)
+        self.sensor_data_layout.addWidget(self.imu_senser)
+        self.sensor_data_layout.addLayout(self.v_line)
+        self.sensor_data_layout.addWidget(self.audio_sensor)
+        self.frame_subdata = Frame(
+            "IMU & Audio Sensor", 
+            layout=self.sensor_data_layout, 
+            min_size=(460, 310), 
+            max_size=(920, 620)
+        )
 
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
         all_signals.captured_rgb.connect(self.setRGBImage)
