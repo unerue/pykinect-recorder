@@ -307,7 +307,7 @@ class _param(ctypes.Structure):
     ]
 
 
-class k4a_calibration_intrinsic_parameters_t(ctypes.Union):
+class _k4a_calibration_intrinsic_parameters_t(ctypes.Union):
     """
     Camera intrinsic calibration data.
 
@@ -319,6 +319,9 @@ class k4a_calibration_intrinsic_parameters_t(ctypes.Union):
         ("param", _param),
         ("v", ctypes.c_float * 15),
     ]
+
+
+k4a_calibration_intrinsic_parameters_t = _k4a_calibration_intrinsic_parameters_t
 
 
 class _k4a_calibration_intrinsics_t(ctypes.Structure):
@@ -465,7 +468,7 @@ class _xy(ctypes.Structure):
 
 
 # Two dimensional floating point vector
-class k4a_float2_t(ctypes.Union):
+class _k4a_float2_t(ctypes.Union):
     """
     Two dimensional floating point vector.
 
@@ -486,6 +489,9 @@ class k4a_float2_t(ctypes.Union):
 
     def __str__(self):
         return self.xy.__str__()
+    
+
+k4a_float2_t = _k4a_float2_t
 
 
 class _xyz(ctypes.Structure):
@@ -511,7 +517,7 @@ class _xyz(ctypes.Structure):
 
 
 # Three dimensional floating point vector
-class k4a_float3_t(ctypes.Union):
+class _k4a_float3_t(ctypes.Union):
     """
     Three dimensional floating point vector.
 
@@ -532,9 +538,12 @@ class k4a_float3_t(ctypes.Union):
 
     def __str__(self):
         return self.xyz.__str__()
+    
+
+k4a_float3_t = _k4a_float3_t
 
 
-class k4a_imu_sample_t(ctypes.Structure):
+class _k4a_imu_sample_t(ctypes.Structure):
     """
     IMU sample.
 
@@ -552,6 +561,9 @@ class k4a_imu_sample_t(ctypes.Structure):
         ("gyro_sample", k4a_float3_t),
         ("gyro_timestamp_usec", ctypes.c_uint64),
     ]
+
+
+k4a_imu_sample_t = _k4a_imu_sample_t
 
 
 IMU_SAMPLE_SIZE = ctypes.sizeof(k4a_imu_sample_t)
