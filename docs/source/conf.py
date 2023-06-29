@@ -1,7 +1,6 @@
 # -- General configuration
 
 extensions = [
-    'sphinxcontrib.apidoc',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
