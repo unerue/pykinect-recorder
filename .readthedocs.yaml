@@ -10,6 +10,8 @@ build:
       - poetry config virtualenvs.create false
     post_install:
       - poetry install --with docs
+  commands:
+    - sphinx-apidoc -f -o docs/source pykinect_recorder
 
 sphinx:
   fail_on_warning: true
