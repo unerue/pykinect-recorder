@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import ctypes
 import sys
 import traceback
@@ -39,7 +41,7 @@ def k4a_device_open(device_id: ctypes.c_uint32, device_handle: ctypes.POINTER(k4
     If successful, `k4a_device_open()` will return a device handle in the device_handle parameter. 
     This handle grants exclusive access to the device and may be used in the other Azure Kinect API calls.
 
-    When done with the device, close the handle with `k4a_device_close()`
+    When done with the device, close the handle with `k4a_device_close()`.
 
     Args:
         device_id (c_uint32): The index of the device to open, starting with 0. 
@@ -367,7 +369,7 @@ def k4a_capture_set_depth_image(capture_handle: k4a_capture_t, image_handle: k4a
     with a NULL `image_handle`.
 
     Any `k4a_image_t` contained in this `k4a_capture_t` will automatically be dereferenced when all 
-    references to the `k4a_capture_t` are released with `k4a_capture_release`().
+    references to the `k4a_capture_t` are released with `k4a_capture_release()`.
 
     Args:
         capture_handle (k4a_capture_t): Capture handle to hold the image.
