@@ -1,6 +1,7 @@
 # -- General configuration
 
 extensions = [
+    'sphinxcontrib.apidoc',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
@@ -8,6 +9,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx_search.extension',
+    'sphinxcontrib.napoleon',
 ]
 
 intersphinx_mapping = {
@@ -24,6 +26,10 @@ html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
+# sphinx apidoc
+apidoc_module_dir = '../../pykinect_recorder'
+apidoc_excluded_paths = ['tests']
 
 # Napoleon settings
 napoleon_google_docstring = True
