@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QVBoxLayout, QRadioButton, QWidget,
-    QGridLayout, QCheckBox, QPushButton, QFrame,
+    QGridLayout, QCheckBox, QPushButton, QFrame, QSizePolicy
 )
 from PySide6.QtCore import Qt, QSize
 from ..common_widgets import ComboBox, Slider, HLine, ToggleButton
@@ -13,6 +13,7 @@ class ViewerSidebar(QFrame):
         self.setStyleSheet("background-color: #252526;")
         self.setMinimumSize(QSize(200, 670))
         self.setMaximumSize(QSize(300, 2160))
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)

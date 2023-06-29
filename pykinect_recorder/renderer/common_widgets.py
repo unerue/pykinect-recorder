@@ -8,7 +8,7 @@ from PySide6.QtGui import (
 
 from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton, QSlider, 
-    QFrame, QVBoxLayout, QHBoxLayout
+    QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
 )
 
 """
@@ -130,6 +130,7 @@ class Frame(QFrame):
         super().__init__()
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # self.setMaximumHeight(480)
         # self.setFixedWidth(640)
         self.setContentsMargins(0, 0, 0, 0)
