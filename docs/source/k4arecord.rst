@@ -1,5 +1,11 @@
 K4A Record
 ==========
 
-.. automodule:: pykinect_recorder.main.pyk4a.k4arecord
-    :members:
+.. .. automodule:: pykinect_recorder.main.pyk4a.k4arecord
+..     :members:
+..     :undoc-members:
+..     :show-inheritance:
+
+.. note::
+
+   This wrapper is under active development.
