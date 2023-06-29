@@ -12,7 +12,7 @@ class ViewerSidebar(QFrame):
         super().__init__()
         self.setStyleSheet("background-color: #252526;")
         self.setMinimumSize(QSize(200, 670))
-        self.setMaximumSize(QSize(300, 2160))
+        self.setMaximumSize(QSize(300, 1340))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QVBoxLayout()

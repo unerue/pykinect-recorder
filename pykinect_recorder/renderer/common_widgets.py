@@ -131,10 +131,7 @@ class Frame(QFrame):
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # self.setMaximumHeight(480)
-        # self.setFixedWidth(640)
         self.setContentsMargins(0, 0, 0, 0)
-
         self.setObjectName("Frame")
         self.setStyleSheet(
             """QFrame#Frame {
