@@ -9,7 +9,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx_search.extension',
-    'sphinxcontrib.napoleon',
 ]
 
 intersphinx_mapping = {
