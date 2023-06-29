@@ -15,3 +15,4 @@ pykinect_recorder/main/synology_utils.py
 dataset_list.txt
 .pytest_cache
 metadata.csv
+*.mkv

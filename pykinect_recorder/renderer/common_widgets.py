@@ -24,12 +24,6 @@ class ComboBox(QComboBox):
         self.addItems(items)
         self.setCurrentIndex(current_index)
 
-        # if stylesheet is not None:
-        #     with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
-        #         stylesheet = f.read()
-        #         print(stylesheet)
-        #     self.setStyleSheet(str(stylesheet))
-
 
 class PushButton(QPushButton):
     def __init__(
@@ -39,12 +33,6 @@ class PushButton(QPushButton):
         self.setText(text)
         self.setFont(QFont(f"{font}", fontsize))
         self.setStyleSheet("color: white;")
-
-        # if stylesheet is not None:
-        #     with open(os.path.join(os.path.split(__file__)[0], stylesheet), "r", encoding="utf-8") as f:
-        #         stylesheet = f.read()
-        #         print(stylesheet)
-        #     self.setStyleSheet(str(stylesheet))
 
 
 class Slider(QSlider):

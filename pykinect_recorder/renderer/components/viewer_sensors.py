@@ -157,28 +157,27 @@ class SensorViewer(QFrame):
                     self.device._handle, color_command_dict[k], K4A_COLOR_CONTROL_MODE_MANUAL, ctypes.c_int32(int(v))
                 )
 
-            self.viewer.device = self.device
-            self.viewer.is_run = True
+            self.th = RecordSensors(device=self.device, audio_record=False)
+            self.th.is_run = True
             self.is_play = False
             self.btn_open.setEnabled(False)
+            self.th.audio_file = self.filename_audio
 
-            if self.is_record:
-                self.viewer.audio_file = self.filename_audio
-                # self.viewer.audio_record = True
+            if self.is_record:    
                 self.btn_viewer.setEnabled(False)
                 self.btn_record.setIcon(qta.icon("fa5.stop-circle"))
             else:
                 self.btn_record.setEnabled(False)
                 self.btn_viewer.setIcon(qta.icon("fa5.stop-circle"))
             
-            self.viewer.run()
+            self.th.start()
 
         else:
-            self.btn_open.setEnabled(True)
-            self.viewer.image_timer.stop()
+            self.th.is_run = False
+            self.th.quit()
+            self.device.close()
+
             if self.is_record:
-                if self.viewer.audio_record:
-                    self.viewer.audio_timer.stop()
                 self.btn_viewer.setEnabled(True)
                 self.btn_record.setIcon(qta.icon("mdi.record"))
             else:
@@ -187,7 +186,6 @@ class SensorViewer(QFrame):
 
             self.btn_open.setEnabled(True)
             self.is_play = True
-            self.device.close()
             time.sleep(1)
 
     def set_filename(self) -> None:
