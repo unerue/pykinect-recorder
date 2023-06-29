@@ -43,14 +43,17 @@ black = "^23.1.0"
 isort = "^5.12.0"
 mypy = "^1.1.1"
 pyinstaller = "^5.10.1"
-# sphinx = "^4.5.0"
-# sphinx-rtd-theme = "^1.0.0"
-# readthedocs-sphinx-search = "^0.3.1"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^4.5.0"
 sphinx-rtd-theme = "^1.0.0"
 readthedocs-sphinx-search = "^0.3.1"
+pyyaml = "^6.0"
+addict = "^2.4.0"
+tqdm = "^4.65.0"
+sphinxcontrib-napoleon = "^0.7"
+sphinxcontrib-apidoc = "^0.3.0"
+celery = "^5.3.1"
 
 [build-system]
 requires = ["poetry-core"]
