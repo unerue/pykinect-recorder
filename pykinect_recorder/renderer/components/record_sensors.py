@@ -34,20 +34,19 @@ def callback(indata, frames, time, status):
 class RecordSensors(QThread):
     global queue
 
-    def __init__(self, device: Device, audio_record=None, parent=None) -> None:
-        QThread.__init__(self, parent)
+    def __init__(self, device: Device, audio_record=None) -> None:
+        super().__init__()
         self.device = device
         self.is_run = None
 
         self.input_devices = QMediaDevices.audioInputs()
         self.audio_input = None
         self.audio_file = None
-        self.audio_record = audio_record  # verb -> noun
+        self.audio_record = audio_record
 
     def run(self):
-        self.readyAudio()  # snake_case
+        self.readyAudio()
         self.io_device = self.audio_input.start()
-
         with sf.SoundFile(
             self.audio_file,
             mode="x",
@@ -56,10 +55,11 @@ class RecordSensors(QThread):
         ) as file:
             with sd.InputStream(samplerate=44100, device=0, channels=2, callback=callback):
                 while self.is_run:
-                    start_t = time.time()  # start_time
-                    current_frame = self.device.update()  # current_frame
-                    current_imu_data = self.device.update_imu()
+                    start_time = time.time()
                     file.write(q.get())
+
+                    current_frame = self.device.update()
+                    current_imu_data = self.device.update_imu()
 
                     current_rgb_frame = current_frame.get_color_image()
                     current_depth_frame = current_frame.get_depth_image()
@@ -96,7 +96,7 @@ class RecordSensors(QThread):
                     gyro_data = current_imu_data.gyro
 
                     try:
-                        fps = 1 / (end_time - start_t)
+                        fps = 1 / (end_time - start_time)
                         all_signals.captured_fps.emit(fps)
                     except:
                         pass
@@ -109,14 +109,13 @@ class RecordSensors(QThread):
                     data = self.io_device.readAll()
                     available_samples = data.size() // RESOLUTION
                     all_signals.captured_audio.emit([data, available_samples])
-
-        if self.audio_record is None:
-            import os
-
-            os.remove(self.audio_file)
-
+                
         self.audio_input.stop()
         self.io_device = None
+
+        if self.audio_record is False:
+            import os
+            os.remove(self.audio_file)
 
     def _colorize(
         self,
@@ -138,4 +137,4 @@ class RecordSensors(QThread):
         format_audio.setChannelCount(3)
         format_audio.setSampleFormat(QAudioFormat.SampleFormat.UInt8)
 
-        self.audio_input = QAudioSource(self.input_devices[0], format_audio, self)
+        self.audio_input = QAudioSource(self.input_devices[0], format_audio)
