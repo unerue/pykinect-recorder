@@ -1,10 +1,10 @@
-Welcome to Lumache's documentation!
-===================================
+Welcome to pykinect-recorder's documentation!
+=============================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+**pykinect-recorder** is an educational/industrial library 
+that provides sensor recording (including audio), playback, 
+and computer vision soultions through a python wrapper of 
+the Azure Kinect Sensor SDK.
 
 
 .. note::
@@ -12,10 +12,9 @@ and offers a *simple* and *intuitive* API.
    This project is under active development.
 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+.. toctree::
+   :maxdepth: 2
+   :caption: Package Reference
 
-
-.. _object-detection:
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+   pyk4a
+   pyrealsense
