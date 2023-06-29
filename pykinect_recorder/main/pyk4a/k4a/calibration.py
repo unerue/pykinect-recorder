@@ -5,9 +5,9 @@ from . import _k4a
 
 class Calibration:
     """
-    Wrapper for `k4a_calibration_t`.
+    Wrapper for ``k4a_calibration_t``.
 
-    Provides member functions for `k4a_calibration_t`.
+    Provides member functions for ``k4a_calibration_t``.
     """
     def __init__(self, calibration_handle: _k4a.k4a_calibration_t):
         self._handle = calibration_handle
@@ -75,11 +75,11 @@ class Calibration:
         Throws error on failure.
 
         Note:
-            See also `k4a_calibration_3d_to_3d()`.
+            See also ``k4a_calibration_3d_to_3d()``.
 
         Args:
             source_point3d (k4a_float3_t): The 3D coordinates in millimeters representing a point 
-                in `source_camera`.
+                in ``source_camera``.
             source_camera (k4a_calibration_type_t): The current camera.
             target_camera (k4a_calibration_type_t): The target camera.
 
@@ -118,9 +118,9 @@ class Calibration:
         invalid data.
 
         Args:
-            source_point2d (_k4a.k4a_float2_t): The 2D pixel in `source_camera` coordinates.
-            source_depth (float): The depth of `source_point2d` in millimeters. One way to derive the 
-                depth value in the color camera geometry is to use the function `k4a_transformation_depth_image_to_color_camera()`.
+            source_point2d (_k4a.k4a_float2_t): The 2D pixel in ``source_camera`` coordinates.
+            source_depth (float): The depth of ``source_point2d`` in millimeters. One way to derive the 
+                depth value in the color camera geometry is to use the function ``k4a_transformation_depth_image_to_color_camera()``.
             source_camera (_k4a.k4a_calibration_type_t): The current camera.
             target_camera (_k4a.k4a_calibration_type_t): The target camera.
 
