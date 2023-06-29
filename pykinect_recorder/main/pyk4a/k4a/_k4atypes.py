@@ -198,21 +198,21 @@ class _k4a_device_configuration_t(ctypes.Structure):
     """
     Configuration parameters for an Azure Kinect device.
 
-    Used by ``k4a_device_start_cameras()`` to specify the configuration of the data capture.
+    Used by `k4a_device_start_cameras()` to specify the configuration of the data capture.
 
     Attributes:
         color_format (c_int): Image format to capture with the color camera. The color camera 
-            does not natively produce BGRA32 images. Setting ``K4A_IMAGE_FORMAT_COLOR_BGRA32`` for 
+            does not natively produce BGRA32 images. Setting `K4A_IMAGE_FORMAT_COLOR_BGRA32` for 
             color_format will result in higher CPU utilization.
         color_resolution (c_int): Image resolution to capture with the color camera.
         depth_mode (c_int): Capture mode for the depth camera.
         camera_fps (c_int): Desired frame rate for the color and depth camera.
-        synchronized_images_only (c_bool): Only produce ``k4a_capture_t`` objects if they contain 
+        synchronized_images_only (c_bool): Only produce `k4a_capture_t` objects if they contain 
             synchronized color and depth images. This setting controls the behavior in which 
             images are dropped when images are produced faster than they can be read, 
             or if there are errors in reading images from the device. If set to true, 
-            ``k4a_capture_t`` objects will only be produced with both color and depth images. 
-            If set to false, ``k4a_capture_t`` objects may be produced only a single image 
+            `k4a_capture_t` objects will only be produced with both color and depth images. 
+            If set to false, `k4a_capture_t` objects may be produced only a single image 
             when the corresponding image is dropped. Setting this to false ensures that 
             the caller receives all of the images received from the camera, regardless of 
             whether the corresponding images expected in the capture are available. 
