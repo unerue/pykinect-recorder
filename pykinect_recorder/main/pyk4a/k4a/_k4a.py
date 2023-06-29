@@ -29,8 +29,6 @@ def k4a_device_get_installed_count() -> ctypes.c_uint32:
     Returns:
         c_uint32: Number of sensors connected to the PC.
     """
-    # K4A_EXPORT uint32_t k4a_device_get_installed_count(void);
-
     return k4a_dll.k4a_device_get_installed_count()
 
 
@@ -51,8 +49,6 @@ def k4a_device_open(device_id: ctypes.c_uint32, device_handle: ctypes.POINTER(k4
     Returns:
         c_int: `K4A_RESULT_SUCCEEDED` if the device was opened successfully.
     """
-    # K4A_EXPORT k4a_result_t k4a_device_open(uint32_t index, k4a_device_t *device_handle);
-
     _k4a_device_open = k4a_dll.k4a_device_open
     _k4a_device_open.restype = ctypes.c_int
     _k4a_device_open.argtypes = (ctypes.c_uint32, ctypes.POINTER(k4a_device_t))
@@ -72,8 +68,6 @@ def k4a_device_close(device_handle: k4a_device_t) -> None:
     Args:
         device_handle (k4a_device_t): Handle obtained by `k4a_device_open()`.
     """
-    # K4A_EXPORT void k4a_device_close(k4a_device_t device_handle);
-
     _k4a_device_close = k4a_dll.k4a_device_close
     _k4a_device_close.restype = None
     _k4a_device_close.argtypes = (k4a_device_t,)
@@ -126,7 +120,6 @@ def k4a_device_get_capture(
             before the timeout elapses, the function will return `K4A_WAIT_RESULT_TIMEOUT`. All other 
             failures will return `K4A_WAIT_RESULT_FAILED`.
     """
-
     _k4a_device_get_capture = k4a_dll.k4a_device_get_capture
     _k4a_device_get_capture.restype = ctypes.c_int
     _k4a_device_get_capture.argtypes = (
@@ -183,7 +176,6 @@ def k4a_device_get_imu_sample(
             before the timeout elapses, the function will return `K4A_WAIT_RESULT_TIMEOUT`. 
             All other failures will return `K4A_WAIT_RESULT_FAILED`.
     """
-
     _k4a_device_get_imu_sample = k4a_dll.k4a_device_get_imu_sample
     _k4a_device_get_imu_sample.restype = ctypes.c_int
     _k4a_device_get_imu_sample.argtypes = (
@@ -211,8 +203,6 @@ def k4a_capture_create(capture_handle: ctypes.POINTER(k4a_capture_t)) -> k4a_res
         k4a_result_t: Returns `K4A_RESULT_SUCCEEDED` on success. Errors are indicated with 
             `K4A_RESULT_FAILED` and error specific data can be found in the log.
     """
-    # K4A_EXPORT k4a_result_t k4a_capture_create(k4a_capture_t *capture_handle);
-
     _k4a_capture_create = k4a_dll.k4a_capture_create
     _k4a_capture_create.restype = k4a_result_t
     _k4a_capture_create.argtypes = (ctypes.POINTER(k4a_capture_t),)
@@ -229,8 +219,6 @@ def k4a_capture_release(capture_handle: k4a_capture_t) -> None:
     Args:
         capture_handle (k4a_capture_t): Capture to release.
     """
-    # K4A_EXPORT void k4a_capture_release(k4a_capture_t capture_handle);
-
     _k4a_capture_release = k4a_dll.k4a_capture_release
     _k4a_capture_release.restype = None
     _k4a_capture_release.argtypes = (k4a_capture_t,)
@@ -248,8 +236,6 @@ def k4a_capture_reference(capture_handle: k4a_capture_t) -> None:
     Args:
         capture_handle (k4a_capture_t): Capture to add a reference to.
     """
-    # K4A_EXPORT void k4a_capture_reference(k4a_capture_t capture_handle);
-
     _k4a_capture_reference = k4a_dll.k4a_capture_reference
     _k4a_capture_reference.restype = None
     _k4a_capture_reference.argtypes = (k4a_capture_t,)
@@ -270,8 +256,6 @@ def k4a_capture_get_color_image(capture_handle: k4a_capture_t) -> k4a_image_t:
     Returns:
         k4a_image_t
     """
-    # K4A_EXPORT k4a_image_t k4a_capture_get_color_image(k4a_capture_t capture_handle)
-
     _k4a_capture_get_color_image = k4a_dll.k4a_capture_get_color_image
     _k4a_capture_get_color_image.restype = k4a_image_t
     _k4a_capture_get_color_image.argtypes = (k4a_capture_t,)
@@ -292,8 +276,6 @@ def k4a_capture_get_depth_image(capture_handle: k4a_capture_t) -> k4a_image_t:
     Returns:
         k4a_image_t
     """
-    # K4A_EXPORT k4a_image_t k4a_capture_get_depth_image(k4a_capture_t capture_handle);
-
     _k4a_capture_get_depth_image = k4a_dll.k4a_capture_get_depth_image
     _k4a_capture_get_depth_image.restype = k4a_image_t
     _k4a_capture_get_depth_image.argtypes = (k4a_capture_t,)
@@ -314,8 +296,6 @@ def k4a_capture_get_ir_image(capture_handle: k4a_capture_t) -> k4a_image_t:
     Returns:
         k4a_image_t
     """
-    # K4A_EXPORT k4a_image_t k4a_capture_get_ir_image(k4a_capture_t capture_handle);
-
     _k4a_capture_get_ir_image = k4a_dll.k4a_capture_get_ir_image
     _k4a_capture_get_ir_image.restype = k4a_image_t
     _k4a_capture_get_ir_image.argtypes = (k4a_capture_t,)
@@ -343,8 +323,6 @@ def k4a_capture_set_color_image(capture_handle: k4a_capture_t, image_handle: k4a
         capture_handle (k4a_capture_t): Capture handle to hold the image.
         image_handle (k4a_image_t): Image handle containing the image.
     """
-    # K4A_EXPORT void k4a_capture_set_color_image(k4a_capture_t capture_handle, k4a_image_t image_handle);
-
     _k4a_capture_set_color_image = k4a_dll.k4a_capture_set_color_image
     _k4a_capture_set_color_image.restype = None
     _k4a_capture_set_color_image.argtypes = (
@@ -375,8 +353,6 @@ def k4a_capture_set_depth_image(capture_handle: k4a_capture_t, image_handle: k4a
         capture_handle (k4a_capture_t): Capture handle to hold the image.
         image_handle (k4a_image_t): Image handle containing the image.
     """
-    # K4A_EXPORT void k4a_capture_set_depth_image(k4a_capture_t capture_handle, k4a_image_t image_handle);
-
     _k4a_capture_set_depth_image = k4a_dll.k4a_capture_set_depth_image
     _k4a_capture_set_depth_image.restype = None
     _k4a_capture_set_depth_image.argtypes = (
@@ -407,8 +383,6 @@ def k4a_capture_set_ir_image(capture_handle: k4a_capture_t, image_handle: k4a_im
         capture_handle (k4a_capture_t): Capture handle to hold the image.
         image_handle (k4a_image_t): Image handle containing the image.
     """
-    # K4A_EXPORT void k4a_capture_set_ir_image(k4a_capture_t capture_handle, k4a_image_t image_handle);
-
     _k4a_capture_set_ir_image = k4a_dll.k4a_capture_set_ir_image
     _k4a_capture_set_ir_image.restype = None
     _k4a_capture_set_ir_image.argtypes = (
