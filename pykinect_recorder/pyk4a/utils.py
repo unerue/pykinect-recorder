@@ -2,6 +2,67 @@ import numpy as np
 import platform
 import sys
 
+import cv2
+import open3d as o3d
+
+
+class Open3dVisualizer:
+    def __init__(self):
+        self.point_cloud = o3d.geometry.PointCloud()
+        self.o3d_started = False
+
+        self.vis = o3d.visualization.Visualizer()
+        self.vis.create_window()
+
+    def __call__(self, points_3d, rgb_image=None):
+        self.update(points_3d, rgb_image)
+
+    def update(self, points_3d, rgb_image=None):
+        # Add values to vectors
+        self.point_cloud.points = o3d.utility.Vector3dVector(points_3d)
+        if rgb_image is not None:
+            colors = cv2.cvtColor(rgb_image, cv2.COLOR_BGRA2RGB).reshape(-1, 3) / 255
+            self.point_cloud.colors = o3d.utility.Vector3dVector(colors)
+
+        self.point_cloud.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
+
+        # Add geometries if it is the first time
+        if not self.o3d_started:
+            self.vis.add_geometry(self.point_cloud)
+            self.o3d_started = True
+
+        else:
+            self.vis.update_geometry(self.point_cloud)
+
+        self.vis.poll_events()
+        self.vis.update_renderer()
+
+
+def smooth_depth_image(depth_image, max_hole_size=10):
+    """Smoothes depth image by filling the holes using inpainting method
+
+    Parameters:
+    depth_image(Image): Original depth image
+    max_hole_size(int): Maximum size of hole to fill
+
+    Returns:
+    Image: Smoothed depth image
+
+    Remarks:
+    Bigger maximum hole size will try to fill bigger holes but requires longer time
+    """
+    mask = np.zeros(depth_image.shape, dtype=np.uint8)
+    mask[depth_image == 0] = 1
+
+    # Do not include in the mask the holes bigger than the maximum hole size
+    kernel = np.ones((max_hole_size, max_hole_size), np.uint8)
+    erosion = cv2.erode(mask, kernel, iterations=1)
+    mask = mask - erosion
+
+    smoothed_depth_image = cv2.inpaint(depth_image.astype(np.uint16), mask, max_hole_size, cv2.INPAINT_NS)
+
+    return smoothed_depth_image
+
 
 def get_k4a_module_path():
     # Check if running in Jetson Nano or similar ARM chips
