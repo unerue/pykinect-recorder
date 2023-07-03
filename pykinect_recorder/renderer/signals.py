@@ -31,6 +31,7 @@ class AllSignals(QObject):
     save_filepath = Signal(str)
     time_control = Signal(int)
     time_value = Signal(int)
+    clear_frame = Signal(bool)
 
     # Video clipping signals
     clip_option = Signal(str)

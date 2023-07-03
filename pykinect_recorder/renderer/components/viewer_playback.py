@@ -27,7 +27,7 @@ class PlaybackViewer(QFrame):
         self.setMinimumSize(QSize(920, 670))
         self.setMaximumSize(QSize(2000, 2000))
         self.setStyleSheet("background-color: #1e1e1e;")
-        self.th = None
+        self.viewer = None
         self.playback = None
         self.file_path = None
 
@@ -36,7 +36,6 @@ class PlaybackViewer(QFrame):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         self.captured_viewer_frame = CapturedImageViewer()
-
         self.bottom_layout = QHBoxLayout()
         self.bottom_layout.setSpacing(5)
         self.bottom_layout.setContentsMargins(0, 0, 0, 0)
@@ -44,22 +43,18 @@ class PlaybackViewer(QFrame):
 
         self.btn_stop = QPushButton("Stop")
         self.btn_stop.setFixedSize(100, 50)
-        self.btn_stop.setStyleSheet(
-            """
+        self.btn_stop.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
             }
-        """
-        )
+        """)
         self.btn_clip = QPushButton("Clipping")
         self.btn_clip.setFixedSize(100, 50)
-        self.btn_clip.setStyleSheet(
-            """
+        self.btn_clip.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
             }
-        """
-        )
+        """)
 
         self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
         self.slider_time.setFixedHeight(50)
@@ -88,9 +83,9 @@ class PlaybackViewer(QFrame):
 
     @Slot(str)
     def start_playback(self, filepath) -> None:
-        if self.th is not None:
+        if self.viewer is not None:
             time.sleep(0.5)
-            self.th.timer.stop()
+            self.viewer.timer.stop()
             self.btn_stop.setText("Stop")
             self.playback.close()
         try:
@@ -98,15 +93,16 @@ class PlaybackViewer(QFrame):
             initialize_libraries()
             self.playback = start_playback(filepath)
             
-            self.th = PlaybackSensors(playback=self.playback)
-            self.slider_time.setRange(333555, self.playback.get_recording_length())
-            self.slider_time.setValue(333555)
-            self.th.timer.start()
+            self.viewer = PlaybackSensors(playback=self.playback)
+            self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
+            self.slider_time.setRange(self.start_time, self.playback.get_recording_length()-self.start_time)
+            self.slider_time.setValue(self.start_time)
+            self.viewer.timer.start()
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
             e_message = Label(
-                "<b>영상을 불러올 수 없습니다. <br>다른 영상을 실행해주세요.</b>", 
+                "<b>Can't load video. <br>Please select another video.</b>", 
                 "Arial", 20, Qt.AlignmentFlag.AlignCenter
             )
             layout_modal.addWidget(e_message)
@@ -117,21 +113,21 @@ class PlaybackViewer(QFrame):
 
     def stop_playback(self):
         if self.btn_stop.text() == "Stop":
-            self.th.timer.stop()
+            self.viewer.timer.stop()
             self.btn_stop.setText("Start")
         else:
-            self.th.timer.start()
+            self.viewer.timer.start()
             self.btn_stop.setText("Stop")
 
     def control_time(self):
-        if self.th is not None:
+        if self.viewer is not None:
             all_signals.time_control.emit(self.slider_time.value())
 
     def extract_video_to_frame(self):
-        self.th.timer.stop()
+        self.viewer.timer.stop()
         video_clip_dialog = VideoClippingDialog(self.file_path)
         video_clip_dialog.exec_()
-        self.th.timer.start()
+        self.viewer.timer.start()
 
 
 class CapturedImageViewer(QFrame):
@@ -151,15 +147,12 @@ class CapturedImageViewer(QFrame):
         self.sensor_data_layout.setSpacing(0)
         self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
         self.imu_senser = ImuSensors(min_size=(220, 270), max_size=(440, 540))
-        self.audio_sensor = AudioSensor(min_size=(220, 270), max_size=(440, 540))
 
         self.v_line = QVBoxLayout()
         self.v_line.setSpacing(0)
         self.v_line.setContentsMargins(0, 0, 0, 0)
         self.v_line.addWidget(VLine())
         self.sensor_data_layout.addWidget(self.imu_senser)
-        self.sensor_data_layout.addLayout(self.v_line)
-        self.sensor_data_layout.addWidget(self.audio_sensor)
         self.frame_subdata = Frame(
             "IMU & Audio Sensor", 
             layout=self.sensor_data_layout, 
@@ -172,10 +165,12 @@ class CapturedImageViewer(QFrame):
         all_signals.captured_depth.connect(self.set_depth_image)
         all_signals.captured_ir.connect(self.set_ir_image)
         all_signals.captured_time.connect(self.set_time)
+        all_signals.captured_fps.connect(self.set_fps)
         all_signals.captured_acc_data.connect(self.set_acc_data)
         all_signals.captured_gyro_data.connect(self.set_gyro_data)
-        all_signals.captured_fps.connect(self.set_fps)
         all_signals.captured_audio.connect(self.set_audio_data)
+        all_signals.clear_frame.connect(self.clear_frame)
+
         self.main_layout.addWidget(self.frame_depth, 0, 0)
         self.main_layout.addWidget(self.frame_ir, 0, 1)
         self.main_layout.addWidget(self.frame_rgb, 1, 0)
@@ -250,14 +245,14 @@ class CapturedImageViewer(QFrame):
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
         self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
+    
+    @Slot(float)
+    def set_fps(self, value) -> None:
+        self.imu_senser.label_fps.setText("FPS : %.2f" % value)
 
     @Slot(float)
     def set_time(self, time) -> None:
         self.imu_senser.label_time.setText("Time(s) : %.3f" % time)
-
-    @Slot(float)
-    def set_fps(self, value) -> None:
-        self.imu_senser.label_fps.setText("FPS : %.2f" % value)
 
     @Slot(list)
     def set_acc_data(self, values) -> None:
@@ -286,3 +281,16 @@ class CapturedImageViewer(QFrame):
             data_index = data_index + RESOLUTION
 
         self.audio_sensor.series.replace(self.buffer)
+
+    def clear_frame(self):
+        self.frame_rgb.frame.clear()
+        self.frame_depth.frame.clear()
+        self.frame_ir.frame.clear()
+        self.imu_senser.label_time.setText("Time(s) : ")
+        self.imu_senser.label_fps.setText("FPS : ")
+        self.imu_senser.label_acc_x.setText("X : ")
+        self.imu_senser.label_acc_y.setText("Y : ")
+        self.imu_senser.label_acc_z.setText("Z : ")
+        self.imu_senser.label_gyro_x.setText("X : ")
+        self.imu_senser.label_gyro_y.setText("Y : ")
+        self.imu_senser.label_gyro_z.setText("Z : ")

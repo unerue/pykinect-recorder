@@ -40,9 +40,9 @@ class VideoClippingDialog(QDialog):
         
         self.btn_layout = QHBoxLayout()
         self.btn_layout.setAlignment(Qt.AlignRight)
-        self.save_btn = QPushButton("추출")
+        self.save_btn = QPushButton("extract")
         self.save_btn.setFixedHeight(40)
-        self.exit_btn = QPushButton("종료")
+        self.exit_btn = QPushButton("exit")
         self.exit_btn.setFixedHeight(40)
         self.btn_layout.addWidget(self.save_btn)
         self.btn_layout.addWidget(self.exit_btn)
@@ -63,6 +63,7 @@ class VideoClippingDialog(QDialog):
         self.main_layout.addWidget(self.media_frame)
 
         # time control layout
+        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
         self.time_layout = QHBoxLayout()
         self.time_layout.setAlignment(Qt.AlignCenter)
         self.time_slider = QLabeledRangeSlider(Qt.Horizontal, self)
@@ -102,7 +103,8 @@ class VideoClippingDialog(QDialog):
         self.setLayout(self.main_layout)
 
         self.initialize_playback()
-        self.update_next_frame()
+        self.playback.seek_timestamp(self.start_time)
+
         self.save_btn.clicked.connect(self.select_root_path)
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
@@ -124,10 +126,10 @@ class VideoClippingDialog(QDialog):
         cur_left, cur_right = self.time_slider.value()
         if cur_left != self.left:
             self.left = cur_left
-            self.playback.seek_timestamp(self.left*33333)
+            self.playback.seek_timestamp(self.start_time + self.left*33333)
         elif cur_right != self.right:
             self.right = cur_right
-            self.playback.seek_timestamp(self.right*33333)
+            self.playback.seek_timestamp(self.start_time + self.right*33333)
         self.update_next_frame()
 
     def update_next_frame(self):

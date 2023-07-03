@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QStackedLayout, QFrame
 from .viewer_sensors import SensorViewer
 from .viewer_playback import PlaybackViewer
 from .viewer_solution import ViewerSolution
-
+from ..signals import all_signals
 
 class StackedViewer(QFrame):
     def __init__(self) -> None:
@@ -34,3 +34,4 @@ class StackedViewer(QFrame):
             self.main_layout.setCurrentWidget(self.main_solution)
         else:
             self.main_layout.setCurrentWidget(self.main_viewer)
+        all_signals.clear_frame.emit(True)

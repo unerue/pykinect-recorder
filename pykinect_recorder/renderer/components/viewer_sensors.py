@@ -91,6 +91,7 @@ class SensorViewer(QFrame):
         all_signals.captured_gyro_data.connect(self.set_gyro_data)
         all_signals.captured_fps.connect(self.set_fps)
         all_signals.captured_audio.connect(self.set_audio_data)
+        all_signals.clear_frame.connect(self.clear_frame)
 
     def select_option(self, value):
         if value == "viewer":
@@ -124,19 +125,17 @@ class SensorViewer(QFrame):
                     self.device._handle, color_command_dict[k], K4A_COLOR_CONTROL_MODE_MANUAL, ctypes.c_int32(int(v))
                 )
 
-            self.th = RecordSensors(device=self.device, audio_record=False)
-            self.th.is_run = True
+            self.viewer = RecordSensors(device=self.device)
+            self.viewer.start_audio()
+            self.viewer.timer.start()
             self.is_play = False
-            self.th.audio_file = self.filename_audio          
-            self.th.start()
 
         else:
-            self.th.is_run = False
-            self.th.quit()
+            self.viewer.timer.stop()
+            self.viewer.exit_audio()
             self.device.close()
             self.is_play = True
             time.sleep(1)
-            self.clear_frame()
 
     def set_filename(self) -> None:
         if self.base_path is None:
@@ -146,7 +145,6 @@ class SensorViewer(QFrame):
         filename = filename.strftime("%Y_%m_%d_%H_%M_%S")
 
         self.filename_video = os.path.join(self.base_path, f"{filename}.mkv")
-        self.filename_audio = os.path.join(self.base_path, f"{filename}.mp3")
         if sys.flags.debug:
             print(self.base_path, self.filename_video)
 

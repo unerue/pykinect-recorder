@@ -26,7 +26,14 @@ class PushButton(QPushButton):
         super().__init__()
         self.setText(text)
         self.setFont(QFont(f"{font}", fontsize))
-        self.setStyleSheet("color: white;")
+        self.setStyleSheet("""
+            QPushButton {
+                color: white;
+            }
+            QPushButton:hover {
+                border-color: red;
+            }
+        """)
 
 
 class Slider(QSlider):

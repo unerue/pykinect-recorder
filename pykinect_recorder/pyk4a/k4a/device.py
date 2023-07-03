@@ -54,8 +54,8 @@ class Device:
 
     def close(self) -> None:
         if self.is_valid():
-            self.stop_imu()
             self.stop_cameras()
+            self.stop_imu()
             _k4a.k4a_device_close(self._handle)
 
             # Clear members
@@ -84,12 +84,11 @@ class Device:
 
         if self.is_imu_sample_initialized():
             Device.imu_sample._struct = imu_sample
-            Device.imu_sample.parse_data()
+            # Device.imu_sample.parse_data()
         else:
             Device.imu_sample = ImuSample(imu_sample)
 
         if self.recording:
-            print(imu_sample)
             self.record.write_imu(imu_sample)
 
         return Device.imu_sample
