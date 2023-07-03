@@ -24,7 +24,7 @@ class StackedSidebar(QFrame):
         self.setLayout(self.main_layout)
 
     @Slot(str)
-    def setCurrentWidget(self, value):
+    def set_current_widget(self, value):
         if value == "explorer":
             self.main_layout.setCurrentWidget(self.sidebar_explorer)
         elif value == "solution":

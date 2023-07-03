@@ -1,16 +1,18 @@
 import os
 import cv2
+
+from superqt import QLabeledRangeSlider
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Slot, Qt, QSize, QTimer
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QMainWindow,
-    QPushButton, QFrame, QWidget, QFileDialog, QProgressBar
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
+    QFrame, QWidget, QFileDialog, QProgressBar
 )
 
 from ..signals import all_signals
-from superqt import QLabeledRangeSlider
-from pykinect_recorder.pyk4a.pyk4a.pykinect import start_playback, start_device, initialize_libraries
-from pykinect_recorder.pyk4a.pyk4a.k4a.configuration import Configuration
+from ...pyk4a.utils import colorize
+from ...pyk4a.pykinect import start_playback, start_device, initialize_libraries
+from ...pyk4a.k4a.configuration import Configuration
 
 
 class VideoClippingDialog(QDialog):
@@ -115,7 +117,7 @@ class VideoClippingDialog(QDialog):
         self.total_frame = self.right - self.left
 
         self.time_slider.setTickInterval(1)
-        self.time_slider.setRange(self.left, self.right)  ## 마이크로세컨 -> 프레임단위
+        self.time_slider.setRange(self.left, self.right)
         self.time_slider.setValue([self.left, self.right])
 
     def control_timestamp(self):
@@ -138,15 +140,6 @@ class VideoClippingDialog(QDialog):
         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
         scaled_rgb_frame = rgb_frame.scaled(1080, 720, Qt.KeepAspectRatio)
         self.media_label.setPixmap(QPixmap.fromImage(scaled_rgb_frame))
-
-    def colorize(self, image, clipping_range, colormap):
-        if clipping_range[0] or clipping_range[1]:
-            img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
-        else:
-            img = image.copy()
-        img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        img = cv2.applyColorMap(img, colormap)
-        return img
     
     @Slot(str)
     def set_clip_option(self, value):
@@ -195,9 +188,8 @@ class VideoClippingDialog(QDialog):
         if self.cnt == self.total_frame:
             self.timer.stop()
 
-        self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
-        # self.playback.update()
         self.cnt += 1
+        self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
         all_signals.current_frame_cnt.emit(self.cnt)
 
     def extract_frame(self):
@@ -224,13 +216,13 @@ class VideoClippingDialog(QDialog):
         current_ir_frame = current_frame.get_ir_image()
 
         if current_ir_frame[0]:
-            ir_frame = self.colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
+            ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
             cv2.imwrite(os.path.join(
                 self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"), ir_frame,
             )
 
         if current_depth_frame[0]:
-            current_depth_frame = self.colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
+            current_depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
             cv2.imwrite(os.path.join(
                 self.root_path, self.save_file_name, "depth", f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png"), current_depth_frame,
             )

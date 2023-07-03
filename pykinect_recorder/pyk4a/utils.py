@@ -30,6 +30,7 @@ def colorize(
     return image
 
 
+
 class Open3dVisualizer:
     def __init__(self):
         self.point_cloud = o3d.geometry.PointCloud()

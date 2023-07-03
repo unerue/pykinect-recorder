@@ -1,9 +1,11 @@
 import os
-from glob import glob
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QFrame, QWidget, QVBoxLayout, QScrollArea, QPushButton, QHBoxLayout, QFileDialog
+from PySide6.QtWidgets import (
+    QFrame, QWidget, QVBoxLayout, QScrollArea, QPushButton, QHBoxLayout, QFileDialog
+)
+
 from ..common_widgets import Label, PushButton
 from ..signals import all_signals
 

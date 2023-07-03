@@ -1,4 +1,4 @@
-from ..utils import getdict
+from ..utils import get_dict
 
 
 class ImuSample:
@@ -20,7 +20,7 @@ class ImuSample:
             self._struct = None
 
     def parse_data(self):
-        self.imu_sample_dict = getdict(self._struct)
+        self.imu_sample_dict = get_dict(self._struct)
 
         # Convert the acc and gyro dicts to numpy array
         self.imu_sample_dict["acc_sample"] = self.imu_sample_dict["acc_sample"]["v"]

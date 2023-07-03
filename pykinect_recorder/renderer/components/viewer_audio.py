@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QFrame, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from typing import Tuple
 
 from ..common_widgets import Label
 
@@ -9,7 +8,7 @@ SAMPLE_COUNT = 10000
 
 
 class AudioSensor(QFrame):
-    def __init__(self, min_size: Tuple[int, int], max_size: Tuple[int, int]) -> None:
+    def __init__(self, min_size: tuple[int, int], max_size: tuple[int, int]) -> None:
         super().__init__()
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))

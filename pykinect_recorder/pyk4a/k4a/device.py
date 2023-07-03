@@ -25,6 +25,7 @@ class Device:
         self._handle = self.open(index)
         self.recording = False
         self.record = False
+        self.is_imu = True
 
     def __del__(self) -> None:
         self.close()
@@ -74,7 +75,7 @@ class Device:
         # Write capture if recording
         if self.recording:
             self.record.write_capture(Device.capture.handle())
-
+            
         return Device.capture
 
     def update_imu(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> ImuSample:
@@ -88,6 +89,7 @@ class Device:
             Device.imu_sample = ImuSample(imu_sample)
 
         if self.recording:
+            print(imu_sample)
             self.record.write_imu(imu_sample)
 
         return Device.imu_sample

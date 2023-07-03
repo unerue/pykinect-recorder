@@ -1,12 +1,11 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout
-from typing import Tuple
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
 
 from ..common_widgets import Label
 
 
 class ImuSensors(QFrame):
-    def __init__(self, min_size: Tuple[int, int], max_size: Tuple[int, int]) -> None:
+    def __init__(self, min_size: tuple[int, int], max_size: tuple[int, int]) -> None:
         super().__init__()
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))

@@ -1,3 +1,4 @@
+import os
 import cv2
 import sys
 import time
@@ -5,13 +6,8 @@ import queue
 import sounddevice as sd
 import soundfile as sf
 
-from numpy.typing import NDArray
-from typing import Optional, Tuple
 from PySide6.QtCore import Qt, QThread
 from PySide6.QtGui import QImage
-
-from pyk4a import Device
-from pyk4a.utils import colorize
 from PySide6.QtMultimedia import (
     QAudioFormat,
     QAudioSource,
@@ -19,6 +15,8 @@ from PySide6.QtMultimedia import (
 )
 
 from ..signals import all_signals
+from ...pyk4a import Device
+from ...pyk4a.utils import colorize
 
 
 RESOLUTION = 4
@@ -48,7 +46,7 @@ class RecordSensors(QThread):
 
     def run(self):
         # https://github.com/ShadarRim/opencvpythonvideoplayer/blob/master/player.py
-        self.readyAudio()
+        self.ready_audio()
         # self.ready_audio()
         self.io_device = self.audio_input.start()
         with sf.SoundFile(
@@ -118,26 +116,9 @@ class RecordSensors(QThread):
         self.io_device = None
 
         if self.audio_record is False:
-            import os
-
             os.remove(self.audio_file)
 
-    def _colorize(
-        self,
-        image: NDArray,
-        clipping_range: Tuple[Optional[int], Optional[int]] = (None, None),
-        colormap: int = cv2.COLORMAP_HSV,
-    ) -> NDArray:
-        """삭제해라 애송아"""
-        if clipping_range[0] or clipping_range[1]:
-            img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
-        else:
-            img = image.copy()
-        img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        img = cv2.applyColorMap(img, colormap)
-        return img
-
-    def readyAudio(self) -> None:
+    def ready_audio(self) -> None:
         format_audio = QAudioFormat()
         format_audio.setSampleRate(44200)
         format_audio.setChannelCount(3)

@@ -9,10 +9,16 @@ from PySide6.QtWidgets import (
     QPushButton,
     QFrame,
     QSizePolicy,
+    QScrollArea,
+    QDialog,
 )
 from PySide6.QtCore import Qt, QSize
-from ..common_widgets import ComboBox, Slider, HLine, ToggleButton
+import qtawesome as qta
+
 from ..signals import all_signals
+from ..common_widgets import ComboBox, Slider, HLine, ToggleButton, Label
+from ...pyk4a.k4a.configuration import Configuration
+from ...pyk4a.pykinect import start_device, initialize_libraries
 
 
 class ViewerSidebar(QFrame):
@@ -28,21 +34,180 @@ class ViewerSidebar(QFrame):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setAlignment(Qt.AlignTop)
 
-        main_layout.addWidget(RgbCameraPanel())
-        main_layout.addWidget(DepthCameraPanel())
-        main_layout.addWidget(IRCameraPanel())
-        main_layout.addWidget(AudioPanel())
+        widget_scroll = QScrollArea()
+        widget_scroll.setWidgetResizable(True)
+
+        widget_option = QWidget()
+        option_layout = QVBoxLayout(widget_option)
+        option_layout.setSpacing(0)
+        option_layout.setContentsMargins(0, 0, 0, 0)
+        option_layout.setAlignment(Qt.AlignTop)
+        
+        self.btn_panel = BtnPanel()
+        self.rgb_camera_panel = RgbCameraPanel()
+        self.depth_camera_panel = DepthCameraPanel()
+        self.ir_camera_panel = IRCameraPanel()
+        self.audio_panel = AudioPanel()
+
+        option_layout.addWidget(self.btn_panel)
+        option_layout.addWidget(self.rgb_camera_panel)
+        option_layout.addWidget(self.depth_camera_panel)
+        option_layout.addWidget(self.ir_camera_panel)
+        option_layout.addWidget(self.audio_panel)
+
+        widget_scroll.setWidget(widget_option)
+        main_layout.addWidget(widget_scroll)
         self.setLayout(main_layout)
+
+        all_signals.sidebar_toggle.connect(self.toggle_option)
+
+    def toggle_option(self):
+        self.rgb_camera_panel._toggle()
+        self.depth_camera_panel._toggle()
+        self.ir_camera_panel._toggle()
+
+
+class BtnPanel(QFrame):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setMinimumHeight(90)
+        self.setMaximumHeight(160)
+        self.setObjectName("BtnPanel")
+        self.setStyleSheet("""
+            QFrame#BtnPanel {
+                border-color: gray; border-width: 2px; border-radius: 5px;
+            }
+        """)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+
+        # toggle btn
+        self.is_run = False
+        self.is_device = False
+        top_layout = QVBoxLayout()
+        title_layout = QHBoxLayout()
+        self.btn_switch = ToggleButton()
+        title_layout.addWidget(QLabel("<b>Device open<b>"))
+        title_layout.addStretch()
+        title_layout.addWidget(self.btn_switch)
+        top_layout.addLayout(title_layout)
+        top_layout.addWidget(HLine())
+
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(5)
+        btn_layout.setContentsMargins(0, 0, 0, 0)
+        btn_layout.setAlignment(Qt.AlignCenter)
+
+        self.btn_viewer = self.make_icons(qta.icon("fa.play"),"Streaming Button", scale=0.7)
+        self.btn_viewer.setStyleSheet("""
+            QPushButton:hover {
+                border-color: white;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+        """)
+        self.btn_record = self.make_icons(qta.icon("mdi.record"),"Recording Button", scale=0.7)
+        self.btn_record.setStyleSheet(""" 
+            QPushButton {
+                background-color: red; 
+            }
+            QPushButton:hover {
+                border-color: white;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+        """)
+        self.btn_viewer.setObjectName("viewer")
+        self.btn_record.setObjectName("recorder")
+        self.btn_viewer.setEnabled(False)
+        self.btn_record.setEnabled(False)
+        
+        btn_layout.addWidget(self.btn_viewer)
+        btn_layout.addWidget(self.btn_record)
+        main_layout.addLayout(top_layout)
+        main_layout.addLayout(btn_layout)
+
+        self.setLayout(main_layout)
+        self.btn_switch.clicked.connect(self.toggle_button)
+        self.btn_viewer.clicked.connect(self.emit_option)
+        self.btn_record.clicked.connect(self.emit_option)
+
+    def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
+        w, h = int(35 * scale), int(35 * scale)
+        btn = QPushButton(icon, "")
+        btn.setFixedSize(40, 40)
+        btn.setIconSize(QSize(w, h))
+        btn.setToolTip(f"<b>{tooltip}<b>")
+        return btn
+    
+    def check_device(self) -> bool:
+        try:
+            self.config = Configuration()
+            initialize_libraries()
+            _device = start_device(config=self.config)
+            _device.close()
+        except:
+            modal = QDialog()
+            layout_modal = QVBoxLayout()
+            e_message = Label("<b>Fail to connect camera <br> Please retry connection.</b>", "Arial", 20, Qt.AlignmentFlag.AlignCenter)
+            layout_modal.addWidget(e_message)
+            modal.setLayout(layout_modal)
+            modal.setWindowTitle("Error Message")
+            modal.resize(400, 200)
+            modal.exec()
+            return False
+    
+    def emit_option(self):
+        name = self.sender().objectName()
+        if self.is_run is False:
+            if name == 'viewer':
+                self.btn_record.setEnabled(False)
+                self.btn_viewer.setIcon(qta.icon("fa5.stop-circle"))
+            else:
+                self.btn_viewer.setEnabled(False)
+                self.btn_record.setIcon(qta.icon("fa5.stop-circle"))
+            self.is_run = True
+        else:
+            if name == 'viewer':
+                self.btn_record.setEnabled(True)
+                self.btn_viewer.setIcon(qta.icon("fa.play"))
+            else:
+                self.btn_viewer.setEnabled(True)
+                self.btn_record.setIcon(qta.icon("mdi.record"))
+            self.is_run = False
+
+        all_signals.sidebar_toggle.emit(True)
+        all_signals.camera_option.emit(config_sidebar)
+        all_signals.device_option.emit(name)
+    
+    def toggle_button(self) -> None:
+        if self.is_device is False:
+            if self.check_device() is False:
+                return
+            else:
+                self.btn_viewer.setEnabled(True)
+                self.btn_record.setEnabled(True)
+                self.is_device = True
+                self.btn_switch.toggle()
+                all_signals.sidebar_toggle.emit(True)
+        else:
+            self.btn_viewer.setDisabled(True)
+            self.btn_record.setDisabled(True)
+            self.is_device = False
+            self.btn_switch.toggle()
+            all_signals.sidebar_toggle.emit(True)
 
 
 class RgbCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setObjectName("RgbCameraPanel")
         self.setMinimumHeight(380)
         self.setMaximumHeight(760)
-        self.setStyleSheet(
-            """
+        self.setObjectName("RgbCameraPanel")
+        self.setStyleSheet("""
             QFrame#RgbCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
@@ -87,21 +252,25 @@ class RgbCameraPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_resolutions.setDisabled(True)
+        self.btn_rgbformat.setDisabled(True)
+        self.btn_fps.setDisabled(True)
+        self.control_panel.setDisabled(True)
         self.btn_switch.clicked.connect(self._toggle)
 
     def _toggle(self) -> None:
         self.btn_switch.toggle()
         if self.is_change:
-            self.btn_resolutions.setDisabled(True)
-            self.btn_rgbformat.setDisabled(True)
-            self.btn_fps.setDisabled(True)
-            self.control_panel.setDisabled(True)
-            self.is_change = False
-        else:
             self.btn_resolutions.setDisabled(False)
             self.btn_rgbformat.setDisabled(False)
             self.btn_fps.setDisabled(False)
             self.control_panel.setDisabled(False)
+            self.is_change = False
+        else:
+            self.btn_resolutions.setDisabled(True)
+            self.btn_rgbformat.setDisabled(True)
+            self.btn_fps.setDisabled(True)
+            self.control_panel.setDisabled(True)
             self.is_change = True
 
     def set_config(self) -> None:
@@ -110,8 +279,8 @@ class RgbCameraPanel(QFrame):
             "color_format": self.btn_rgbformat.currentIndex(),
             "camera_fps": self.btn_fps.currentIndex(),
         }
-        _config_sidebar["color"] = color
-        all_signals.config_viewer.emit(_config_sidebar)
+        config_sidebar["color"] = color
+        all_signals.camera_option.emit(config_sidebar)
 
 
 class ColorControlPanel(QWidget):
@@ -185,8 +354,8 @@ class ColorControlPanel(QWidget):
             "K4A_COLOR_CONTROL_BACKLIGHT_COMPENSATION": self.backlight.isChecked(),
             "K4A_COLOR_CONTROL_POWERLINE_FREQUENCY": "1" if self.power_freq1.isChecked() else "2",
         }
-        _config_sidebar["color_option"] = color_option
-        all_signals.config_viewer.emit(_config_sidebar)
+        config_sidebar["color_option"] = color_option
+        all_signals.camera_option.emit(config_sidebar)
 
 
 class DepthCameraPanel(QFrame):
@@ -232,22 +401,24 @@ class DepthCameraPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_depth.setDisabled(True)
+        self.btn_fps.setDisabled(True)
         self.btn_switch.clicked.connect(self._toggle)
 
     def _toggle(self) -> None:
         self.btn_switch.toggle()
         if self.is_change:
-            self.btn_depth.setDisabled(True)
-            self.btn_fps.setDisabled(True)
-            self.is_change = False
-        else:
             self.btn_depth.setDisabled(False)
             self.btn_fps.setDisabled(False)
+            self.is_change = False
+        else:
+            self.btn_depth.setDisabled(True)
+            self.btn_fps.setDisabled(True)
             self.is_change = True
 
     def set_config(self) -> None:
-        _config_sidebar["depth_mode"] = self.btn_depth.currentIndex() + 1
-        all_signals.config_viewer.emit(_config_sidebar)
+        config_sidebar["depth_mode"] = self.btn_depth.currentIndex() + 1
+        all_signals.camera_option.emit(config_sidebar)
 
 
 class IRCameraPanel(QFrame):
@@ -334,19 +505,22 @@ class AudioPanel(QFrame):
         self.set_config()
         self.setLayout(main_layout)
 
+        self.btn_samplerate.setDisabled(True)
+        self.btn_channel.setDisabled(True)
+        self.btn_subtype.setDisabled(True)
         self.btn_switch.clicked.connect(self._toggle)
 
     def _toggle(self) -> None:
         self.btn_switch.toggle()
         if self.is_change:
-            self.btn_samplerate.setDisabled(True)
-            self.btn_channel.setDisabled(True)
-            self.btn_subtype.setDisabled(True)
-            self.is_change = False
-        else:
             self.btn_samplerate.setDisabled(False)
             self.btn_channel.setDisabled(False)
             self.btn_subtype.setDisabled(False)
+            self.is_change = False
+        else:
+            self.btn_samplerate.setDisabled(True)
+            self.btn_channel.setDisabled(True)
+            self.btn_subtype.setDisabled(True)
             self.is_change = True
 
     def set_config(self) -> None:
@@ -355,11 +529,10 @@ class AudioPanel(QFrame):
             "channel": self.btn_channel.currentText(),
             "subtype": self.btn_subtype.currentText(),
         }
-        _config_sidebar["audio"] = audio
-        all_signals.config_viewer.emit(_config_sidebar)
+        config_sidebar["audio"] = audio
+        all_signals.camera_option.emit(config_sidebar)
 
-
-_config_sidebar = {
+config_sidebar = {
     "color": {"color_resolution": 1, "color_format": 0, "camera_fps": 2},
     "color_option": {
         "K4A_COLOR_CONTROL_EXPOSURE_TIME_ABSOLUTE": 33300,

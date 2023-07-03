@@ -3,7 +3,7 @@ import cv2
 from . import _k4a
 from .image import Image
 from .transformation import Transformation
-from ..utils.postProcessing import smooth_depth_image
+from ..utils import smooth_depth_image
 
 
 class Capture:

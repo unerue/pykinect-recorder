@@ -1,4 +1,4 @@
-from PySide6.QtCore import Slot, Qt
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QStackedLayout, QFrame
 
 from .viewer_sensors import SensorViewer
@@ -27,7 +27,7 @@ class StackedViewer(QFrame):
         self.setLayout(self.main_layout)
 
     @Slot(str)
-    def setCurrentWidget(self, value):
+    def set_current_widget(self, value):
         if value == "explorer":
             self.main_layout.setCurrentWidget(self.main_explorer)
         elif value == "solution":

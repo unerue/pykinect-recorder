@@ -1,12 +1,11 @@
 import os
-import cv2
 import platform
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QFrame, QFileDialog
 
-from ..common_widgets import PushButton, Label, VLine
 from ..signals import all_signals
+from ..common_widgets import PushButton, Label, VLine
 
 
 class Toolbar(QFrame):

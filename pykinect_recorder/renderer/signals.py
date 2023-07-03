@@ -11,6 +11,11 @@ class AllSignals(QObject):
     stacked_sidebar_status = Signal(str)
     camera_connect_status = Signal(bool)
 
+    # Sidebar button signals
+    sidebar_toggle = Signal(bool)
+    camera_option = Signal(dict)
+    device_option = Signal(str)
+
     # Sensor viewer signals
     captured_rgb = Signal(QImage)
     captured_depth = Signal(QImage)
@@ -26,9 +31,6 @@ class AllSignals(QObject):
     save_filepath = Signal(str)
     time_control = Signal(int)
     time_value = Signal(int)
-
-    # Config signals
-    config_viewer = Signal(dict)
 
     # Video clipping signals
     clip_option = Signal(str)

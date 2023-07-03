@@ -181,12 +181,16 @@ class ToggleButton(QPushButton):
         self.bg_color = QColor(0, 188, 248)
 
         self.setCheckable(True)
+        self.setChecked(True)
         self.setMinimumWidth(55)  # 55
         self.setMinimumHeight(22)  # 22
         self.clicked.connect(self._toggle)
 
     def paintEvent(self, event) -> None:
-        self.bg_color = QColor(255, 40, 40) if self.isChecked() else QColor(0, 188, 248)
+        if self.isChecked() is True:
+            self.bg_color = QColor(255, 40, 40)
+        else:
+            self.bg_color = QColor(0, 188, 248)
 
         radius = 7
         width = 2 * radius + 2
