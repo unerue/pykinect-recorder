@@ -16,8 +16,8 @@ class Toolbar(QFrame):
         self.setMaximumWidth(4000)
         self.setContentsMargins(0, 0, 0, 0)
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
-        self.user_name = os.getenv('USERNAME')
-        
+        self.user_name = os.getenv("USERNAME")
+
         # check execution environment.
         if platform.system().startswith("Windows"):
             self.base_path = os.path.join("C", "Users", self.user_name, "Videos\\")
@@ -25,11 +25,13 @@ class Toolbar(QFrame):
             self.base_path = os.path.join("home", self.user_name, "Videos\\")
 
         self.setObjectName("Toolbar")
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#Toolbar {
                 background-color: #323233; padding: 0px; margin: 0px;
             }
-        """)
+        """
+        )
 
         self.label_device_status = Label("Azure Kinect Camera", orientation=Qt.AlignCenter)
         self.label_device_status.setFixedSize(170, 50)
@@ -50,12 +52,7 @@ class Toolbar(QFrame):
         self.btn_finddir.clicked.connect(self.search_file)
 
     def search_file(self) -> None:
-        _dirNames = QFileDialog.getExistingDirectory(
-            self, 
-            "Open Data Files", 
-            self.base_path, 
-            QFileDialog.ShowDirsOnly
-        )
+        _dirNames = QFileDialog.getExistingDirectory(self, "Open Data Files", self.base_path, QFileDialog.ShowDirsOnly)
         self.label_dirpath.setText(_dirNames)
         self.base_path = _dirNames
         all_signals.save_filepath.emit(self.base_path)

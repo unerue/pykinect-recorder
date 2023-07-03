@@ -1,15 +1,9 @@
 import os
 from typing import Tuple, Union, List
 from PySide6.QtCore import Qt, QPoint, QRect, QSize
-from PySide6.QtGui import (
-    QFont, QPen, QPainter, QFontMetrics, 
-    QPalette, QBrush, QColor
-)
+from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QPalette, QBrush, QColor
 
-from PySide6.QtWidgets import (
-    QLabel, QComboBox, QPushButton, QSlider, 
-    QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
-)
+from PySide6.QtWidgets import QLabel, QComboBox, QPushButton, QSlider, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
 
 """
 In script file, There are many custom widgets to use frequently in this project.
@@ -146,20 +140,23 @@ class Frame(QFrame):
         self.title_layout.setContentsMargins(0, 0, 0, 0)
         self.title_name = Label(text, orientation=Qt.AlignCenter)
         self.title_name.setFixedHeight(30)
-        self.title_name.setStyleSheet("""
+        self.title_name.setStyleSheet(
+            """
             background-color: #2c2e37;
-        """)
+        """
+        )
         self.title_layout.addWidget(self.title_name)
 
         if layout is None:
             self.frame = QLabel()
             self.layout_main.addLayout(self.title_layout)
             self.layout_main.addWidget(self.frame)
-            
+
         else:
             self.layout_main.addLayout(self.title_layout)
             self.layout_main.addLayout(layout)
         self.setLayout(self.layout_main)
+
 
 class HLine(QFrame):
     def __init__(self):
@@ -167,6 +164,7 @@ class HLine(QFrame):
         self.setStyleSheet(" border-color: #808080; ")
         self.setFixedHeight(1)
         self.setContentsMargins(0, 0, 0, 0)
+
 
 class VLine(QFrame):
     def __init__(self):

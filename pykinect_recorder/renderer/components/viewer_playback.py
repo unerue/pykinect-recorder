@@ -1,17 +1,14 @@
 import time
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QSize
 from PySide6.QtGui import QImage, QPixmap, QDrag
-from PySide6.QtWidgets import (
-    QHBoxLayout, QPushButton, QFrame, QGridLayout,
-    QDialog, QVBoxLayout
-)
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QFrame, QGridLayout, QDialog, QVBoxLayout
 
 from ..common_widgets import Frame, Slider, Label, VLine
 from .playback_sensors import PlaybackSensors
 from .viewer_video_clipping import VideoClippingDialog
 from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
-from pykinect_recorder.main.pyk4a.pykinect import initialize_libraries, start_playback
+from pykinect_recorder.pyk4a.pyk4a.pykinect import initialize_libraries, start_playback
 from ..signals import all_signals
 
 
@@ -54,10 +51,7 @@ class PlaybackViewer(QFrame):
         self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
         self.frame_subdata = Frame(
-            "IMU & Audio Sensor", 
-            layout=self.sensor_data_layout, 
-            min_size=(460, 310),
-            max_size=(920, 620)
+            "IMU & Audio Sensor", layout=self.sensor_data_layout, min_size=(460, 310), max_size=(920, 620)
         )
 
         top_layout = QHBoxLayout()
@@ -113,7 +107,7 @@ class PlaybackViewer(QFrame):
         all_signals.captured_time.connect(self.setTime)
         all_signals.captured_fps.connect(self.setFps)
         all_signals.time_value.connect(self.set_slider_value)
-        
+
         self.setAcceptDrops(True)
         self.setLayout(self.grid_layout)
 
@@ -201,7 +195,7 @@ class PlaybackViewer(QFrame):
             initialize_libraries()
             self.playback = start_playback(filepath)
             playback_config = self.playback.get_record_configuration()
-            
+
             self.th = PlaybackSensors(playback=self.playback)
             self.slider_time.setRange(333555, self.playback.get_recording_length())
             self.slider_time.setValue(333555)
@@ -209,16 +203,13 @@ class PlaybackViewer(QFrame):
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
-            e_message = Label(
-                "<b>영상을 불러올 수 없습니다. <br>다른 영상을 실행해주세요.</b>", 
-                "Arial", 20, Qt.AlignmentFlag.AlignCenter
-            )
+            e_message = Label("<b>영상을 불러올 수 없습니다. <br>다른 영상을 실행해주세요.</b>", "Arial", 20, Qt.AlignmentFlag.AlignCenter)
             layout_modal.addWidget(e_message)
             modal.setLayout(layout_modal)
             modal.setWindowTitle("Error Message")
             modal.resize(400, 200)
             modal.exec()
-        
+
     @Slot(QImage)
     def setRGBImage(self, image: QImage) -> None:
         self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))

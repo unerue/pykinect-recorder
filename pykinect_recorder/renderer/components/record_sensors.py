@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from typing import Optional, Tuple
 from PySide6.QtCore import Qt, QThread
 from PySide6.QtGui import QImage
-from pykinect_recorder.main.pyk4a.k4a import Device
+from pykinect_recorder.pyk4a.pyk4a.k4a import Device
 from PySide6.QtMultimedia import (
     QAudioFormat,
     QAudioSource,
@@ -17,6 +17,7 @@ from PySide6.QtMultimedia import (
 )
 
 from ..signals import all_signals
+from ..utils import colorize
 
 
 RESOLUTION = 4
@@ -75,7 +76,7 @@ class RecordSensors(QThread):
                         all_signals.captured_rgb.emit(scaled_rgb_frame)
 
                     if current_depth_frame[0]:
-                        depth_frame = self._colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
+                        depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
                         h, w, ch = depth_frame.shape
 
                         depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -83,7 +84,7 @@ class RecordSensors(QThread):
                         all_signals.captured_depth.emit(scaled_depth_frame)
 
                     if current_ir_frame[0]:
-                        ir_frame = self._colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
+                        ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                         h, w, ch = ir_frame.shape
 
                         ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
@@ -109,12 +110,13 @@ class RecordSensors(QThread):
                     data = self.io_device.readAll()
                     available_samples = data.size() // RESOLUTION
                     all_signals.captured_audio.emit([data, available_samples])
-                
+
         self.audio_input.stop()
         self.io_device = None
 
         if self.audio_record is False:
             import os
+
             os.remove(self.audio_file)
 
     def _colorize(
@@ -123,6 +125,7 @@ class RecordSensors(QThread):
         clipping_range: Tuple[Optional[int], Optional[int]] = (None, None),
         colormap: int = cv2.COLORMAP_HSV,
     ) -> NDArray:
+        """삭제해라 애송아"""
         if clipping_range[0] or clipping_range[1]:
             img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
         else:

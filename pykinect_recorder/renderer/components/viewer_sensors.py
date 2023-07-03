@@ -5,7 +5,7 @@ import ctypes
 import datetime
 from pathlib import Path
 
-import qtawesome as qta 
+import qtawesome as qta
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QPointF, QSize
 from PySide6.QtGui import QImage, QPixmap, QDrag
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QDialog, QGridLayout
@@ -29,7 +29,7 @@ RESOLUTION = 4
 class SensorViewer(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        
+
         self.setMinimumSize(QSize(920, 670))
         self.setMaximumSize(QSize(2000, 2000))
         self.setContentsMargins(0, 0, 0, 0)
@@ -44,24 +44,26 @@ class SensorViewer(QFrame):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(5)
         btn_layout.setContentsMargins(0, 0, 0, 0)
         btn_layout.setAlignment(Qt.AlignCenter)
 
-        self.btn_open = self.make_icons(qta.icon("mdi6.camera-plus-outline"),"Device open")
-        self.btn_viewer = self.make_icons(qta.icon("fa.play"),"Streaming Button", scale=0.7)
-        self.btn_record = self.make_icons(qta.icon("mdi.record"),"Recording Button", scale=0.7)
-        self.btn_record.setStyleSheet(""" 
+        self.btn_open = self.make_icons(qta.icon("mdi6.camera-plus-outline"), "Device open")
+        self.btn_viewer = self.make_icons(qta.icon("fa.play"), "Streaming Button", scale=0.7)
+        self.btn_record = self.make_icons(qta.icon("mdi.record"), "Recording Button", scale=0.7)
+        self.btn_record.setStyleSheet(
+            """ 
             QPushButton {
                 background-color: red; 
             }
             QPushButton:hover {
                 border-color: white;
             }
-        """)
-        
+        """
+        )
+
         btn_layout.addWidget(self.btn_open)
         btn_layout.addWidget(self.btn_viewer)
         btn_layout.addWidget(self.btn_record)
@@ -69,7 +71,7 @@ class SensorViewer(QFrame):
 
         self.frame_captured_image_viewer = CapturedImageViewer()
         main_layout.addWidget(self.frame_captured_image_viewer)
-        
+
         self.viewer = RecordSensors(device=self.device)
         self.is_device = False
         self.is_play = True
@@ -91,20 +93,17 @@ class SensorViewer(QFrame):
         except:
             modal = QDialog()
             layout_modal = QVBoxLayout()
-            e_message = Label("<b>Fail to connect camera <br> Please retry connection.</b>", "Arial", 20, Qt.AlignmentFlag.AlignCenter)
+            e_message = Label(
+                "<b>Fail to connect camera <br> Please retry connection.</b>", "Arial", 20, Qt.AlignmentFlag.AlignCenter
+            )
             layout_modal.addWidget(e_message)
             modal.setLayout(layout_modal)
             modal.setWindowTitle("Error Message")
             modal.resize(400, 200)
             modal.exec()
             return False
-    
-    def make_icons(
-        self,
-        icon: qta,
-        tooltip: str,
-        scale: float = 0.8
-    ) -> QPushButton:
+
+    def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(45 * scale), int(45 * scale)
         _btn = QPushButton(icon, "")
         _btn.setFixedSize(50, 50)
@@ -121,7 +120,7 @@ class SensorViewer(QFrame):
         """
         )
         return _btn
-    
+
     def open_device(self) -> None:
         if self.is_device is False:
             if self.check_device() is False:
@@ -153,11 +152,7 @@ class SensorViewer(QFrame):
             for k, v in self.emit_configs["color"].items():
                 setattr(self.config, k, v)
             setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-            self.device = start_device(
-                config=self.config, 
-                record=self.is_record, 
-                record_filepath=self.filename_video
-            )
+            self.device = start_device(config=self.config, record=self.is_record, record_filepath=self.filename_video)
 
             for k, v in self.emit_configs["color_option"].items():
                 k4a_device_set_color_control(
@@ -170,13 +165,13 @@ class SensorViewer(QFrame):
             self.btn_open.setEnabled(False)
             self.th.audio_file = self.filename_audio
 
-            if self.is_record:    
+            if self.is_record:
                 self.btn_viewer.setEnabled(False)
                 self.btn_record.setIcon(qta.icon("fa5.stop-circle"))
             else:
                 self.btn_record.setEnabled(False)
                 self.btn_viewer.setIcon(qta.icon("fa5.stop-circle"))
-            
+
             self.th.start()
 
         else:
@@ -243,10 +238,7 @@ class CapturedImageViewer(QFrame):
         self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
         self.frame_subdata = Frame(
-            "IMU & Audio Sensor", 
-            layout=self.sensor_data_layout, 
-            min_size=(460, 310), 
-            max_size=(920, 620)
+            "IMU & Audio Sensor", layout=self.sensor_data_layout, min_size=(460, 310), max_size=(920, 620)
         )
 
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]

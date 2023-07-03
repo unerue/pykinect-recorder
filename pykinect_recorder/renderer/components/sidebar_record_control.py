@@ -1,6 +1,14 @@
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QVBoxLayout, QRadioButton, QWidget,
-    QGridLayout, QCheckBox, QPushButton, QFrame, QSizePolicy
+    QHBoxLayout,
+    QLabel,
+    QVBoxLayout,
+    QRadioButton,
+    QWidget,
+    QGridLayout,
+    QCheckBox,
+    QPushButton,
+    QFrame,
+    QSizePolicy,
 )
 from PySide6.QtCore import Qt, QSize
 from ..common_widgets import ComboBox, Slider, HLine, ToggleButton
@@ -33,11 +41,13 @@ class RgbCameraPanel(QFrame):
         self.setObjectName("RgbCameraPanel")
         self.setMinimumHeight(380)
         self.setMaximumHeight(760)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#RgbCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
-        """)
+        """
+        )
 
         main_layout = QVBoxLayout()
         top_layout = QVBoxLayout()
@@ -185,11 +195,13 @@ class DepthCameraPanel(QFrame):
         self.setObjectName("DepthCameraPanel")
         self.setMinimumHeight(110)
         self.setMaximumHeight(220)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#DepthCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
-        """)
+        """
+        )
 
         main_layout = QVBoxLayout()
         top_layout = QVBoxLayout()
@@ -244,11 +256,13 @@ class IRCameraPanel(QFrame):
         self.setObjectName("IRCameraPanel")
         self.setMinimumHeight(40)
         self.setMaximumHeight(80)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#IRCameraPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
-        """)
+        """
+        )
 
         main_layout = QVBoxLayout()
         title_layout = QHBoxLayout()
@@ -278,11 +292,13 @@ class AudioPanel(QFrame):
         self.setObjectName("AudioPanel")
         self.setMinimumHeight(140)
         self.setMaximumHeight(280)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#AudioPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
-        """)
+        """
+        )
 
         main_layout = QVBoxLayout()
         top_layout = QVBoxLayout()

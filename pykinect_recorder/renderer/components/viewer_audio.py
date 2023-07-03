@@ -9,11 +9,7 @@ SAMPLE_COUNT = 10000
 
 
 class AudioSensor(QFrame):
-    def __init__(
-            self,
-            min_size: Tuple[int, int],
-            max_size: Tuple[int, int]
-    ) -> None:
+    def __init__(self, min_size: Tuple[int, int], max_size: Tuple[int, int]) -> None:
         super().__init__()
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
@@ -44,8 +40,8 @@ class AudioSensor(QFrame):
 
         self.chart_view = QChartView(self.chart)
         self.chart_view.setContentsMargins(-11, -11, -11, -11)
-        self.chart_view.setMinimumSize(QSize(min_size[0], min_size[1]-30))
-        self.chart_view.setMaximumSize(QSize(max_size[0], (max_size[1]-50)))
+        self.chart_view.setMinimumSize(QSize(min_size[0], min_size[1] - 30))
+        self.chart_view.setMaximumSize(QSize(max_size[0], (max_size[1] - 50)))
 
         self.main_layout.addWidget(self.label_title)
         self.main_layout.addWidget(self.chart_view)

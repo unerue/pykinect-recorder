@@ -1,9 +1,6 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QHBoxLayout, QMainWindow, QVBoxLayout, 
-    QWidget, QSizePolicy, QFrame, QSizeGrip
-)
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QVBoxLayout, QWidget, QSizePolicy, QFrame, QSizeGrip
 
 from .renderer.components.toolbar import Toolbar
 from .renderer.components.sidebar_menu import SidebarMenus
@@ -68,4 +65,3 @@ class MainWindow(QMainWindow):
         all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.setCurrentWidget)
         all_signals.stacked_sidebar_status.connect(self.stacked_viewer.setCurrentWidget)
         all_signals.playback_filepath.connect(self.stacked_viewer.main_explorer.start_playback)
-

@@ -6,11 +6,7 @@ from ..common_widgets import Label
 
 
 class ImuSensors(QFrame):
-    def __init__(
-            self,
-            min_size: Tuple[int, int],
-            max_size: Tuple[int, int]
-    ) -> None:
+    def __init__(self, min_size: Tuple[int, int], max_size: Tuple[int, int]) -> None:
         super().__init__()
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
@@ -37,7 +33,7 @@ class ImuSensors(QFrame):
         self.label_fps = Label("FPS : ")
         self.label_fps.setMinimumHeight(30)
         self.label_fps.setMaximumHeight(50)
-        
+
         self.speed_layout.addWidget(self.label_time)
         self.speed_layout.addWidget(self.label_fps)
 

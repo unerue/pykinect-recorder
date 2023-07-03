@@ -10,9 +10,9 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     qdarktheme.setup_theme()
     tray_icon = QSystemTrayIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
-    tray_icon.setToolTip("Pykinect Recorder")    
+    tray_icon.setToolTip("Pykinect Recorder")
     # tray_icon.show()
-    
+
     screen_rect = app.primaryScreen().size()
     width, height = screen_rect.width(), screen_rect.height()
     main_window = MainWindow(width, height)

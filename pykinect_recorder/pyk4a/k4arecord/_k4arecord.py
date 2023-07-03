@@ -48,13 +48,11 @@ def k4a_record_write_header(recording_handle):
 
     return _k4a_record_write_header(recording_handle)
 
+
 def k4a_record_write_imu_sample(recording_handle, imu_sample):
     _k4a_record_write_imu_sample = record_dll.k4a_record_write_imu_sample
     _k4a_record_write_imu_sample.restype = k4a_result_t
-    _k4a_record_write_imu_sample.argtypes = (
-        k4a_record_t,
-        k4a_imu_sample_t
-    )
+    _k4a_record_write_imu_sample.argtypes = (k4a_record_t, k4a_imu_sample_t)
 
     return _k4a_record_write_imu_sample(recording_handle, imu_sample)
 

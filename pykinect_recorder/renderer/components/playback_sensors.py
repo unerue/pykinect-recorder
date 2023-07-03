@@ -6,8 +6,8 @@ from typing import Optional, Tuple
 
 from PySide6.QtCore import Qt, Signal, QThread, QTimer
 from PySide6.QtGui import QImage
-from pykinect_recorder.main.pyk4a.k4arecord.playback import Playback
-from pykinect_recorder.main.pyk4a.k4a._k4a import k4a_image_get_device_timestamp_usec
+from pykinect_recorder.pyk4a.pyk4a.k4arecord.playback import Playback
+from pykinect_recorder.pyk4a.pyk4a.k4a._k4a import k4a_image_get_device_timestamp_usec
 from ..signals import all_signals
 
 

@@ -3,10 +3,7 @@ from glob import glob
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import (
-    QFrame, QWidget, QVBoxLayout, QScrollArea, 
-    QPushButton, QHBoxLayout, QFileDialog
-)
+from PySide6.QtWidgets import QFrame, QWidget, QVBoxLayout, QScrollArea, QPushButton, QHBoxLayout, QFileDialog
 from ..common_widgets import Label, PushButton
 from ..signals import all_signals
 
@@ -71,18 +68,21 @@ class ExplorerSidebar(QFrame):
 
 class _FileInfo(QPushButton):
     Filename = Signal(str)
+
     def __init__(self) -> None:
         super().__init__()
         self.setFixedSize(240, 100)
         self.setObjectName("FileInfo")
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QPushButton#FileInfo {
                 border-color: white;
             }
             QPushButton#FileInfo:hover {
                 border-color: red;
             }
-        """)
+        """
+        )
 
         layout_main = QVBoxLayout()
         self.label_name = Label("File name: ", "Arial", 10, Qt.AlignmentFlag.AlignCenter)

@@ -23,17 +23,17 @@ class SidebarMenus(QFrame):
         menu_layout.setContentsMargins(0, 0, 0, 0)
         menu_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
-        btn_recorder_menu = self.make_icons(qta.icon("fa.video-camera"),"Recording Viewer")
-        btn_explorer_menu = self.make_icons(qta.icon("ph.monitor-play-fill"),"Explorer & Playback")
-        btn_deeplearning_menu = self.make_icons(qta.icon("fa.crosshairs"),"Deep Learning Solution")
+        btn_recorder_menu = self.make_icons(qta.icon("fa.video-camera"), "Recording Viewer")
+        btn_explorer_menu = self.make_icons(qta.icon("ph.monitor-play-fill"), "Explorer & Playback")
+        btn_deeplearning_menu = self.make_icons(qta.icon("fa.crosshairs"), "Deep Learning Solution")
 
         menu_layout.addWidget(btn_recorder_menu)
         menu_layout.addWidget(btn_explorer_menu)
         menu_layout.addWidget(btn_deeplearning_menu)
         main_layout.addLayout(menu_layout)
 
-        option_layout = QVBoxLayout()         
-        btn_option = self.make_icons(qta.icon("fa.gear"),"Pykinect Recorder Option")
+        option_layout = QVBoxLayout()
+        btn_option = self.make_icons(qta.icon("fa.gear"), "Pykinect Recorder Option")
         option_layout.addWidget(btn_option)
         main_layout.addLayout(option_layout)
 
@@ -44,12 +44,7 @@ class SidebarMenus(QFrame):
         btn_deeplearning_menu.clicked.connect(self.clicked_solution)
         btn_option.clicked.connect(self.clicked_option)
 
-    def make_icons(
-        self,
-        icon: qta,
-        tooltip: str,
-        scale: float = 0.8
-    ) -> QPushButton:
+    def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(45 * scale), int(45 * scale)
         _btn = QPushButton(icon, "")
         _btn.setFixedSize(55, 55)

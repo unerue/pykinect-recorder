@@ -152,23 +152,24 @@ class _k4abt_tracker_configuration_t(ctypes.Structure):
     Used by k4abt_tracker_create() to specify the configuration of the k4abt tracker.
 
     Attributes:
-        sensor_orientation (c_int): The sensor mounting orientation type. Setting the correct 
+        sensor_orientation (c_int): The sensor mounting orientation type. Setting the correct
             orientation can help the body tracker to achieve more accurate body tracking results.
-        processing_mode (c_int): Specify whether to use CPU only mode or GPU mode to run the tracker. 
-            The CPU only mode doesn't require the machine to have a GPU to run this SDK. But it will 
+        processing_mode (c_int): Specify whether to use CPU only mode or GPU mode to run the tracker.
+            The CPU only mode doesn't require the machine to have a GPU to run this SDK. But it will
             be much slower than the GPU mode.
-        gpu_device_id (c_int32): Specify the GPU device ID to run the tracker. The setting is not 
+        gpu_device_id (c_int32): Specify the GPU device ID to run the tracker. The setting is not
             effective if the processing_mode setting is set to K4ABT_TRACKER_PROCESSING_MODE_CPU.
-            For K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA and K4ABT_TRACKER_PROCESSING_MODE_GPU_TENSORRT 
-            modes, ID of the graphic card can be retrieved using the CUDA API. In case when 
-            processing_mode is K4ABT_TRACKER_PROCESSING_MODE_GPU_DIRECTML, the device ID corresponds 
-            to the enumeration order of hardware adapters as given by IDXGIFactory::EnumAdapters. 
-            A device_id of 0 always corresponds to the default adapter, which is typically the primary 
-            display GPU installed on the system. More information can be found in the ONNX Runtime 
+            For K4ABT_TRACKER_PROCESSING_MODE_GPU_CUDA and K4ABT_TRACKER_PROCESSING_MODE_GPU_TENSORRT
+            modes, ID of the graphic card can be retrieved using the CUDA API. In case when
+            processing_mode is K4ABT_TRACKER_PROCESSING_MODE_GPU_DIRECTML, the device ID corresponds
+            to the enumeration order of hardware adapters as given by IDXGIFactory::EnumAdapters.
+            A device_id of 0 always corresponds to the default adapter, which is typically the primary
+            display GPU installed on the system. More information can be found in the ONNX Runtime
             Documentation.
-        model_path (c_char_p): Specify the model file name and location used by the tracker. If specified, 
+        model_path (c_char_p): Specify the model file name and location used by the tracker. If specified,
             the tracker will use this model instead of the default one.
     """
+
     _fields_ = [
         ("sensor_orientation", ctypes.c_int),
         ("processing_mode", ctypes.c_int),
@@ -190,6 +191,7 @@ class _wxyz(ctypes.Structure):
         y (c_float): Y representation of a quaternion.
         z (c_float): Z representation of a quaternion.
     """
+
     _fields_ = [
         ("w", ctypes.c_float),
         ("x", ctypes.c_float),
@@ -210,6 +212,7 @@ class k4a_quaternion_t(ctypes.Union):
         wxyz (_wxyz): W, X, Y, Z representation of a quaternion.
         v (c_float[4]): Array representation of a quaternion.
     """
+
     _fields_ = [("wxyz", _wxyz), ("v", ctypes.c_float * 4)]
 
     def __init__(self, q=(0, 0, 0, 0)):
@@ -245,6 +248,7 @@ class _k4abt_joint_t(ctypes.Structure):
         orientation (k4a_quaternion_t): The orientation of the joint specified in normalized quaternion.
         confidence_level (c_int): The confidence level of the joint.
     """
+
     _fields_ = [
         ("position", k4a_float3_t),
         ("orientation", k4a_quaternion_t),
@@ -275,6 +279,7 @@ class k4abt_skeleton_t(ctypes.Structure):
     Attributes:
         joints (_k4abt_joint_t[K4ABT_JOINT_COUNT]): The joints for the body.
     """
+
     _fields_ = [
         ("joints", _k4abt_joint_t * K4ABT_JOINT_COUNT),
     ]
@@ -295,6 +300,7 @@ class k4abt_body_t(ctypes.Structure):
         id (c_uint32): An id for the body that can be used for frame-to-frame correlation.
         skeleton (k4abt_skeleton_t): The skeleton information for the body.
     """
+
     _fields_ = [
         ("id", ctypes.c_uint32),
         ("skeleton", k4abt_skeleton_t),

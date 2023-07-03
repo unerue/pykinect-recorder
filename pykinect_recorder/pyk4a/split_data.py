@@ -4,9 +4,9 @@ import sys
 import pandas as pd
 from glob import glob
 from pathlib import Path
-from pykinect_recorder.main.pyk4a.pykinect import initialize_libraries
-from pykinect_recorder.main.pyk4a.k4arecord import Playback
-from pykinect_recorder.main.pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
+from pykinect_recorder.pyk4a.pyk4a.pykinect import initialize_libraries
+from pykinect_recorder.pyk4a.pyk4a.k4arecord import Playback
+from pykinect_recorder.pyk4a.pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
 
 
 def colorize(
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     if not os.path.exists(root_path):
         os.mkdir(root_path)
     print(len(file_paths))
-    
+
     for i, file_path in enumerate(file_paths):
         print(i, file_path)
         file_name = file_path.split("\\")[-1][:-4]
@@ -53,16 +53,18 @@ if __name__ == "__main__":
                 if current_ir_frame[0]:
                     ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                     depth_h, depth_w, _ = ir_frame.shape
-                    cv2.imwrite(os.path.join(
-                        root_path, file_name, "ir", f"{file_name}_ir_{str(cnt).zfill(6)}.png"), ir_frame,
+                    cv2.imwrite(
+                        os.path.join(root_path, file_name, "ir", f"{file_name}_ir_{str(cnt).zfill(6)}.png"),
+                        ir_frame,
                     )
 
                 if current_rgb_frame[0]:
                     rgb_frame = current_rgb_frame[1]
                     color_h, color_w, _ = rgb_frame.shape
-                    cv2.imwrite(os.path.join(
-                        root_path, file_name, "rgb", f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"), rgb_frame,
-                        [cv2.IMWRITE_JPEG_QUALITY, 100]
+                    cv2.imwrite(
+                        os.path.join(root_path, file_name, "rgb", f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"),
+                        rgb_frame,
+                        [cv2.IMWRITE_JPEG_QUALITY, 100],
                     )
                 cnt += 1
             else:

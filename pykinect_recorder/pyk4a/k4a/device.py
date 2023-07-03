@@ -91,7 +91,7 @@ class Device:
             self.record.write_imu(imu_sample)
 
         return Device.imu_sample
-    
+
     def get_capture(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> _k4a.ctypes.POINTER:
         # Release current handle
         if self.is_capture_initialized():
@@ -179,7 +179,7 @@ class Device:
 
     def get_playback_capture(self, playback_handle):
         capture_handle = _k4a.k4a_capture_t()
-        ret = k4a_playback_get_next_capture(playback_handle, capture_handle)!= K4A_STREAM_RESULT_EOF
+        ret = k4a_playback_get_next_capture(playback_handle, capture_handle) != K4A_STREAM_RESULT_EOF
         if ret:
             return capture_handle
         else:
@@ -193,7 +193,7 @@ class Device:
             Device.capture._handle = capture_handle
         else:
             Device.capture = Capture(capture_handle, playback_calibration)
-        
+
         if self.recording:
             self.record.write_capture(Device.capture.handle())
 

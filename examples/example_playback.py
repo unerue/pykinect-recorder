@@ -1,6 +1,6 @@
 import cv2
 
-from pykinect_recorder.main.pyk4a.pykinect import initialize_libraries, start_playback
+from pykinect_recorder.pyk4a.pyk4a.pykinect import initialize_libraries, start_playback
 
 if __name__ == "__main__":
     video_filename = "C:/Users/zeroone/Videos/2023_03_21_10_57_05.mkv"

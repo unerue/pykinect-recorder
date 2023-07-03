@@ -78,7 +78,7 @@ class Playback:
         ret = _k4arecord.k4a_playback_get_next_capture(self._handle, capture_handle) != _k4arecord.K4A_STREAM_RESULT_EOF
 
         return ret, self._capture
-    
+
     def get_next_capture_with_record(self):
         if self.is_capture_initialized():
             self._capture.release_handle()

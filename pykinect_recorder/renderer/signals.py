@@ -9,7 +9,7 @@ class AllSignals(QObject):
 
     # Sidebar stacked widget signals
     stacked_sidebar_status = Signal(str)
-    camera_connect_status=Signal(bool)
+    camera_connect_status = Signal(bool)
 
     # Sensor viewer signals
     captured_rgb = Signal(QImage)
