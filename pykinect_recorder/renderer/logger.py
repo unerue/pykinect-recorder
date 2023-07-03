@@ -3,7 +3,7 @@ import logging
 
 import termcolor
 
-from . import __appname__
+from ..pyk4a import __appname__
 
 COLORS = {
     "WARNING": "yellow",

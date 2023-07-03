@@ -9,7 +9,9 @@ from numpy.typing import NDArray
 from typing import Optional, Tuple
 from PySide6.QtCore import Qt, QThread
 from PySide6.QtGui import QImage
-from pykinect_recorder.pyk4a.pyk4a.k4a import Device
+
+from pyk4a import Device
+from pyk4a.utils import colorize
 from PySide6.QtMultimedia import (
     QAudioFormat,
     QAudioSource,
@@ -17,7 +19,6 @@ from PySide6.QtMultimedia import (
 )
 
 from ..signals import all_signals
-from ..utils import colorize
 
 
 RESOLUTION = 4
@@ -46,7 +47,9 @@ class RecordSensors(QThread):
         self.audio_record = audio_record
 
     def run(self):
+        # https://github.com/ShadarRim/opencvpythonvideoplayer/blob/master/player.py
         self.readyAudio()
+        # self.ready_audio()
         self.io_device = self.audio_input.start()
         with sf.SoundFile(
             self.audio_file,

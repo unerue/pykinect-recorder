@@ -3,22 +3,14 @@ import cv2
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Slot, Qt, QSize, QTimer
 from PySide6.QtWidgets import (
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QMainWindow,
-    QPushButton,
-    QFrame,
-    QWidget,
-    QFileDialog,
-    QProgressBar,
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QMainWindow,
+    QPushButton, QFrame, QWidget, QFileDialog, QProgressBar
 )
 
 from ..signals import all_signals
 from superqt import QLabeledRangeSlider
-from pykinect_recorder.main.pyk4a.pykinect import start_playback, start_device, initialize_libraries
-from pykinect_recorder.main.pyk4a.k4a.configuration import Configuration
+from pykinect_recorder.pyk4a.pyk4a.pykinect import start_playback, start_device, initialize_libraries
+from pykinect_recorder.pyk4a.pyk4a.k4a.configuration import Configuration
 
 
 class VideoClippingDialog(QDialog):
@@ -30,7 +22,7 @@ class VideoClippingDialog(QDialog):
         self.root_path = None
         self.file_name = file_name
         self.clip_option = None
-        self.save_file_name = self.file_name.split("/")[-1][:-4]
+        self.save_file_name = self.file_name.split('/')[-1][:-4]
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
 
@@ -43,7 +35,7 @@ class VideoClippingDialog(QDialog):
         self.title_label = QLabel(f"{file_name.split('/')[-1]}")
         self.title_label.setFixedHeight(40)
         self.title_layout.addWidget(self.title_label)
-
+        
         self.btn_layout = QHBoxLayout()
         self.btn_layout.setAlignment(Qt.AlignRight)
         self.save_btn = QPushButton("추출")
@@ -72,8 +64,7 @@ class VideoClippingDialog(QDialog):
         self.time_layout = QHBoxLayout()
         self.time_layout.setAlignment(Qt.AlignCenter)
         self.time_slider = QLabeledRangeSlider(Qt.Horizontal, self)
-        self.time_slider.setStyleSheet(
-            """
+        self.time_slider.setStyleSheet("""
             QSlider { 
                 margin: 0px;
                 border-radius: 4px;
@@ -102,8 +93,7 @@ class VideoClippingDialog(QDialog):
             QSlider:handle:horizontal:pressed {
                 background-color: "#000000";
             }
-        """
-        )
+        """)
         self.time_slider.setFixedSize(QSize(800, 80))
         self.time_layout.addWidget(self.time_slider)
         self.main_layout.addLayout(self.time_layout)
@@ -121,7 +111,7 @@ class VideoClippingDialog(QDialog):
 
     def initialize_playback(self):
         self.playback = start_playback(self.file_name)
-        self.left, self.right = 0, self.playback.get_recording_length() // 33333
+        self.left, self.right = 0, self.playback.get_recording_length()//33333
         self.total_frame = self.right - self.left
 
         self.time_slider.setTickInterval(1)
@@ -132,10 +122,10 @@ class VideoClippingDialog(QDialog):
         cur_left, cur_right = self.time_slider.value()
         if cur_left != self.left:
             self.left = cur_left
-            self.playback.seek_timestamp(self.left * 33333)
+            self.playback.seek_timestamp(self.left*33333)
         elif cur_right != self.right:
             self.right = cur_right
-            self.playback.seek_timestamp(self.right * 33333)
+            self.playback.seek_timestamp(self.right*33333)
         self.update_next_frame()
 
     def update_next_frame(self):
@@ -157,7 +147,7 @@ class VideoClippingDialog(QDialog):
         img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         img = cv2.applyColorMap(img, colormap)
         return img
-
+    
     @Slot(str)
     def set_clip_option(self, value):
         self.clip_option = value
@@ -175,12 +165,12 @@ class VideoClippingDialog(QDialog):
         self.total_frame = self.right - self.left
         all_signals.video_total_frame.emit(int(self.total_frame))
         config = self.record_config_to_config()
-
+        
         initialize_libraries()
         self.device = start_device(
             config=config,
             record=True,
-            record_filepath=os.path.join(self.root_path, self.save_file_name + "_extract.mkv"),
+            record_filepath=os.path.join(self.root_path, self.save_file_name+"_extract.mkv")
         )
         self.playback.seek_timestamp(self.left)
 
@@ -200,7 +190,7 @@ class VideoClippingDialog(QDialog):
         setattr(config, "color_resolution", record_config._handle.color_resolution)
         setattr(config, "camera_fps", record_config._handle.camera_fps)
         return config
-
+        
     def save_to_mkv(self):
         if self.cnt == self.total_frame:
             self.timer.stop()
@@ -217,7 +207,7 @@ class VideoClippingDialog(QDialog):
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "rgb"), exist_ok=True)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=True)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "depth"), exist_ok=True)
-
+        
         self.timer = QTimer()
         self.timer.setInterval(0.033)
         self.timer.timeout.connect(self.save_frame)
@@ -227,7 +217,7 @@ class VideoClippingDialog(QDialog):
     def save_frame(self):
         if self.cnt == self.total_frame:
             self.timer.stop()
-
+        
         _, current_frame = self.playback.update()
         current_rgb_frame = current_frame.get_color_image()
         current_depth_frame = current_frame.get_depth_image()
@@ -235,36 +225,21 @@ class VideoClippingDialog(QDialog):
 
         if current_ir_frame[0]:
             ir_frame = self.colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
-            cv2.imwrite(
-                os.path.join(
-                    self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"
-                ),
-                ir_frame,
+            cv2.imwrite(os.path.join(
+                self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"), ir_frame,
             )
 
         if current_depth_frame[0]:
             current_depth_frame = self.colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
-            cv2.imwrite(
-                os.path.join(
-                    self.root_path,
-                    self.save_file_name,
-                    "depth",
-                    f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png",
-                ),
-                current_depth_frame,
+            cv2.imwrite(os.path.join(
+                self.root_path, self.save_file_name, "depth", f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png"), current_depth_frame,
             )
 
         if current_rgb_frame[0]:
             rgb_frame = current_rgb_frame[1]
-            cv2.imwrite(
-                os.path.join(
-                    self.root_path,
-                    self.save_file_name,
-                    "rgb",
-                    f"{self.save_file_name}_rgb_{str(self.cnt).zfill(6)}.jpg",
-                ),
-                rgb_frame,
-                [cv2.IMWRITE_JPEG_QUALITY, 100],
+            cv2.imwrite(os.path.join(
+                self.root_path, self.save_file_name, "rgb", f"{self.save_file_name}_rgb_{str(self.cnt).zfill(6)}.jpg"), rgb_frame,
+                [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
         self.cnt += 1
         all_signals.current_frame_cnt.emit(self.cnt)
