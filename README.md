@@ -47,11 +47,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 ## Installation<hr>
  
-There are two options:
-- Run with cli (anaconda).
-- Run with poetry.
-
-### Anaconda (Recommended)
+### Anaconda
 ```bash
 conda create -n azure python=3.8 -y
 conda activate azure
@@ -59,20 +55,6 @@ pip install pykinect-recorder
 
 pykinect
 ```
-
-### Poetry
-```bash
-Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py
-
-$Env:Path += ";C:\Users\{user_name}\AppData\Roaming\Python\Scripts"; setx PATH "$Env:Path"
-
-# In root directory
-poetry install
-poetry run python main.py
-```
-
-- To use poetry, git clone our repository first. you can install poetry with above command.
-- If error occured, See Poetry [official document](https://python-poetry.org/docs/).
 
 <br>
 
