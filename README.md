@@ -18,7 +18,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 <br>
 
-##  Features<hr>
+##  Features
 
 - [x] See RGB, IR, Depth, IMU and Audio data when recoding.
 - [x] Control Recording option (FPS, brightness, ...).
@@ -31,7 +31,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 <br>
 
-## Prerequisites<hr>
+## Prerequisites
 
 ### Azure kinect SDK 
 
@@ -45,8 +45,8 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 <br>
 
-## Installation<hr>
- 
+## Installation
+
 There are two options:
 - Run with cli (anaconda).
 - Run with poetry.
@@ -76,6 +76,6 @@ poetry run python main.py
 
 <br>
 
-## Features<hr>
+## Features
 
 ML Solutions: native, mediapipe, torchvision
