@@ -58,6 +58,7 @@ class SensorViewer(QFrame):
         self.v_line.setSpacing(0)
         self.v_line.setContentsMargins(0, 0, 0, 0)
         self.v_line.addWidget(VLine())
+        
         self.sensor_data_layout.addWidget(self.imu_senser)
         self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
@@ -81,6 +82,8 @@ class SensorViewer(QFrame):
         self.is_record = True
         self.setLayout(self.main_layout)
 
+        all_signals.save_filepath.connect(self.set_base_path)
+        all_signals.sidebar_toggle.connect(self.set_config)
         all_signals.device_option.connect(self.select_option)
         all_signals.camera_option.connect(self.set_config)
         all_signals.captured_rgb.connect(self.set_rgb_image)
@@ -153,7 +156,7 @@ class SensorViewer(QFrame):
         self.emit_configs = value
 
     @Slot(str)
-    def setBasePath(self, value: str) -> None:
+    def set_base_path(self, value: str) -> None:
         self.base_path = value
 
     def eventFilter(self, watched, event):

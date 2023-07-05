@@ -70,15 +70,16 @@ class ViewerSidebar(QFrame):
 class BtnPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setMinimumHeight(90)
-        self.setMaximumHeight(160)
+        self.setMinimumHeight(100)
+        self.setMaximumHeight(150)
         self.setObjectName("BtnPanel")
         self.setStyleSheet("""
             QFrame#BtnPanel {
                 border-color: gray; border-width: 2px; border-radius: 5px;
             }
         """)
-
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
 
@@ -205,7 +206,7 @@ class RgbCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setMinimumHeight(380)
-        self.setMaximumHeight(760)
+        self.setMaximumHeight(500)
         self.setObjectName("RgbCameraPanel")
         self.setStyleSheet("""
             QFrame#RgbCameraPanel {
@@ -213,6 +214,7 @@ class RgbCameraPanel(QFrame):
             }
         """
         )
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QVBoxLayout()
         top_layout = QVBoxLayout()
@@ -283,9 +285,10 @@ class RgbCameraPanel(QFrame):
         all_signals.camera_option.emit(config_sidebar)
 
 
-class ColorControlPanel(QWidget):
+class ColorControlPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.grid_layout = QGridLayout()
 
         self.grid_layout.addWidget(QLabel("Exposure Time"), 0, 0)
@@ -363,7 +366,7 @@ class DepthCameraPanel(QFrame):
         super().__init__()
         self.setObjectName("DepthCameraPanel")
         self.setMinimumHeight(110)
-        self.setMaximumHeight(220)
+        self.setMaximumHeight(160)
         self.setStyleSheet(
             """
             QFrame#DepthCameraPanel {
@@ -371,6 +374,7 @@ class DepthCameraPanel(QFrame):
             }
         """
         )
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QVBoxLayout()
         top_layout = QVBoxLayout()
@@ -391,29 +395,21 @@ class DepthCameraPanel(QFrame):
         grid_layout.addWidget(self.btn_depth, 1, 1)
         self.btn_depth.currentIndexChanged.connect(self.set_config)
 
-        grid_layout.addWidget(QLabel("FPS"), 2, 0)
-        self.btn_fps = ComboBox(["5", "15", "30"], 2)
-        grid_layout.addWidget(self.btn_fps, 2, 1)
-        self.btn_fps.currentIndexChanged.connect(self.set_config)
-
         main_layout.addLayout(top_layout)
         main_layout.addLayout(grid_layout)
         self.set_config()
         self.setLayout(main_layout)
 
         self.btn_depth.setDisabled(True)
-        self.btn_fps.setDisabled(True)
         self.btn_switch.clicked.connect(self._toggle)
 
     def _toggle(self) -> None:
         self.btn_switch.toggle()
         if self.is_change:
             self.btn_depth.setDisabled(False)
-            self.btn_fps.setDisabled(False)
             self.is_change = False
         else:
             self.btn_depth.setDisabled(True)
-            self.btn_fps.setDisabled(True)
             self.is_change = True
 
     def set_config(self) -> None:
@@ -426,7 +422,7 @@ class IRCameraPanel(QFrame):
         super().__init__()
         self.setObjectName("IRCameraPanel")
         self.setMinimumHeight(40)
-        self.setMaximumHeight(80)
+        self.setMaximumHeight(60)
         self.setStyleSheet(
             """
             QFrame#IRCameraPanel {
@@ -434,6 +430,7 @@ class IRCameraPanel(QFrame):
             }
         """
         )
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_layout = QVBoxLayout()
         title_layout = QHBoxLayout()
@@ -462,7 +459,8 @@ class AudioPanel(QFrame):
         super().__init__()
         self.setObjectName("AudioPanel")
         self.setMinimumHeight(140)
-        self.setMaximumHeight(280)
+        self.setMaximumHeight(200)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setStyleSheet(
             """
             QFrame#AudioPanel {

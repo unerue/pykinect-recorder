@@ -35,13 +35,11 @@ class SidebarMenus(QFrame):
         btn_option = self.make_icons(qta.icon("fa.gear"), "Pykinect Recorder Option")
         option_layout.addWidget(btn_option)
         main_layout.addLayout(option_layout)
-
         self.setLayout(main_layout)
 
         btn_recorder_menu.clicked.connect(self.clicked_recorder)
         btn_explorer_menu.clicked.connect(self.clicked_explorer)
         btn_deeplearning_menu.clicked.connect(self.clicked_solution)
-        btn_option.clicked.connect(self.clicked_option)
 
     def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(45 * scale), int(45 * scale)
@@ -62,10 +60,10 @@ class SidebarMenus(QFrame):
             }
         """
         )
-
         return _btn
 
     def clicked_recorder(self):
+        print("sibal")
         all_signals.stacked_sidebar_status.emit("recorder")
 
     def clicked_explorer(self):
@@ -73,6 +71,3 @@ class SidebarMenus(QFrame):
 
     def clicked_solution(self):
         all_signals.stacked_sidebar_status.emit("solution")
-
-    def clicked_option(self):
-        pass

@@ -22,9 +22,10 @@ class StackedViewer(QFrame):
         self.main_layout.addWidget(self.main_explorer)
         self.main_layout.addWidget(self.main_solution)
 
-        # 현재 index
         self.main_layout.setCurrentIndex(0)
-        self.setLayout(self.main_layout)
+        self.setLayout(self.main_layout)   
+        
+        all_signals.stacked_sidebar_status.connect(self.set_current_widget)
 
     @Slot(str)
     def set_current_widget(self, value):

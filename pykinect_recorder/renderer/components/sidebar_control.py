@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QStackedLayout, QFrame
 from .sidebar_solutions import SolutionSidebar
 from .sidebar_record_control import ViewerSidebar
 from .sidebar_explorer import ExplorerSidebar
-
+from ..signals import all_signals
 
 class StackedSidebar(QFrame):
     def __init__(self) -> None:
@@ -19,9 +19,10 @@ class StackedSidebar(QFrame):
         self.main_layout.addWidget(self.sidebar_explorer)
         self.main_layout.addWidget(self.sidebar_solution)
 
-        # 현재 index
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)
+
+        all_signals.stacked_sidebar_status.connect(self.set_current_widget)
 
     @Slot(str)
     def set_current_widget(self, value):
