@@ -10,7 +10,7 @@ from .renderer.signals import all_signals
 
 
 class MainWindow(QMainWindow):
-    def __init__(self) -> None:
+    def __init__(self, width, height) -> None:
         super().__init__()
         self.setWindowTitle("pykinect recorder")
         self.setWindowIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))

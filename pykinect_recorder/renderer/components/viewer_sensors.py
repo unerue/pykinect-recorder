@@ -70,8 +70,8 @@ class SensorViewer(QFrame):
         )
 
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
-        self.main_layout.addWidget(self.frame_depth, 0, 0)
-        self.main_layout.addWidget(self.frame_ir, 0, 1)
+        self.main_layout.addWidget(self.frame_ir, 0, 0)
+        self.main_layout.addWidget(self.frame_depth, 0, 1)
         self.main_layout.addWidget(self.frame_rgb, 1, 0)
         self.main_layout.addWidget(self.frame_subdata, 1, 1)
 

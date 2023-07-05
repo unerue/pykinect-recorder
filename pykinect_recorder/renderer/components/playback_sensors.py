@@ -14,7 +14,7 @@ class PlaybackSensors:
         self.device_fps = dict_fps[self.playback.get_record_configuration()._handle.camera_fps]
 
         self.timer = QTimer()
-        self.timer.setInterval(1 / self.device_fps)
+        self.timer.setInterval(1 / int(self.device_fps))
         self.timer.timeout.connect(self.run)
         all_signals.time_control.connect(self.change_timestamp)
 
@@ -56,7 +56,7 @@ class PlaybackSensors:
             acc_data = current_imu_data.acc
             gyro_data = current_imu_data.gyro
 
-            all_signals.captured_fps.emit(self.device_fps)
+            all_signals.captured_fps.emit(int(self.device_fps))
             all_signals.captured_time.emit(acc_time / 1e6)
             all_signals.captured_acc_data.emit(acc_data)
             all_signals.captured_gyro_data.emit(gyro_data)

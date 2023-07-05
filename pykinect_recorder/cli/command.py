@@ -16,7 +16,6 @@ def cli():
 # @click.option("--open", is_flag=True)
 # def check(open):
 #     if open:
-#         print('sibal')
 #         # run()
 
 

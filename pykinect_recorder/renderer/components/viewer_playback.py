@@ -26,6 +26,7 @@ class PlaybackViewer(QFrame):
         self.viewer = None
         self.playback = None
         self.file_path = None
+        self.is_run = False
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setSpacing(0)
@@ -37,14 +38,8 @@ class PlaybackViewer(QFrame):
         self.bottom_layout.setContentsMargins(0, 0, 0, 0)
         self.bottom_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-<<<<<<< HEAD
-        self.btn_stop = QPushButton("Stop")
-        self.btn_stop.setFixedSize(40, 40)
-=======
-        
         self.btn_stop = self.make_icons(qta.icon("fa5.stop-circle"), "Start & Stop", scale=0.7)
         self.btn_stop.setFixedSize(50, 50)
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
         self.btn_stop.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
@@ -53,13 +48,8 @@ class PlaybackViewer(QFrame):
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
         """)
-<<<<<<< HEAD
-        self.btn_clip = QPushButton("Clipping")
-        self.btn_clip.setFixedSize(40, 40)
-=======
         self.btn_clip = self.make_icons(qta.icon("mdi6.scissors-cutting"),"Video Clipping", scale=0.7)
         self.btn_clip.setFixedSize(50, 50)
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
         self.btn_clip.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
@@ -113,6 +103,7 @@ class PlaybackViewer(QFrame):
             initialize_libraries()
             self.playback = start_playback(filepath)
             
+            self.is_run = True
             self.viewer = PlaybackSensors(playback=self.playback)
             self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
             self.slider_time.setRange(self.start_time, self.playback.get_recording_length()-self.start_time)
@@ -132,12 +123,14 @@ class PlaybackViewer(QFrame):
             modal.exec()
 
     def stop_playback(self):
-        if self.btn_stop.text() == "Stop":
+        if self.is_run is True:
+            self.is_run = False
             self.viewer.timer.stop()
-            self.btn_stop.setText(qta.icon("fa5.stop-circle"))
+            self.btn_stop.setIcon(qta.icon("fa.play"))
         else:
+            self.is_run = True
             self.viewer.timer.start()
-            self.btn_stop.setText(qta.icon("fa5.stop-circle"))
+            self.btn_stop.setIcon(qta.icon("fa5.stop-circle"))
 
     def control_time(self):
         if self.viewer is not None:
@@ -159,15 +152,9 @@ class CapturedImageViewer(QFrame):
         self.main_layout = QGridLayout()
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-<<<<<<< HEAD
-        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 330), max_size=(595, 510))
-        self.frame_depth = Frame("Depth Sensor", min_size=(460, 300), max_size=(595, 510))
-        self.frame_ir = Frame("IR Sensor", min_size=(460, 300), max_size=(595, 510))
-=======
         self.frame_rgb = Frame("RGB Sensor", min_size=(460, 300), max_size=(920, 600))
         self.frame_depth = Frame("Depth Sensor", min_size=(460, 330), max_size=(920, 660))
         self.frame_ir = Frame("IR Sensor", min_size=(460, 330), max_size=(920, 660))
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
@@ -178,13 +165,8 @@ class CapturedImageViewer(QFrame):
         self.frame_subdata = Frame(
             "IMU Sensor", 
             layout=self.sensor_data_layout, 
-<<<<<<< HEAD
-            min_size=(460, 330), 
-            max_size=(595, 510)
-=======
             min_size=(460, 300), 
             max_size=(920, 600)
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
         )
 
         all_signals.captured_rgb.connect(self.set_rgb_image)
@@ -196,8 +178,8 @@ class CapturedImageViewer(QFrame):
         all_signals.captured_gyro_data.connect(self.set_gyro_data)
         all_signals.clear_frame.connect(self.clear_frame)
 
-        self.main_layout.addWidget(self.frame_depth, 0, 0)
-        self.main_layout.addWidget(self.frame_ir, 0, 1)
+        self.main_layout.addWidget(self.frame_ir, 0, 0)
+        self.main_layout.addWidget(self.frame_depth, 0, 1)
         self.main_layout.addWidget(self.frame_rgb, 1, 0)
         self.main_layout.addWidget(self.frame_subdata, 1, 1)
 
@@ -267,21 +249,13 @@ class CapturedImageViewer(QFrame):
 
     @Slot(QImage)
     def set_depth_image(self, image: QImage) -> None:
-<<<<<<< HEAD
-        w, h = self.frame_depth.label_image.width(), self.frame_depth.label_image.height()
-=======
         w, h = self.frame_depth.label_image.width(), self.frame_rgb.label_image.height()
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
         image = image.scaled(w, h, Qt.KeepAspectRatio)
         self.frame_depth.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
-<<<<<<< HEAD
-        w, h = self.frame_ir.label_image.width(), self.frame_ir.label_image.height()
-=======
         w, h = self.frame_ir.label_image.width(), self.frame_rgb.label_image.height()
->>>>>>> 4d4de5e148646f503037a292b4c854d4860463b0
         image = image.scaled(w, h, Qt.KeepAspectRatio)
         self.frame_ir.label_image.setPixmap(QPixmap.fromImage(image))
     
