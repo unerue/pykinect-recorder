@@ -45,7 +45,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 <br>
 
-## Installation<hr>
+## Installation
  
 ### Anaconda
 ```bash
