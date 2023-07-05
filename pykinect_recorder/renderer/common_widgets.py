@@ -133,15 +133,27 @@ class Frame(QFrame):
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setObjectName("Frame")
-        self.setStyleSheet(
-            """QFrame#Frame {
-                border-color: white;
-            }"""
-        )
-        self.layout_main = QVBoxLayout()
-        self.layout_main.setSpacing(0)
-        self.layout_main.setContentsMargins(0, 0, 0, 0)
+
+        self.main_layout = QHBoxLayout()
+        self.main_layout.setSpacing(0)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.frame_image = QFrame()
+        self.frame_image.setObjectName("Frame_image")
+        self.frame_image.setContentsMargins(0, 0, 0, 0)
+        self.frame_image.setStyleSheet(""" 
+            QFrame#Frame_image {
+                border: 1px solid white; 
+            }
+        """)
+        self.frame_layout = QVBoxLayout(self.frame_image)
+        self.frame_layout.setSpacing(0)
+        self.frame_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.letter_box_frame = QFrame()
+        self.letter_box_frame.setContentsMargins(0, 0, 0, 0)
+        self.letter_box_frame.setStyleSheet( """ background-color: #1e1e1e; """ )
+
         self.title_layout = QHBoxLayout()
         self.title_layout.setSpacing(0)
         self.title_layout.setContentsMargins(0, 0, 0, 0)
@@ -155,14 +167,21 @@ class Frame(QFrame):
         self.title_layout.addWidget(self.title_name)
 
         if layout is None:
-            self.frame = QLabel()
-            self.layout_main.addLayout(self.title_layout)
-            self.layout_main.addWidget(self.frame)
+            self.label_image = QLabel()
+            self.frame_layout.addLayout(self.title_layout)
+            self.frame_layout.addWidget(self.label_image)
+            self.main_layout.addWidget(self.frame_image)
 
+            if text in ["Depth Sensor", "IR Sensor"]:
+                self.letter_box_frame.setMinimumSize(min_size[0]-min_size[1]-30, min_size[1])
+                self.letter_box_frame.setMaximumSize(max_size[0]-max_size[1]-60, max_size[1])
+                self.main_layout.addWidget(self.letter_box_frame)
         else:
-            self.layout_main.addLayout(self.title_layout)
-            self.layout_main.addLayout(layout)
-        self.setLayout(self.layout_main)
+            self.frame_layout.addLayout(self.title_layout)
+            self.frame_layout.addLayout(layout)
+            self.main_layout.addWidget(self.frame_image)
+
+        self.setLayout(self.main_layout)
 
 
 class HLine(QFrame):
