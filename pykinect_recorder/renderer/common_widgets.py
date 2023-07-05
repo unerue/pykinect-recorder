@@ -21,7 +21,7 @@ class ComboBox(QComboBox):
 
 class PushButton(QPushButton):
     def __init__(
-        self, text: str = "", font: str = "Arial", fontsize: int = 10, stylesheet: Union[str, os.PathLike] = None
+        self, text: str = "", font: str = "Arial", fontsize: int = 10, icon_path: str = ""
     ) -> None:
         super().__init__()
         self.setText(text)
@@ -34,6 +34,7 @@ class PushButton(QPushButton):
                 border-color: red;
             }
         """)
+
 
 
 class Slider(QSlider):
@@ -197,7 +198,7 @@ class VLine(QFrame):
         super().__init__()
         self.setStyleSheet(" border-color: #808080; ")
         self.setFixedWidth(1)
-        self.setMaximumHeight(600)
+        self.setMaximumHeight(1000)
         self.setContentsMargins(0, 0, 0, 0)
 
 

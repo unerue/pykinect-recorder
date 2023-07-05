@@ -10,15 +10,15 @@ from .renderer.signals import all_signals
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, width, height) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("pykinect recorder")
         self.setWindowIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
         self.initial_window()
 
     def initial_window(self) -> None:
-        self.setMinimumSize(QSize(1280, 720))
-        self.setMaximumSize(QSize(1980, 1080))
+        self.setMinimumSize(QSize(1280, 740))
+        self.setMaximumSize(QSize(1550, 1080))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_widget = QWidget()

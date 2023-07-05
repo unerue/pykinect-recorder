@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame, QGridLayout,
     QDialog, QVBoxLayout
 )
+import qtawesome as qta
 
 from .playback_sensors import PlaybackSensors
 from .viewer_video_clipping import VideoClippingDialog
@@ -37,22 +38,29 @@ class PlaybackViewer(QFrame):
 
         self.captured_viewer_frame = CapturedImageViewer()
         self.bottom_layout = QHBoxLayout()
-        self.bottom_layout.setSpacing(5)
+        self.bottom_layout.setSpacing(10)
         self.bottom_layout.setContentsMargins(0, 0, 0, 0)
         self.bottom_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.btn_stop = QPushButton("Stop")
-        self.btn_stop.setFixedSize(100, 50)
+        
+        self.btn_stop = self.make_icons(qta.icon("fa5.stop-circle"), "Start & Stop", scale=0.7)
+        self.btn_stop.setFixedSize(50, 50)
         self.btn_stop.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
             }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
         """)
-        self.btn_clip = QPushButton("Clipping")
-        self.btn_clip.setFixedSize(100, 50)
+        self.btn_clip = self.make_icons(qta.icon("mdi6.scissors-cutting"),"Video Clipping", scale=0.7)
+        self.btn_clip.setFixedSize(50, 50)
         self.btn_clip.setStyleSheet("""
             QPushButton:hover {
                 border-color: "white";
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
         """)
 
@@ -77,6 +85,14 @@ class PlaybackViewer(QFrame):
         self.slider_time.valueChanged.connect(self.control_time)
         all_signals.time_value.connect(self.set_slider_value)
         
+    def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
+        w, h = int(35 * scale), int(35 * scale)
+        btn = QPushButton(icon, "")
+        btn.setFixedSize(40, 40)
+        btn.setIconSize(QSize(w, h))
+        btn.setToolTip(f"<b>{tooltip}<b>")
+        return btn
+
     def set_slider_value(self, value):
         _time = self.slider_time.value() + value
         self.slider_time.setValue(_time)
@@ -86,7 +102,7 @@ class PlaybackViewer(QFrame):
         if self.viewer is not None:
             time.sleep(0.5)
             self.viewer.timer.stop()
-            self.btn_stop.setText("Stop")
+            self.btn_stop.setIcon(qta.icon("fa5.stop-circle"))
             self.playback.close()
         try:
             self.file_path = filepath
@@ -114,10 +130,10 @@ class PlaybackViewer(QFrame):
     def stop_playback(self):
         if self.btn_stop.text() == "Stop":
             self.viewer.timer.stop()
-            self.btn_stop.setText("Start")
+            self.btn_stop.setText(qta.icon("fa5.stop-circle"))
         else:
             self.viewer.timer.start()
-            self.btn_stop.setText("Stop")
+            self.btn_stop.setText(qta.icon("fa5.stop-circle"))
 
     def control_time(self):
         if self.viewer is not None:
@@ -139,25 +155,21 @@ class CapturedImageViewer(QFrame):
         self.main_layout = QGridLayout()
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.frame_rgb = Frame("RGB Sensor", min_size=(480, 270), max_size=(960, 540))
-        self.frame_depth = Frame("Depth Sensor", min_size=(400, 400), max_size=(800, 880))
-        self.frame_ir = Frame("IR Sensor", min_size=(400, 400), max_size=(800, 800))
+        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 300), max_size=(920, 600))
+        self.frame_depth = Frame("Depth Sensor", min_size=(460, 330), max_size=(920, 660))
+        self.frame_ir = Frame("IR Sensor", min_size=(460, 330), max_size=(920, 660))
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
         self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
-        self.imu_senser = ImuSensors(min_size=(220, 270), max_size=(440, 540))
+        self.imu_senser = ImuSensors(min_size=(460, 300), max_size=(920, 600))
 
-        self.v_line = QVBoxLayout()
-        self.v_line.setSpacing(0)
-        self.v_line.setContentsMargins(0, 0, 0, 0)
-        self.v_line.addWidget(VLine())
         self.sensor_data_layout.addWidget(self.imu_senser)
         self.frame_subdata = Frame(
-            "IMU & Audio Sensor", 
+            "IMU Sensor", 
             layout=self.sensor_data_layout, 
-            min_size=(440, 270), 
-            max_size=(880, 540)
+            min_size=(460, 300), 
+            max_size=(920, 600)
         )
 
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
@@ -168,7 +180,6 @@ class CapturedImageViewer(QFrame):
         all_signals.captured_fps.connect(self.set_fps)
         all_signals.captured_acc_data.connect(self.set_acc_data)
         all_signals.captured_gyro_data.connect(self.set_gyro_data)
-        all_signals.captured_audio.connect(self.set_audio_data)
         all_signals.clear_frame.connect(self.clear_frame)
 
         self.main_layout.addWidget(self.frame_depth, 0, 0)
@@ -236,15 +247,21 @@ class CapturedImageViewer(QFrame):
 
     @Slot(QImage)
     def set_rgb_image(self, image: QImage) -> None:
-        self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_rgb.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_rgb.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_depth_image(self, image: QImage) -> None:
-        self.frame_depth.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_depth.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_depth.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
-        self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_ir.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_ir.label_image.setPixmap(QPixmap.fromImage(image))
     
     @Slot(float)
     def set_fps(self, value) -> None:
@@ -266,26 +283,10 @@ class CapturedImageViewer(QFrame):
         self.imu_senser.label_gyro_y.setText("Y : %.5f" % values[1])
         self.imu_senser.label_gyro_z.setText("Z : %.5f" % values[2])
 
-    @Slot(list)
-    def set_audio_data(self, values) -> None:
-        start = 0
-        if values[1] < SAMPLE_COUNT:
-            start = SAMPLE_COUNT - values[1]
-            for s in range(start):
-                self.buffer[s].setY(self.buffer[s + values[1]].y())
-
-        data_index = 0
-        for s in range(start, SAMPLE_COUNT):
-            value = (ord(values[0][data_index]) - 128) / 128
-            self.buffer[s].setY(value)
-            data_index = data_index + RESOLUTION
-
-        self.audio_sensor.series.replace(self.buffer)
-
     def clear_frame(self):
-        self.frame_rgb.frame.clear()
-        self.frame_depth.frame.clear()
-        self.frame_ir.frame.clear()
+        self.frame_rgb.label_image.clear()
+        self.frame_depth.label_image.clear()
+        self.frame_ir.label_image.clear()
         self.imu_senser.label_time.setText("Time(s) : ")
         self.imu_senser.label_fps.setText("FPS : ")
         self.imu_senser.label_acc_x.setText("X : ")

@@ -30,7 +30,7 @@ class SensorViewer(QFrame):
         super().__init__()
         
         self.setMinimumSize(QSize(920, 670))
-        self.setMaximumSize(QSize(2000, 2000))
+        self.setMaximumSize(QSize(1190, 1030))
         self.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("background-color: #1e1e1e;")
 
@@ -44,28 +44,30 @@ class SensorViewer(QFrame):
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setAlignment(Qt.AlignCenter)
-        self.frame_rgb = Frame("RGB Sensor", min_size=(480, 270), max_size=(960, 540))
-        self.frame_depth = Frame("Depth Sensor", min_size=(400, 400), max_size=(800, 880))
-        self.frame_ir = Frame("IR Sensor", min_size=(400, 400), max_size=(800, 800))
+        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 330), max_size=(920, 660))
+        self.frame_depth = Frame("Depth Sensor", min_size=(460, 330), max_size=(920, 660))
+        self.frame_ir = Frame("IR Sensor", min_size=(460, 330), max_size=(920, 660))
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
         self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
-        self.imu_senser = ImuSensors(min_size=(220, 270), max_size=(440, 540))
-        self.audio_sensor = AudioSensor(min_size=(220, 270), max_size=(440, 540))
-
+        self.sensor_data_layout.setAlignment(Qt.AlignCenter)
+        
+        self.imu_senser = ImuSensors(min_size=(227, 300), max_size=(454, 600))
+        self.audio_sensor = AudioSensor(min_size=(227, 300), max_size=(454, 600))
         self.v_line = QVBoxLayout()
         self.v_line.setSpacing(0)
         self.v_line.setContentsMargins(0, 0, 0, 0)
         self.v_line.addWidget(VLine())
+        
         self.sensor_data_layout.addWidget(self.imu_senser)
         self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
         self.frame_subdata = Frame(
             "IMU & Audio Sensor", 
             layout=self.sensor_data_layout, 
-            min_size=(440, 270), 
-            max_size=(880, 540)
+            min_size=(460, 330), 
+            max_size=(920, 660)
         )
 
         self.buffer = [QPointF(x, 0) for x in range(SAMPLE_COUNT)]
@@ -82,7 +84,9 @@ class SensorViewer(QFrame):
         self.setLayout(self.main_layout)
 
         all_signals.device_option.connect(self.select_option)
+        all_signals.sidebar_toggle.connect(self.set_config)
         all_signals.camera_option.connect(self.set_config)
+        all_signals.save_filepath.connect(self.setBasePath)
         all_signals.captured_rgb.connect(self.set_rgb_image)
         all_signals.captured_depth.connect(self.set_depth_image)
         all_signals.captured_ir.connect(self.set_ir_image)
@@ -214,15 +218,21 @@ class SensorViewer(QFrame):
 
     @Slot(QImage)
     def set_rgb_image(self, image: QImage) -> None:
-        self.frame_rgb.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_rgb.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_rgb.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_depth_image(self, image: QImage) -> None:
-        self.frame_depth.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_depth.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_depth.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
-        self.frame_ir.frame.setPixmap(QPixmap.fromImage(image))
+        w, h = self.frame_ir.label_image.width(), self.frame_rgb.label_image.height()
+        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        self.frame_ir.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(float)
     def set_time(self, time) -> None:
@@ -261,9 +271,9 @@ class SensorViewer(QFrame):
         self.audio_sensor.series.replace(self.buffer)
 
     def clear_frame(self):
-        self.frame_rgb.frame.clear()
-        self.frame_depth.frame.clear()
-        self.frame_ir.frame.clear()
+        self.frame_rgb.label_image.clear()
+        self.frame_depth.label_image.clear()
+        self.frame_ir.label_image.clear()
         self.imu_senser.label_time.setText("Time(s) : ")
         self.imu_senser.label_fps.setText("FPS : ")
         self.imu_senser.label_acc_x.setText("X : ")

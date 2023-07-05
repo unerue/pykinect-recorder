@@ -25,7 +25,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 - [x] Change layout with drag and drop.
 - [x] Playback Recorded video.
 - [ ] Recording Audio.
-- [ ] 3D Viewer with streaming/recording.
+- [ ] 3D Viewer with streaming/recorded video.
 - [ ] Deep Learning Inference with streaming/recorded video.
 - [ ] Sync multi camera.
 
