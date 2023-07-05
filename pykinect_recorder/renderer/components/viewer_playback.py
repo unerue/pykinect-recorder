@@ -84,6 +84,7 @@ class PlaybackViewer(QFrame):
         self.btn_clip.clicked.connect(self.extract_video_to_frame)
         self.slider_time.valueChanged.connect(self.control_time)
         all_signals.time_value.connect(self.set_slider_value)
+        all_signals.playback_filepath.connect(self.start_playback)
         
     def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(35 * scale), int(35 * scale)

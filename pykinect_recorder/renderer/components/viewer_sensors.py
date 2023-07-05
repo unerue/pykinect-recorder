@@ -83,10 +83,10 @@ class SensorViewer(QFrame):
         self.is_record = True
         self.setLayout(self.main_layout)
 
-        all_signals.device_option.connect(self.select_option)
+        all_signals.save_filepath.connect(self.set_base_path)
         all_signals.sidebar_toggle.connect(self.set_config)
+        all_signals.device_option.connect(self.select_option)
         all_signals.camera_option.connect(self.set_config)
-        all_signals.save_filepath.connect(self.setBasePath)
         all_signals.captured_rgb.connect(self.set_rgb_image)
         all_signals.captured_depth.connect(self.set_depth_image)
         all_signals.captured_ir.connect(self.set_ir_image)
@@ -157,7 +157,7 @@ class SensorViewer(QFrame):
         self.emit_configs = value
 
     @Slot(str)
-    def setBasePath(self, value: str) -> None:
+    def set_base_path(self, value: str) -> None:
         self.base_path = value
 
     def eventFilter(self, watched, event):

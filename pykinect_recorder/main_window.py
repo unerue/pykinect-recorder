@@ -59,9 +59,3 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(main_sub_layout)
         main_layout.addLayout(self.frame_layout)
         self.setCentralWidget(main_widget)
-
-        all_signals.save_filepath.connect(self.stacked_viewer.main_viewer.setBasePath)
-        all_signals.sidebar_toggle.connect(self.stacked_viewer.main_viewer.set_config)
-        all_signals.stacked_sidebar_status.connect(self.stacked_sidebar.set_current_widget)
-        all_signals.stacked_sidebar_status.connect(self.stacked_viewer.set_current_widget)
-        all_signals.playback_filepath.connect(self.stacked_viewer.main_explorer.start_playback)
