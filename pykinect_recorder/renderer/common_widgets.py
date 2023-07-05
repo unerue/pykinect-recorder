@@ -174,7 +174,7 @@ class Frame(QFrame):
 
             if text in ["Depth Sensor", "IR Sensor"]:
                 self.letter_box_frame.setMinimumSize(min_size[0]-min_size[1]-30, min_size[1])
-                self.letter_box_frame.setMaximumSize(max_size[0]-max_size[1]-60, max_size[1])
+                self.letter_box_frame.setMaximumSize(max_size[0]-max_size[1]-30, max_size[1])
                 self.main_layout.addWidget(self.letter_box_frame)
         else:
             self.frame_layout.addLayout(self.title_layout)

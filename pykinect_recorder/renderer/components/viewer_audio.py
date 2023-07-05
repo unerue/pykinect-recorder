@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QFrame, QVBoxLayout
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QSizePolicy
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
 from ..common_widgets import Label
@@ -14,6 +14,7 @@ class AudioSensor(QFrame):
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
         self.setContentsMargins(0, 0, 0, 0)
         self.setObjectName("AudioSensor")
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setSpacing(0)

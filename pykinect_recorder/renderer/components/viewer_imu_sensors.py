@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QGridLayout, QSizePolicy
 
 from ..common_widgets import Label
 
@@ -11,6 +11,7 @@ class ImuSensors(QFrame):
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
         self.setContentsMargins(0, 0, 0, 0)
         self.setObjectName("IMUSensor")
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setSpacing(0)
@@ -21,11 +22,12 @@ class ImuSensors(QFrame):
         self.label_title.setMinimumHeight(30)
         self.label_title.setMaximumHeight(50)
 
+        self.grid_layout = QGridLayout()
         self.speed_layout = QHBoxLayout()
-        self.speed_layout.setSpacing(0)
+        self.speed_layout.setSpacing(5)
         self.speed_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.label_time = Label("Time(s) : --- ")
+        self.label_time = Label("Time(s) : ")
         self.label_time.setMinimumHeight(30)
         self.label_time.setMaximumHeight(50)
 

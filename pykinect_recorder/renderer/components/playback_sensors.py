@@ -32,24 +32,21 @@ class PlaybackSensors:
 
                 h, w, ch = rgb_frame.shape
                 rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
-                scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
-                all_signals.captured_rgb.emit(scaled_rgb_frame)
+                all_signals.captured_rgb.emit(rgb_frame)
 
             if current_depth_frame[0]:
                 depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
                 h, w, ch = depth_frame.shape
 
                 depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
-                scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                all_signals.captured_depth.emit(scaled_depth_frame)
+                all_signals.captured_depth.emit(depth_frame)
 
             if current_ir_frame[0]:
                 ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
                 h, w, ch = ir_frame.shape
 
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
-                scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
-                all_signals.captured_ir.emit(scaled_ir_frame)
+                all_signals.captured_ir.emit(ir_frame)
 
             current_imu_data = self.playback.get_next_imu_sample()
             acc_time = current_imu_data.acc_time
