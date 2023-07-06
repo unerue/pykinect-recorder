@@ -63,7 +63,6 @@ class VideoClippingDialog(QDialog):
         self.main_layout.addWidget(self.media_frame)
 
         # time control layout
-        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
         self.time_layout = QHBoxLayout()
         self.time_layout.setAlignment(Qt.AlignCenter)
         self.time_slider = QLabeledRangeSlider(Qt.Horizontal, self)
@@ -115,7 +114,9 @@ class VideoClippingDialog(QDialog):
 
     def initialize_playback(self):
         self.playback = start_playback(self.file_name)
-        self.left, self.right = 0, self.playback.get_recording_length()//33333
+        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
+        self.left = 0
+        self.right = (self.playback.get_recording_length()-self.start_time) / 33333
         self.total_frame = self.right - self.left
 
         self.time_slider.setTickInterval(1)

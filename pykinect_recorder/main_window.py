@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.status_bar)
         self.setCentralWidget(main_widget)
 
-        self.mouseMoveEvent = self.moveWindow
+        self.topbar.mouseMoveEvent = self.moveWindow
         all_signals.window_control.connect(self.window_control)
 
     @Slot(str)
@@ -66,10 +66,10 @@ class MainWindow(QMainWindow):
                 self.is_maximize = True
             else:
                 self.resize(QSize(1280, 740))
-                # center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                # geo = self.frameGeometry()
-                # geo.moveCenter(center)
-                # self.move(geo.topLeft())
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.frameGeometry()
+                geo.moveCenter(center)
+                self.move(geo.topLeft())
                 self.is_maximize = False
         else:
             self.close()

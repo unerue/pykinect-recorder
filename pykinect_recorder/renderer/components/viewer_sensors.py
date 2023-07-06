@@ -32,7 +32,7 @@ class SensorViewer(QFrame):
         self.setMinimumSize(QSize(920, 670))
         self.setMaximumSize(QSize(1190, 1030))
         self.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet("background-color: #1e1e1e;")
+        self.setStyleSheet("background-color: #1e1e1e; border-radius: 0px;")
 
         self.device = None
         self.config = Configuration()
