@@ -82,20 +82,22 @@ class SensorViewer(QFrame):
         self.is_record = True
         self.setLayout(self.main_layout)
 
-        all_signals.save_filepath.connect(self.set_base_path)
-        all_signals.sidebar_toggle.connect(self.set_config)
-        all_signals.device_option.connect(self.select_option)
-        all_signals.camera_option.connect(self.set_config)
-        all_signals.captured_rgb.connect(self.set_rgb_image)
-        all_signals.captured_depth.connect(self.set_depth_image)
-        all_signals.captured_ir.connect(self.set_ir_image)
-        all_signals.captured_time.connect(self.set_time)
-        all_signals.captured_acc_data.connect(self.set_acc_data)
-        # all_signals.captured_gyro_data.connect(self.set_gyro_data)
-        all_signals.imu_signals.imu_gyro_data.connect(self.set_gyro_data)
-        all_signals.captured_fps.connect(self.set_fps)
-        all_signals.captured_audio.connect(self.set_audio_data)
-        all_signals.clear_frame.connect(self.clear_frame)
+        # UI option signals 
+        all_signals.option_signals.save_filepath.connect(self.set_base_path)
+        all_signals.option_signals.sidebar_toggle.connect(self.set_config)
+        all_signals.option_signals.device_option.connect(self.select_option)
+        all_signals.option_signals.camera_option.connect(self.set_config)
+        all_signals.option_signals.clear_frame.connect(self.clear_frame)
+        
+        # Recording signals
+        all_signals.record_signals.rgb_image.connect(self.set_rgb_image)
+        all_signals.record_signals.depth_image.connect(self.set_depth_image)
+        all_signals.record_signals.ir_image.connect(self.set_ir_image)
+        all_signals.record_signals.record_time.connect(self.set_time)
+        all_signals.record_signals.video_fps.connect(self.set_fps)
+        all_signals.record_signals.imu_acc_data.connect(self.set_acc_data)
+        all_signals.record_signals.imu_gyro_data.connect(self.set_gyro_data)
+        all_signals.record_signals.audio_data.connect(self.set_audio_data)
 
     def select_option(self, value):
         if value == "viewer":
@@ -123,20 +125,19 @@ class SensorViewer(QFrame):
                 record_filepath=self.filename_video
             )
             setattr(self.config, "depth_mode", self.emit_configs["depth_mode"])
-
             for k, v in self.emit_configs["color_option"].items():
                 k4a_device_set_color_control(
                     self.device._handle, color_command_dict[k], K4A_COLOR_CONTROL_MODE_MANUAL, ctypes.c_int32(int(v))
                 )
 
             self.viewer = RecordSensors(device=self.device)
-            self.viewer.start_audio()
-            self.viewer.timer.start()
+            self.viewer.start()
+            self.viewer.is_run = True
             self.is_play = False
-
         else:
-            self.viewer.timer.stop()
-            self.viewer.exit_audio()
+            self.viewer.is_run = False
+            self.viewer.quit()
+            self.device.stop_imu()
             self.device.close()
             self.is_play = True
             time.sleep(1)
@@ -213,34 +214,33 @@ class SensorViewer(QFrame):
 
             self.main_layout.addItem(self.main_layout.takeAt(i), *p2)
             self.main_layout.addItem(self.main_layout.takeAt(j), *p1)
-
             event.accept()
 
     @Slot(QImage)
     def set_rgb_image(self, image: QImage) -> None:
         w, h = self.frame_rgb.label_image.width(), self.frame_rgb.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_rgb.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_depth_image(self, image: QImage) -> None:
         w, h = self.frame_depth.label_image.width(), self.frame_depth.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_depth.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
         w, h = self.frame_ir.label_image.width(), self.frame_ir.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_ir.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(float)
     def set_time(self, time) -> None:
         self.imu_senser.label_time.setText("Time(s) : %.3f" % time)
 
-    @Slot(float)
+    @Slot(int)
     def set_fps(self, value) -> None:
-        self.imu_senser.label_fps.setText("FPS : %.2f" % value)
+        self.imu_senser.label_fps.setText("FPS : %d" % value)
 
     @Slot(list)
     def set_acc_data(self, values) -> None:

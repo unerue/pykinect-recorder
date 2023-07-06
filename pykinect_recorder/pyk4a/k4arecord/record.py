@@ -46,13 +46,12 @@ class Record:
         if self.is_valid():
             _k4arecord.VERIFY(
                 _k4arecord.k4a_record_write_imu_sample(self.record_handle, imu_sample),
-                "Failed to write header!",
+                "Failed to write imu!",
             )
 
     def write_capture(self, capture_handle):
         if not self.is_valid():
             raise NameError("Recording not found")
-
         if not self.header_written:
             self.write_header()
             self.header_written = True
@@ -64,5 +63,5 @@ class Record:
     def add_imu_track(self):
         _k4arecord.VERIFY(
             _k4arecord.k4a_record_add_imu_track(self.record_handle),
-            "Failed to write capture!",
+            "Failed to add imu track!",
         )

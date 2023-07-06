@@ -22,7 +22,7 @@ class StackedSidebar(QFrame):
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)
 
-        all_signals.stacked_sidebar_status.connect(self.set_current_widget)
+        all_signals.option_signals.stacked_sidebar_status.connect(self.set_current_widget)
 
     @Slot(str)
     def set_current_widget(self, value):

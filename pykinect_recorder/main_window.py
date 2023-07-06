@@ -1,13 +1,16 @@
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QVBoxLayout, QWidget, QSizePolicy, QFrame, QSizeGrip
+from PySide6.QtCore import Qt, QSize, Slot
+from PySide6.QtGui import QIcon, QScreen
+from PySide6.QtWidgets import (
+    QHBoxLayout, QMainWindow, QVBoxLayout, QWidget,
+    QSizePolicy, QFrame, QSizeGrip, QApplication
+)
 
-from .renderer.components.toolbar import Toolbar
+from .renderer.components.topbar import Topbar
 from .renderer.components.sidebar_menu import SidebarMenus
 from .renderer.components.sidebar_control import StackedSidebar
 from .renderer.components.viewer_control import StackedViewer
+from .renderer.components.statusbar import StatusBar
 from .renderer.signals import all_signals
-
 
 class MainWindow(QMainWindow):
     def __init__(self, width, height) -> None:
@@ -20,6 +23,8 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(1280, 740))
         self.setMaximumSize(QSize(1550, 1080))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.is_maximize = False
 
         main_widget = QWidget()
         main_layout = QVBoxLayout(main_widget)
@@ -27,8 +32,8 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setAlignment(Qt.AlignTop)
 
-        self.toolbar = Toolbar()
-        main_layout.addWidget(self.toolbar)
+        self.topbar = Topbar()
+        main_layout.addWidget(self.topbar)
 
         main_sub_layout = QHBoxLayout()
         main_sub_layout.setSpacing(0)
@@ -38,24 +43,42 @@ class MainWindow(QMainWindow):
         self.sidebar_menus = SidebarMenus()
         self.stacked_sidebar = StackedSidebar()
         self.stacked_viewer = StackedViewer()
-
-        self.frame_layout = QHBoxLayout()
-        self.frame_size_grip = QFrame()
-        self.frame_size_grip.setObjectName("frame_size_grip")
-        self.frame_size_grip.setMinimumSize(QSize(20, 10))
-        self.frame_size_grip.setMaximumSize(QSize(20, 16777215))
-        self.frame_size_grip.setFrameShape(QFrame.NoFrame)
-        self.frame_size_grip.setFrameShadow(QFrame.Raised)
-        self.frame_layout.addWidget(self.frame_size_grip)
-        self.frame_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        self.sizegrip = QSizeGrip(self.frame_size_grip)
-        self.sizegrip.setStyleSheet("width: 20px; height: 20px; margin 0px; padding: 0px;")
-
+        
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
         main_sub_layout.addWidget(self.stacked_viewer)
-
         main_layout.addLayout(main_sub_layout)
-        main_layout.addLayout(self.frame_layout)
+       
+        self.status_bar = StatusBar()
+        main_layout.addWidget(self.status_bar)
         self.setCentralWidget(main_widget)
+
+        self.mouseMoveEvent = self.moveWindow
+        all_signals.window_control.connect(self.window_control)
+
+    @Slot(str)
+    def window_control(self, value):
+        if value == "minimize":
+            self.showMinimized()
+        elif value == "maximize":
+            if self.is_maximize is False:
+                self.showFullScreen()
+                self.is_maximize = True
+            else:
+                self.resize(QSize(1280, 740))
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.frameGeometry()
+                geo.moveCenter(center)
+                self.move(geo.topLeft())
+                self.is_maximize = False
+        else:
+            self.close()
+
+    def mousePressEvent(self, event) -> None:
+        self.dragPos = event.globalPos()
+
+    def moveWindow(self, event) -> None:
+        if event.buttons() == Qt.LeftButton:
+            self.move(self.pos() + event.globalPos() - self.dragPos)
+            self.dragPos = event.globalPos()
+            event.accept()

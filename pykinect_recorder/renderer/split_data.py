@@ -4,9 +4,9 @@ import sys
 import pandas as pd
 from glob import glob
 from pathlib import Path
-from pykinect_recorder.pyk4a.pyk4a.pykinect import initialize_libraries
-from pykinect_recorder.pyk4a.pyk4a.k4arecord import Playback
-from pykinect_recorder.pyk4a.pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
+from pykinect_recorder.pyk4a.pykinect import initialize_libraries
+from pykinect_recorder.pyk4a.k4arecord import Playback
+from pykinect_recorder.pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
 
 
 def colorize(

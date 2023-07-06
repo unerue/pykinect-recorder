@@ -25,7 +25,7 @@ class StackedViewer(QFrame):
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)   
         
-        all_signals.stacked_sidebar_status.connect(self.set_current_widget)
+        all_signals.option_signals.stacked_sidebar_status.connect(self.set_current_widget)
 
     @Slot(str)
     def set_current_widget(self, value):
@@ -35,4 +35,4 @@ class StackedViewer(QFrame):
             self.main_layout.setCurrentWidget(self.main_solution)
         else:
             self.main_layout.setCurrentWidget(self.main_viewer)
-        all_signals.clear_frame.emit(True)
+        all_signals.option_signals.clear_frame.emit(True)

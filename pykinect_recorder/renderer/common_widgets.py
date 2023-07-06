@@ -1,7 +1,7 @@
 import os
 from typing import Tuple, Union, List
 from PySide6.QtCore import Qt, QPoint, QRect, QSize
-from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QPalette, QBrush, QColor
+from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QColor
 
 from PySide6.QtWidgets import QLabel, QComboBox, QPushButton, QSlider, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
 
@@ -34,7 +34,6 @@ class PushButton(QPushButton):
                 border-color: red;
             }
         """)
-
 
 
 class Slider(QSlider):

@@ -63,10 +63,10 @@ class SidebarMenus(QFrame):
         return _btn
 
     def clicked_recorder(self):
-        all_signals.stacked_sidebar_status.emit("recorder")
+        all_signals.option_signals.stacked_sidebar_status.emit("recorder")
 
     def clicked_explorer(self):
-        all_signals.stacked_sidebar_status.emit("explorer")
+        all_signals.option_signals.stacked_sidebar_status.emit("explorer")
 
     def clicked_solution(self):
-        all_signals.stacked_sidebar_status.emit("solution")
+        all_signals.option_signals.stacked_sidebar_status.emit("solution")

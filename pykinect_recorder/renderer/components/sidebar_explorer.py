@@ -65,7 +65,7 @@ class ExplorerSidebar(QFrame):
     @Slot(str)
     def emit_file_path(self, filename) -> None:
         tmp = os.path.join(self.base_path, filename)
-        all_signals.playback_filepath.emit(tmp)
+        all_signals.playback_signals.playback_filepath.emit(tmp)
 
 
 class _FileInfo(QPushButton):

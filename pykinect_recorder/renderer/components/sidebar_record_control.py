@@ -59,7 +59,7 @@ class ViewerSidebar(QFrame):
         main_layout.addWidget(widget_scroll)
         self.setLayout(main_layout)
 
-        all_signals.sidebar_toggle.connect(self.toggle_option)
+        all_signals.option_signals.sidebar_toggle.connect(self.toggle_option)
 
     def toggle_option(self):
         self.rgb_camera_panel._toggle()
@@ -180,9 +180,9 @@ class BtnPanel(QFrame):
                 self.btn_record.setIcon(qta.icon("mdi.record"))
             self.is_run = False
 
-        all_signals.sidebar_toggle.emit(True)
-        all_signals.camera_option.emit(config_sidebar)
-        all_signals.device_option.emit(name)
+        all_signals.option_signals.sidebar_toggle.emit(True)
+        all_signals.option_signals.camera_option.emit(config_sidebar)
+        all_signals.option_signals.device_option.emit(name)
     
     def toggle_button(self) -> None:
         if self.is_device is False:
@@ -193,13 +193,13 @@ class BtnPanel(QFrame):
                 self.btn_record.setEnabled(True)
                 self.is_device = True
                 self.btn_switch.toggle()
-                all_signals.sidebar_toggle.emit(True)
+                all_signals.option_signals.sidebar_toggle.emit(True)
         else:
             self.btn_viewer.setDisabled(True)
             self.btn_record.setDisabled(True)
             self.is_device = False
             self.btn_switch.toggle()
-            all_signals.sidebar_toggle.emit(True)
+            all_signals.option_signals.sidebar_toggle.emit(True)
 
 
 class RgbCameraPanel(QFrame):
@@ -282,7 +282,7 @@ class RgbCameraPanel(QFrame):
             "camera_fps": self.btn_fps.currentIndex(),
         }
         config_sidebar["color"] = color
-        all_signals.camera_option.emit(config_sidebar)
+        all_signals.option_signals.camera_option.emit(config_sidebar)
 
 
 class ColorControlPanel(QFrame):
@@ -358,7 +358,7 @@ class ColorControlPanel(QFrame):
             "K4A_COLOR_CONTROL_POWERLINE_FREQUENCY": "1" if self.power_freq1.isChecked() else "2",
         }
         config_sidebar["color_option"] = color_option
-        all_signals.camera_option.emit(config_sidebar)
+        all_signals.option_signals.camera_option.emit(config_sidebar)
 
 
 class DepthCameraPanel(QFrame):
@@ -414,7 +414,7 @@ class DepthCameraPanel(QFrame):
 
     def set_config(self) -> None:
         config_sidebar["depth_mode"] = self.btn_depth.currentIndex() + 1
-        all_signals.camera_option.emit(config_sidebar)
+        all_signals.option_signals.camera_option.emit(config_sidebar)
 
 
 class IRCameraPanel(QFrame):
@@ -528,7 +528,7 @@ class AudioPanel(QFrame):
             "subtype": self.btn_subtype.currentText(),
         }
         config_sidebar["audio"] = audio
-        all_signals.camera_option.emit(config_sidebar)
+        all_signals.option_signals.camera_option.emit(config_sidebar)
 
 config_sidebar = {
     "color": {"color_resolution": 1, "color_format": 0, "camera_fps": 2},

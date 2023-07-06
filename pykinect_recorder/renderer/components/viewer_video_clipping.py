@@ -108,7 +108,7 @@ class VideoClippingDialog(QDialog):
         self.save_btn.clicked.connect(self.select_root_path)
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
-        all_signals.clip_option.connect(self.set_clip_option)
+        all_signals.playback_signals.clip_option.connect(self.set_clip_option)
 
     def close_dialog(self):
         self.close()
@@ -158,7 +158,7 @@ class VideoClippingDialog(QDialog):
 
     def extract_mkv(self):
         self.total_frame = self.right - self.left
-        all_signals.video_total_frame.emit(int(self.total_frame))
+        all_signals.playback_signals.video_total_frame.emit(int(self.total_frame))
         config = self.record_config_to_config()
         
         initialize_libraries()
@@ -192,11 +192,11 @@ class VideoClippingDialog(QDialog):
 
         self.cnt += 1
         self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
-        all_signals.current_frame_cnt.emit(self.cnt)
+        all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
 
     def extract_frame(self):
         self.total_frame = self.right - self.left
-        all_signals.video_total_frame.emit(int(self.total_frame))
+        all_signals.playback_signals.video_total_frame.emit(int(self.total_frame))
         self.playback.seek_timestamp(self.left)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "rgb"), exist_ok=True)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=True)
@@ -236,7 +236,7 @@ class VideoClippingDialog(QDialog):
                 [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
         self.cnt += 1
-        all_signals.current_frame_cnt.emit(self.cnt)
+        all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
 
 
 class ProgressBarDialog(QDialog):
@@ -254,8 +254,8 @@ class ProgressBarDialog(QDialog):
         self.main_layout.addWidget(self.title_label)
         self.main_layout.addWidget(self.progress_bar)
 
-        all_signals.current_frame_cnt.connect(self.set_value)
-        all_signals.video_total_frame.connect(self.set_total_frame)
+        all_signals.playback_signals.current_frame_cnt.connect(self.set_value)
+        all_signals.playback_signals.video_total_frame.connect(self.set_total_frame)
         self.setLayout(self.main_layout)
 
     @Slot(int)
@@ -297,7 +297,7 @@ class SelectClipOptionDialog(QDialog):
 
     def emit_status(self):
         if self.sender().objectName() == "btn_mkv":
-            all_signals.clip_option.emit("mkv")
+            all_signals.playback_signals.clip_option.emit("mkv")
         else:
-            all_signals.clip_option.emit("jpg")
+            all_signals.playback_signals.clip_option.emit("jpg")
         self.close()

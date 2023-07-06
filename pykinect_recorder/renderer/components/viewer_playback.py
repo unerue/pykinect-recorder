@@ -73,12 +73,15 @@ class PlaybackViewer(QFrame):
         self.main_layout.addLayout(self.bottom_layout)
         self.setLayout(self.main_layout)
 
+        # playback signals
         self.btn_stop.clicked.connect(self.stop_playback)
-        self.btn_clip.clicked.connect(self.extract_video_to_frame)
         self.slider_time.valueChanged.connect(self.control_time)
-        all_signals.time_value.connect(self.set_slider_value)
-        all_signals.playback_filepath.connect(self.start_playback)
+        all_signals.playback_signals.time_value.connect(self.set_slider_value)
+        all_signals.playback_signals.playback_filepath.connect(self.start_playback)
         
+        # video clipping signals
+        self.btn_clip.clicked.connect(self.extract_video_to_frame)
+
     def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(35 * scale), int(35 * scale)
         btn = QPushButton(icon, "")
@@ -134,7 +137,7 @@ class PlaybackViewer(QFrame):
 
     def control_time(self):
         if self.viewer is not None:
-            all_signals.time_control.emit(self.slider_time.value())
+            all_signals.playback_signals.time_control.emit(self.slider_time.value())
 
     def extract_video_to_frame(self):
         self.viewer.timer.stop()
@@ -169,14 +172,17 @@ class CapturedImageViewer(QFrame):
             max_size=(920, 600)
         )
 
-        all_signals.captured_rgb.connect(self.set_rgb_image)
-        all_signals.captured_depth.connect(self.set_depth_image)
-        all_signals.captured_ir.connect(self.set_ir_image)
-        all_signals.captured_time.connect(self.set_time)
-        all_signals.captured_fps.connect(self.set_fps)
-        all_signals.captured_acc_data.connect(self.set_acc_data)
-        all_signals.captured_gyro_data.connect(self.set_gyro_data)
-        all_signals.clear_frame.connect(self.clear_frame)
+        # UI option signal
+        all_signals.option_signals.clear_frame.connect(self.clear_frame)
+
+        # Playback signals
+        all_signals.playback_signals.rgb_image.connect(self.set_rgb_image)
+        all_signals.playback_signals.depth_image.connect(self.set_depth_image)
+        all_signals.playback_signals.ir_image.connect(self.set_ir_image)
+        all_signals.playback_signals.record_time.connect(self.set_time)
+        all_signals.playback_signals.video_fps.connect(self.set_fps)
+        all_signals.playback_signals.imu_acc_data.connect(self.set_acc_data)
+        all_signals.playback_signals.imu_gyro_data.connect(self.set_gyro_data)
 
         self.main_layout.addWidget(self.frame_ir, 0, 0)
         self.main_layout.addWidget(self.frame_depth, 0, 1)
@@ -236,7 +242,6 @@ class CapturedImageViewer(QFrame):
 
             i, j = max(self.target, source), min(self.target, source)
             p1, p2 = self.main_layout.getItemPosition(i), self.main_layout.getItemPosition(j)
-
             self.main_layout.addItem(self.main_layout.takeAt(i), *p2)
             self.main_layout.addItem(self.main_layout.takeAt(j), *p1)
             event.accept()

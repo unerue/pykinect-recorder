@@ -75,7 +75,7 @@ class Device:
         # Write capture if recording
         if self.recording:
             self.record.write_capture(Device.capture.handle())
-            
+
         return Device.capture
 
     def update_imu(self, timeout_in_ms: int = K4A_WAIT_INFINITE) -> ImuSample:
@@ -84,7 +84,6 @@ class Device:
 
         if self.is_imu_sample_initialized():
             Device.imu_sample._struct = imu_sample
-            # Device.imu_sample.parse_data()
         else:
             Device.imu_sample = ImuSample(imu_sample)
 
