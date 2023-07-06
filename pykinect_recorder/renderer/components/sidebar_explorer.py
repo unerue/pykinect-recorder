@@ -39,6 +39,8 @@ class ExplorerSidebar(QFrame):
         self.layout_scroll.setWidgetResizable(True)
         self.layout_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.layout_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.layout_scroll.verticalScrollBar().setDisabled(True)
+        self.layout_scroll.horizontalScrollBar().setDisabled(True)
 
         self.main_layout.addLayout(self.title_layout)
         self.main_layout.addWidget(self.layout_scroll)
@@ -70,7 +72,8 @@ class ExplorerSidebar(QFrame):
                     fileinfo = _FileInfo()
                     initialize_libraries()
                     playback = start_playback(str(filedir))
-                    start_time = playback.get_record_configuration()._handle.start_timestamp_offset_usec
+                    handle = playback.get_record_configuration()._handle
+                    start_time = handle.start_timestamp_offset_usec
 
                     # Thumbnail
                     # playback.seek_timestamp(start_time)
@@ -80,7 +83,7 @@ class ExplorerSidebar(QFrame):
                     # thumbnail = QImage(thumbnail, 30, 30, 30*3, QImage.Format_RGB888)
                     # fileinfo.label_thumbnail.setPixmap(QPixmap.fromImage(thumbnail))
                     
-                    record_length = (playback.get_recording_length()-start_time) // 33333
+                    record_length = (playback.get_recording_length()-start_time) // 1e6
                     fsize = os.path.getsize(filedir) / (2**30)
                     record_time = str(datetime.timedelta(seconds=record_length))
 

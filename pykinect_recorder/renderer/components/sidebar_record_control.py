@@ -33,6 +33,7 @@ class ViewerSidebar(QFrame):
         self.setMaximumSize(QSize(300, 1340))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        self.is_run = False
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -40,6 +41,8 @@ class ViewerSidebar(QFrame):
 
         widget_scroll = QScrollArea()
         widget_scroll.setWidgetResizable(True)
+        widget_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        widget_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         widget_option = QWidget()
         option_layout = QVBoxLayout(widget_option)
@@ -63,12 +66,25 @@ class ViewerSidebar(QFrame):
         main_layout.addWidget(widget_scroll)
         self.setLayout(main_layout)
 
-        all_signals.option_signals.sidebar_toggle.connect(self.toggle_option)
+        all_signals.option_signals.sidebar_toggle.connect(self.toggle_button)
+        all_signals.record_signals.is_sidebar_enable.connect(self.enable_button)
 
-    def toggle_option(self):
+    def toggle_button(self):
         self.rgb_camera_panel._toggle()
         self.depth_camera_panel._toggle()
         self.ir_camera_panel._toggle()
+
+    def enable_button(self):
+        if self.is_run is False:
+            self.rgb_camera_panel.setDisabled(True)
+            self.depth_camera_panel.setDisabled(True)
+            self.ir_camera_panel.setDisabled(True)
+            self.is_run = True
+        else:
+            self.rgb_camera_panel.setEnabled(True)
+            self.depth_camera_panel.setEnabled(True)
+            self.ir_camera_panel.setEnabled(True)
+            self.is_run = False
 
 
 class BtnPanel(QFrame):
@@ -212,6 +228,7 @@ class BtnPanel(QFrame):
             self.is_run = False
 
         all_signals.option_signals.sidebar_toggle.emit(True)
+        all_signals.record_signals.is_sidebar_enable.emit(True)
         all_signals.option_signals.camera_option.emit(config_sidebar)
         all_signals.option_signals.device_option.emit(name)
     
