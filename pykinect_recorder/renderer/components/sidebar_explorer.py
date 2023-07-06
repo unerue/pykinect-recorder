@@ -41,7 +41,7 @@ class ExplorerSidebar(QFrame):
     def search_file(self) -> None:
         _dirNames = QFileDialog.getExistingDirectory(self, "Open Data Files", ".", QFileDialog.ShowDirsOnly)
         self.base_path = _dirNames
-        self.label_dirpath.setText(_dirNames)
+        self.label_dirpath.setText(_dirNames)  # /etc/ssh/, /etc/ssh/config.txt
         self.set_scrollarea(_dirNames)
 
     def set_scrollarea(self, filedirs: str) -> None:
@@ -87,6 +87,9 @@ class _FileInfo(QPushButton):
         )
 
         layout_main = QVBoxLayout()
+        # playback = Playback(filepath)
+        # playback
+
         self.label_name = Label("File name: ", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
         self.label_store = Label("Total Volume: ", "Arial", 10, Qt.AlignmentFlag.AlignCenter)
         self.label_name.setWordWrap(True)
