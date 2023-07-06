@@ -155,21 +155,21 @@ class CapturedImageViewer(QFrame):
         self.main_layout = QGridLayout()
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 300), max_size=(920, 600))
-        self.frame_depth = Frame("Depth Sensor", min_size=(460, 330), max_size=(920, 660))
-        self.frame_ir = Frame("IR Sensor", min_size=(460, 330), max_size=(920, 660))
+        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 300), max_size=(595, 510))
+        self.frame_depth = Frame("Depth Sensor", min_size=(460, 300), max_size=(595, 510))
+        self.frame_ir = Frame("IR Sensor", min_size=(460, 300), max_size=(595, 510))
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
         self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
-        self.imu_senser = ImuSensors(min_size=(460, 300), max_size=(920, 600))
+        self.imu_senser = ImuSensors(min_size=(450, 270), max_size=(595, 480))
 
         self.sensor_data_layout.addWidget(self.imu_senser)
         self.frame_subdata = Frame(
             "IMU Sensor", 
             layout=self.sensor_data_layout, 
             min_size=(460, 300), 
-            max_size=(920, 600)
+            max_size=(595, 510)
         )
 
         # UI option signal
@@ -249,19 +249,19 @@ class CapturedImageViewer(QFrame):
     @Slot(QImage)
     def set_rgb_image(self, image: QImage) -> None:
         w, h = self.frame_rgb.label_image.width(), self.frame_rgb.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_rgb.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_depth_image(self, image: QImage) -> None:
-        w, h = self.frame_depth.label_image.width(), self.frame_rgb.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        w, h = self.frame_depth.label_image.width(), self.frame_depth.label_image.height()
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_depth.label_image.setPixmap(QPixmap.fromImage(image))
 
     @Slot(QImage)
     def set_ir_image(self, image: QImage) -> None:
-        w, h = self.frame_ir.label_image.width(), self.frame_rgb.label_image.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
+        w, h = self.frame_ir.label_image.width(), self.frame_ir.label_image.height()
+        image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
         self.frame_ir.label_image.setPixmap(QPixmap.fromImage(image))
     
     @Slot(float)
