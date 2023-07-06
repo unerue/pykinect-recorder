@@ -66,10 +66,10 @@ class MainWindow(QMainWindow):
                 self.is_maximize = True
             else:
                 self.resize(QSize(1280, 740))
-                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                geo = self.frameGeometry()
-                geo.moveCenter(center)
-                self.move(geo.topLeft())
+                # center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                # geo = self.frameGeometry()
+                # geo.moveCenter(center)
+                # self.move(geo.topLeft())
                 self.is_maximize = False
         else:
             self.close()

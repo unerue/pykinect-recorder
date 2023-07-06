@@ -84,6 +84,7 @@ class Device:
 
         if self.is_imu_sample_initialized():
             Device.imu_sample._struct = imu_sample
+            Device.imu_sample.parse_data()
         else:
             Device.imu_sample = ImuSample(imu_sample)
 
