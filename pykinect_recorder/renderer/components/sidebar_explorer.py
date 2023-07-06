@@ -122,7 +122,7 @@ class _FileInfo(QPushButton):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setFixedSize(280, 60)
+        self.setFixedSize(240, 60)
         self.setObjectName("FileInfo")
         self.setStyleSheet(
             """
