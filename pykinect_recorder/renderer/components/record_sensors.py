@@ -1,6 +1,6 @@
 import cv2
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtGui import QImage
 from PySide6.QtMultimedia import (
     QAudioFormat,
@@ -16,8 +16,9 @@ from ...pyk4a.utils import colorize
 RESOLUTION = 4
 
 
-class RecordSensors:
+class RecordSensors(QThread):
     def __init__(self, device: Device) -> None:
+        super().__init__()
         self.device = device
         self.input_devices = QMediaDevices.audioInputs()
         self.audio_input = None
@@ -80,6 +81,8 @@ class RecordSensors:
         all_signals.captured_time.emit(acc_time / 1e6)
         all_signals.captured_acc_data.emit(acc_data)
         all_signals.captured_gyro_data.emit(gyro_data)
+        # Test signal structure
+        all_signals.imu_signals.imu_gyro_data.emit(gyro_data)
 
         data = self.io_device.readAll()
         available_samples = data.size() // RESOLUTION

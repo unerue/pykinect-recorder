@@ -2,10 +2,29 @@ from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QImage
 
 
+class OptionSignals(QObject):
+    pass
+
+
+class RecorderSignals(QObject):
+    pass
+
+
+class PlaybackSignals(QObject):
+    pass
+
+
+class ImuSignals(QObject):
+    imu_gyro_data = Signal(list)
+
+
 class AllSignals(QObject):
     """
     This class manages all signals used throughout this project
     """
+    imu_signals = ImuSignals()
+    playback_signals = PlaybackSignals()
+    # all_signals.playback_signals.imu_gyro_data 
 
     # Sidebar stacked widget signals
     stacked_sidebar_status = Signal(str)

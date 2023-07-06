@@ -91,7 +91,8 @@ class SensorViewer(QFrame):
         all_signals.captured_ir.connect(self.set_ir_image)
         all_signals.captured_time.connect(self.set_time)
         all_signals.captured_acc_data.connect(self.set_acc_data)
-        all_signals.captured_gyro_data.connect(self.set_gyro_data)
+        # all_signals.captured_gyro_data.connect(self.set_gyro_data)
+        all_signals.imu_signals.imu_gyro_data.connect(self.set_gyro_data)
         all_signals.captured_fps.connect(self.set_fps)
         all_signals.captured_audio.connect(self.set_audio_data)
         all_signals.clear_frame.connect(self.clear_frame)
@@ -249,7 +250,8 @@ class SensorViewer(QFrame):
 
     @Slot(float)
     def set_gyro_data(self, values) -> None:
-        self.imu_senser.label_gyro_x.setText("X : %.5f" % values[0])
+        # self.imu_senser.label_gyro_x.setText("X : %.5f" % values[0])
+        self.imu_senser.label_gyro_x.setText(f"X : {values[0]:.5f}")
         self.imu_senser.label_gyro_y.setText("Y : %.5f" % values[1])
         self.imu_senser.label_gyro_z.setText("Z : %.5f" % values[2])
 

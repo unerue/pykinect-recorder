@@ -1,14 +1,15 @@
 import cv2
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtGui import QImage
 from ...pyk4a.k4arecord.playback import Playback
 from ...pyk4a.utils import colorize
 from ..signals import all_signals
 
 
-class PlaybackSensors:
+class PlaybackSensors(QThread):
     def __init__(self, playback: Playback) -> None:
+        super().__init__()
         self.playback = playback
         dict_fps = {0: "5", 1: "15", 2: "30"}
         self.device_fps = dict_fps[self.playback.get_record_configuration()._handle.camera_fps]
