@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     qdarktheme.setup_theme()
-    tray_icon = QSystemTrayIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
-    tray_icon.setToolTip("Pykinect Recorder")
+    # tray_icon = QSystemTrayIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
+    # tray_icon.setToolTip("Pykinect Recorder")
     # tray_icon.show()
 
     screen_rect = app.primaryScreen().size()

@@ -1,8 +1,10 @@
+import os
+
 from PySide6.QtCore import Qt, QSize, Slot
 from PySide6.QtGui import QIcon, QScreen
 from PySide6.QtWidgets import (
     QHBoxLayout, QMainWindow, QVBoxLayout, QWidget,
-    QSizePolicy, QFrame, QSizeGrip, QApplication
+    QSizePolicy, QApplication
 )
 
 from .renderer.components.topbar import Topbar
@@ -11,13 +13,14 @@ from .renderer.components.sidebar_control import StackedSidebar
 from .renderer.components.viewer_control import StackedViewer
 from .renderer.components.statusbar import StatusBar
 from .renderer.signals import all_signals
+from .pyk4a.utils import get_root
 
 
 class MainWindow(QMainWindow):
     def __init__(self, width, height) -> None:
         super().__init__()
         self.setWindowTitle("pykinect recorder")
-        self.setWindowIcon(QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico"))
+        self.setWindowIcon(QIcon(os.path.join(get_root(), "renderer/public/kinect-sensor.ico")))
         self.initial_window()
 
     def initial_window(self) -> None:
@@ -43,17 +46,16 @@ class MainWindow(QMainWindow):
 
         self.sidebar_menus = SidebarMenus()
         self.stacked_sidebar = StackedSidebar()
-        self.stacked_sidebar.setStyleSheet("border: 1px solid blue;")
+        # self.stacked_sidebar.setStyleSheet("border: 1px solid blue;")
 
         content_layout = QHBoxLayout()
         self.stacked_viewer = StackedViewer()
-        self.stacked_viewer.setStyleSheet("border: 1px solid red;")
+        # self.stacked_viewer.setStyleSheet("border: 1px solid red;")
         content_layout.addWidget(self.stacked_viewer, Qt.AlignmentFlag.AlignLeft)
         content_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
-        # main_sub_layout.addWidget(self.stacked_viewer)
         main_sub_layout.addLayout(content_layout)
         main_layout.addLayout(main_sub_layout)
        

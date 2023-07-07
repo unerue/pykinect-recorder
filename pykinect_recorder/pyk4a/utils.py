@@ -1,7 +1,7 @@
 import sys
 import platform
+from pathlib import Path
 from typing import Optional
-
 
 import cv2
 import numpy as np
@@ -30,6 +30,14 @@ def colorize(
     image = cv2.applyColorMap(image, colormap)
     return image
 
+def get_root() -> Path:
+    """Get root path for load assets.
+    Args:
+        None.
+    Returns:
+        Path: Root Directory.
+    """
+    return Path(__file__).parent.parent
 
 class Open3dVisualizer:
     def __init__(self):

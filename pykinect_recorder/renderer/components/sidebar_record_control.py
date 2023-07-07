@@ -584,6 +584,7 @@ class AudioPanel(QFrame):
         config_sidebar["audio"] = audio
         all_signals.option_signals.camera_option.emit(config_sidebar)
 
+
 config_sidebar = {
     "color": {"color_resolution": 1, "color_format": 0, "camera_fps": 2},
     "color_option": {

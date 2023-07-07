@@ -1,16 +1,16 @@
 import os
-import platform
 
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import (
-    QHBoxLayout, QFrame, QFileDialog, QLabel,
-    QPushButton, QMenuBar, QMenu, QApplication
+    QHBoxLayout, QFrame, QPushButton,
+    QMenuBar, QMenu, QApplication
 )
 import qtawesome as qta
 
 from ..signals import all_signals
-from ..common_widgets import PushButton, Label, VLine
+from ..common_widgets import Label
+from ...pyk4a.utils import get_root
 
 
 class Topbar(QFrame):
@@ -38,7 +38,7 @@ class Topbar(QFrame):
         self.label_icon = Label()
         self.label_icon.setStyleSheet("margin-left: 6px;")
         self.label_icon.setFixedSize(40, 40)
-        self.icon = QIcon("pykinect_recorder/renderer/public/kinect-sensor.ico")
+        self.icon = QIcon(os.path.join(get_root(), "renderer/public/kinect-sensor.ico"))
         self.pixmap = self.icon.pixmap(25, 25)
         self.label_icon.setPixmap(self.pixmap)
         main_layout.addWidget(self.label_icon)
