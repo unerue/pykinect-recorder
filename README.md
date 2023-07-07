@@ -49,7 +49,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
  
 ### Anaconda
 ```bash
-conda create -n azure python=3.8 -y
+conda create -n azure python=3.10 -y
 conda activate azure
 pip install pykinect-recorder
 

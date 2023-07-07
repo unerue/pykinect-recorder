@@ -137,6 +137,7 @@ class SensorViewer(QFrame):
         else:
             self.viewer.is_run = False
             self.viewer.quit()
+            self.viewer = None
             self.device.stop_imu()
             self.device.close()
             self.is_play = True
