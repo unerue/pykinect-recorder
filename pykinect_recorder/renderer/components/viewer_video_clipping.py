@@ -27,6 +27,7 @@ class VideoClippingDialog(QDialog):
         self.save_file_name = self.file_name.split('/')[-1][:-4]
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
+        self.fps_dict = {0: "5", 1: "15", 2: "30"}
 
         self.main_widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -63,7 +64,6 @@ class VideoClippingDialog(QDialog):
         self.main_layout.addWidget(self.media_frame)
 
         # time control layout
-        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
         self.time_layout = QHBoxLayout()
         self.time_layout.setAlignment(Qt.AlignCenter)
         self.time_slider = QLabeledRangeSlider(Qt.Horizontal, self)
@@ -103,19 +103,25 @@ class VideoClippingDialog(QDialog):
         self.setLayout(self.main_layout)
 
         self.initialize_playback()
-        self.playback.seek_timestamp(self.start_time)
-
         self.save_btn.clicked.connect(self.select_root_path)
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
         all_signals.playback_signals.clip_option.connect(self.set_clip_option)
+
+        self.playback.seek_timestamp(self.start_time+self.ticks)
+        self.update_next_frame()
 
     def close_dialog(self):
         self.close()
 
     def initialize_playback(self):
         self.playback = start_playback(self.file_name)
-        self.left, self.right = 0, self.playback.get_recording_length()//33333
+        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
+        self.device_fps = self.playback.get_record_configuration()._handle.camera_fps
+        self.ticks = int(1e6 // int(self.fps_dict[self.device_fps]))
+
+        self.left = 0
+        self.right = (self.playback.get_recording_length()-self.start_time) // self.ticks - 1
         self.total_frame = self.right - self.left
 
         self.time_slider.setTickInterval(1)
@@ -126,10 +132,10 @@ class VideoClippingDialog(QDialog):
         cur_left, cur_right = self.time_slider.value()
         if cur_left != self.left:
             self.left = cur_left
-            self.playback.seek_timestamp(self.start_time + self.left*33333)
+            self.playback.seek_timestamp(self.start_time + self.left*self.ticks)
         elif cur_right != self.right:
             self.right = cur_right
-            self.playback.seek_timestamp(self.start_time + self.right*33333)
+            self.playback.seek_timestamp(self.start_time + self.right*self.ticks)
         self.update_next_frame()
 
     def update_next_frame(self):

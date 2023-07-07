@@ -38,7 +38,7 @@ class PlaybackViewer(QFrame):
         self.bottom_layout.setContentsMargins(0, 0, 0, 0)
         self.bottom_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.btn_stop = self.make_icons(qta.icon("fa5.stop-circle"), "Start & Stop", scale=0.7)
+        self.btn_stop = self.make_icons(qta.icon("mdi.stop"), "Start & Stop", scale=0.7)
         self.btn_stop.setFixedSize(50, 50)
         self.btn_stop.setStyleSheet("""
             QPushButton:hover {
@@ -99,7 +99,7 @@ class PlaybackViewer(QFrame):
         if self.viewer is not None:
             time.sleep(0.5)
             self.viewer.timer.stop()
-            self.btn_stop.setIcon(qta.icon("fa5.stop-circle"))
+            self.btn_stop.setIcon(qta.icon("mdi.stop"))
             self.playback.close()
         try:
             self.file_path = filepath
@@ -133,7 +133,7 @@ class PlaybackViewer(QFrame):
         else:
             self.is_run = True
             self.viewer.timer.start()
-            self.btn_stop.setIcon(qta.icon("fa5.stop-circle"))
+            self.btn_stop.setIcon(qta.icon("mdi.stop"))
 
     def control_time(self):
         if self.viewer is not None:

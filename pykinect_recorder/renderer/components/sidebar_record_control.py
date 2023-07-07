@@ -11,8 +11,9 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QScrollArea,
     QDialog,
+    QFileDialog
 )
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Slot
 import qtawesome as qta
 
 from ..signals import all_signals
@@ -24,11 +25,15 @@ from ...pyk4a.pykinect import start_device, initialize_libraries
 class ViewerSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setStyleSheet("background-color: #252526;")
+        self.setStyleSheet("""
+            background-color: #252526;
+            border-radius: 0px;                   
+        """)
         self.setMinimumSize(QSize(200, 670))
         self.setMaximumSize(QSize(300, 1340))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        self.is_run = False
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -36,10 +41,12 @@ class ViewerSidebar(QFrame):
 
         widget_scroll = QScrollArea()
         widget_scroll.setWidgetResizable(True)
+        widget_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        widget_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         widget_option = QWidget()
         option_layout = QVBoxLayout(widget_option)
-        option_layout.setSpacing(0)
+        option_layout.setSpacing(5)
         option_layout.setContentsMargins(0, 0, 0, 0)
         option_layout.setAlignment(Qt.AlignTop)
         
@@ -59,47 +66,79 @@ class ViewerSidebar(QFrame):
         main_layout.addWidget(widget_scroll)
         self.setLayout(main_layout)
 
-        all_signals.option_signals.sidebar_toggle.connect(self.toggle_option)
+        all_signals.option_signals.sidebar_toggle.connect(self.toggle_button)
+        all_signals.record_signals.is_sidebar_enable.connect(self.enable_button)
 
-    def toggle_option(self):
+    def toggle_button(self):
         self.rgb_camera_panel._toggle()
         self.depth_camera_panel._toggle()
         self.ir_camera_panel._toggle()
+
+    def enable_button(self):
+        if self.is_run is False:
+            self.rgb_camera_panel.setDisabled(True)
+            self.depth_camera_panel.setDisabled(True)
+            self.ir_camera_panel.setDisabled(True)
+            self.is_run = True
+        else:
+            self.rgb_camera_panel.setEnabled(True)
+            self.depth_camera_panel.setEnabled(True)
+            self.ir_camera_panel.setEnabled(True)
+            self.is_run = False
 
 
 class BtnPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setMinimumHeight(100)
-        self.setMaximumHeight(150)
+        self.setMinimumHeight(130)
+        self.setMaximumHeight(130)
         self.setObjectName("BtnPanel")
         self.setStyleSheet("""
             QFrame#BtnPanel {
-                border-color: gray; border-width: 2px; border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 0px;
             }
         """)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
-        main_layout = QVBoxLayout()
-        main_layout.setAlignment(Qt.AlignTop)
-
+       
         # toggle btn
         self.is_run = False
         self.is_device = False
-        top_layout = QVBoxLayout()
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+
         title_layout = QHBoxLayout()
         self.btn_switch = ToggleButton()
-        title_layout.addWidget(QLabel("<b>Device open<b>"))
+        title_layout.addWidget(QLabel("<b>Open Device<b>"))
         title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)
-        top_layout.addLayout(title_layout)
-        top_layout.addWidget(HLine())
+        main_layout.addLayout(title_layout)
+        main_layout.addWidget(HLine())
+
+        device_status_layout = QHBoxLayout()
+        self.label_device = Label("Device S/N: ")
+        self.label_device_sn = Label()
+        self.label_device_sn.setStyleSheet(" border-color: white; border-radius: 0px; ")
+        self.label_device_sn.setFixedSize(150, 20)
+        device_status_layout.addWidget(self.label_device)
+        device_status_layout.addStretch()
+        device_status_layout.addWidget(self.label_device_sn)
+        main_layout.addLayout(device_status_layout)
 
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(5)
         btn_layout.setContentsMargins(0, 0, 0, 0)
         btn_layout.setAlignment(Qt.AlignCenter)
 
+        self.btn_finddir = self.make_icons(qta.icon("ri.search-line"), "Searching save path", scale=0.7)
+        self.btn_finddir.setStyleSheet("""
+            QPushButton:hover {
+                border-color: white;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }
+        """)
         self.btn_viewer = self.make_icons(qta.icon("fa.play"),"Streaming Button", scale=0.7)
         self.btn_viewer.setStyleSheet("""
             QPushButton:hover {
@@ -123,18 +162,21 @@ class BtnPanel(QFrame):
         """)
         self.btn_viewer.setObjectName("viewer")
         self.btn_record.setObjectName("recorder")
+        self.btn_finddir.setEnabled(False)
         self.btn_viewer.setEnabled(False)
         self.btn_record.setEnabled(False)
         
+        btn_layout.addWidget(self.btn_finddir)
         btn_layout.addWidget(self.btn_viewer)
         btn_layout.addWidget(self.btn_record)
-        main_layout.addLayout(top_layout)
         main_layout.addLayout(btn_layout)
 
         self.setLayout(main_layout)
         self.btn_switch.clicked.connect(self.toggle_button)
+        self.btn_finddir.clicked.connect(self.search_file)
         self.btn_viewer.clicked.connect(self.emit_option)
         self.btn_record.clicked.connect(self.emit_option)
+        all_signals.option_signals.device_serial_number.connect(self.set_device_serial_number)
 
     def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(35 * scale), int(35 * scale)
@@ -144,11 +186,16 @@ class BtnPanel(QFrame):
         btn.setToolTip(f"<b>{tooltip}<b>")
         return btn
     
+    def search_file(self) -> None:
+        _dirNames = QFileDialog.getExistingDirectory(self, "Open Data Files", ".", QFileDialog.ShowDirsOnly)
+        all_signals.option_signals.save_filepath.emit(_dirNames)
+    
     def check_device(self) -> bool:
         try:
             self.config = Configuration()
             initialize_libraries()
             _device = start_device(config=self.config)
+            all_signals.option_signals.device_serial_number.emit(str(_device.get_serialnum()))
             _device.close()
         except:
             modal = QDialog()
@@ -160,16 +207,16 @@ class BtnPanel(QFrame):
             modal.resize(400, 200)
             modal.exec()
             return False
-    
+
     def emit_option(self):
         name = self.sender().objectName()
         if self.is_run is False:
             if name == 'viewer':
                 self.btn_record.setEnabled(False)
-                self.btn_viewer.setIcon(qta.icon("fa5.stop-circle"))
+                self.btn_viewer.setIcon(qta.icon("mdi.stop"))
             else:
                 self.btn_viewer.setEnabled(False)
-                self.btn_record.setIcon(qta.icon("fa5.stop-circle"))
+                self.btn_record.setIcon(qta.icon("mdi.stop"))
             self.is_run = True
         else:
             if name == 'viewer':
@@ -181,6 +228,7 @@ class BtnPanel(QFrame):
             self.is_run = False
 
         all_signals.option_signals.sidebar_toggle.emit(True)
+        all_signals.record_signals.is_sidebar_enable.emit(True)
         all_signals.option_signals.camera_option.emit(config_sidebar)
         all_signals.option_signals.device_option.emit(name)
     
@@ -189,28 +237,34 @@ class BtnPanel(QFrame):
             if self.check_device() is False:
                 return
             else:
+                self.btn_finddir.setEnabled(True)
                 self.btn_viewer.setEnabled(True)
                 self.btn_record.setEnabled(True)
                 self.is_device = True
                 self.btn_switch.toggle()
                 all_signals.option_signals.sidebar_toggle.emit(True)
         else:
+            self.btn_finddir.setDisabled(True)
             self.btn_viewer.setDisabled(True)
             self.btn_record.setDisabled(True)
             self.is_device = False
             self.btn_switch.toggle()
             all_signals.option_signals.sidebar_toggle.emit(True)
+    
+    @Slot(str)
+    def set_device_serial_number(self, value: str):
+        self.label_device_sn.setText(value)
 
 
 class RgbCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setMinimumHeight(380)
-        self.setMaximumHeight(500)
+        self.setMinimumHeight(420)
+        self.setMaximumHeight(420)
         self.setObjectName("RgbCameraPanel")
         self.setStyleSheet("""
             QFrame#RgbCameraPanel {
-                border-color: gray; border-width: 2px; border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 0px;
             }
         """
         )
@@ -365,12 +419,12 @@ class DepthCameraPanel(QFrame):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("DepthCameraPanel")
-        self.setMinimumHeight(110)
-        self.setMaximumHeight(160)
+        self.setMinimumHeight(90)
+        self.setMaximumHeight(90)
         self.setStyleSheet(
             """
             QFrame#DepthCameraPanel {
-                border-color: gray; border-width: 2px; border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 0px;
             }
         """
         )
@@ -422,11 +476,11 @@ class IRCameraPanel(QFrame):
         super().__init__()
         self.setObjectName("IRCameraPanel")
         self.setMinimumHeight(40)
-        self.setMaximumHeight(60)
+        self.setMaximumHeight(40)
         self.setStyleSheet(
             """
             QFrame#IRCameraPanel {
-                border-color: gray; border-width: 2px; border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 0px;
             }
         """
         )
@@ -459,12 +513,12 @@ class AudioPanel(QFrame):
         super().__init__()
         self.setObjectName("AudioPanel")
         self.setMinimumHeight(140)
-        self.setMaximumHeight(200)
+        self.setMaximumHeight(140)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setStyleSheet(
             """
             QFrame#AudioPanel {
-                border-color: gray; border-width: 2px; border-radius: 5px;
+                border-color: gray; border-width: 2px; border-radius: 0px;
             }
         """
         )

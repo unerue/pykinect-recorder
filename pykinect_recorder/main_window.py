@@ -12,6 +12,7 @@ from .renderer.components.viewer_control import StackedViewer
 from .renderer.components.statusbar import StatusBar
 from .renderer.signals import all_signals
 
+
 class MainWindow(QMainWindow):
     def __init__(self, width, height) -> None:
         super().__init__()
@@ -30,30 +31,37 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(main_widget)
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.setAlignment(Qt.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         self.topbar = Topbar()
         main_layout.addWidget(self.topbar)
 
         main_sub_layout = QHBoxLayout()
-        main_sub_layout.setSpacing(0)
-        main_sub_layout.setContentsMargins(0, 0, 0, 0)
-        main_sub_layout.setAlignment(Qt.AlignRight)
+        # main_sub_layout.setSpacing(0)
+        # main_sub_layout.setContentsMargins(0, 0, 0, 0)
+        main_sub_layout.setAlignment(Qt.AlignLeft)
 
         self.sidebar_menus = SidebarMenus()
         self.stacked_sidebar = StackedSidebar()
+        self.stacked_sidebar.setStyleSheet("border: 1px solid blue;")
+
+        content_layout = QHBoxLayout()
         self.stacked_viewer = StackedViewer()
+        self.stacked_viewer.setStyleSheet("border: 1px solid red;")
+        content_layout.addWidget(self.stacked_viewer, Qt.AlignmentFlag.AlignLeft)
+        content_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         
         main_sub_layout.addWidget(self.sidebar_menus)
         main_sub_layout.addWidget(self.stacked_sidebar)
-        main_sub_layout.addWidget(self.stacked_viewer)
+        # main_sub_layout.addWidget(self.stacked_viewer)
+        main_sub_layout.addLayout(content_layout)
         main_layout.addLayout(main_sub_layout)
        
         self.status_bar = StatusBar()
         main_layout.addWidget(self.status_bar)
         self.setCentralWidget(main_widget)
 
-        self.mouseMoveEvent = self.moveWindow
+        self.topbar.mouseMoveEvent = self.moveWindow
         all_signals.window_control.connect(self.window_control)
 
     @Slot(str)
@@ -66,10 +74,10 @@ class MainWindow(QMainWindow):
                 self.is_maximize = True
             else:
                 self.resize(QSize(1280, 740))
-                # center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                # geo = self.frameGeometry()
-                # geo.moveCenter(center)
-                # self.move(geo.topLeft())
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.frameGeometry()
+                geo.moveCenter(center)
+                self.move(geo.topLeft())
                 self.is_maximize = False
         else:
             self.close()

@@ -11,8 +11,8 @@ class OptionSignals(QObject):
     sidebar_toggle = Signal(bool)
     camera_option = Signal(dict)
     device_option = Signal(str)
-
-    # path signals
+    
+    device_serial_number = Signal(str)
     save_filepath = Signal(str)
     clear_frame = Signal(bool)
 
@@ -26,6 +26,7 @@ class RecorderSignals(QObject):
     imu_acc_data = Signal(list)
     imu_gyro_data = Signal(list)
     audio_data = Signal(list)
+    is_sidebar_enable = Signal(bool)
 
 
 class PlaybackSignals(QObject):

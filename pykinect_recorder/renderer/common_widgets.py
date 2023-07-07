@@ -144,6 +144,7 @@ class Frame(QFrame):
         self.frame_image.setStyleSheet(""" 
             QFrame#Frame_image {
                 border: 1px solid white; 
+                border-radius: 0px;
             }
         """)
         self.frame_layout = QVBoxLayout(self.frame_image)

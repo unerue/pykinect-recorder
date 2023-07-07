@@ -2,6 +2,7 @@ import sys
 import platform
 from typing import Optional
 
+
 import cv2
 import numpy as np
 from numpy.typing import NDArray
@@ -28,7 +29,6 @@ def colorize(
     image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     image = cv2.applyColorMap(image, colormap)
     return image
-
 
 
 class Open3dVisualizer:
