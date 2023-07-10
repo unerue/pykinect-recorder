@@ -24,7 +24,7 @@ class ExplorerSidebar(QFrame):
 
         self.main_layout = QVBoxLayout()
         self.title_layout = QHBoxLayout()
-        self.base_path = os.path.join(Path.home(), "Videos/")
+        self.base_path = os.path.join(Path.home(), "Videos")
 
         self.label_dirpath = Label(self.base_path)
         self.label_dirpath.setFixedSize(180, 50)
@@ -109,6 +109,9 @@ class ExplorerSidebar(QFrame):
             }
             QPushButton:hover {
                 border-color: white;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
         """)
         return btn

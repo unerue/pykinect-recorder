@@ -48,16 +48,16 @@ class PlaybackViewer(QFrame):
                 font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
             }
         """)
-        self.btn_clip = self.make_icons(qta.icon("mdi6.scissors-cutting"),"Video Clipping", scale=0.7)
-        self.btn_clip.setFixedSize(50, 50)
-        self.btn_clip.setStyleSheet("""
-            QPushButton:hover {
-                border-color: "white";
-            }
-            QToolTip {
-                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
-            }
-        """)
+        # self.btn_clip = self.make_icons(qta.icon("mdi6.scissors-cutting"),"Video Clipping", scale=0.7)
+        # self.btn_clip.setFixedSize(50, 50)
+        # self.btn_clip.setStyleSheet("""
+        #     QPushButton:hover {
+        #         border-color: "white";
+        #     }
+        #     QToolTip {
+        #         font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+        #     }
+        # """)
 
         self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
         self.slider_time.setFixedHeight(40)
@@ -66,7 +66,7 @@ class PlaybackViewer(QFrame):
         self.slider_time.setTickInterval(33333)
         
         self.bottom_layout.addWidget(self.btn_stop)
-        self.bottom_layout.addWidget(self.btn_clip)
+        # self.bottom_layout.addWidget(self.btn_clip)
         self.bottom_layout.addWidget(self.slider_time)
 
         self.main_layout.addWidget(self.captured_viewer_frame)
@@ -80,7 +80,7 @@ class PlaybackViewer(QFrame):
         all_signals.playback_signals.playback_filepath.connect(self.start_playback)
         
         # video clipping signals
-        self.btn_clip.clicked.connect(self.extract_video_to_frame)
+        # self.btn_clip.clicked.connect(self.extract_video_to_frame)
 
     def make_icons(self, icon: qta, tooltip: str, scale: float = 0.8) -> QPushButton:
         w, h = int(35 * scale), int(35 * scale)
@@ -139,11 +139,11 @@ class PlaybackViewer(QFrame):
         if self.viewer is not None:
             all_signals.playback_signals.time_control.emit(self.slider_time.value())
 
-    def extract_video_to_frame(self):
-        self.viewer.timer.stop()
-        video_clip_dialog = VideoClippingDialog(self.file_path)
-        video_clip_dialog.exec_()
-        self.viewer.timer.start()
+    # def extract_video_to_frame(self):
+    #     self.viewer.timer.stop()
+    #     video_clip_dialog = VideoClippingDialog(self.file_path)
+    #     video_clip_dialog.exec_()
+    #     self.viewer.timer.start()
 
 
 class CapturedImageViewer(QFrame):

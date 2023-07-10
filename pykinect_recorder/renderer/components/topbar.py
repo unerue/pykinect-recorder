@@ -4,7 +4,7 @@ from PySide6.QtGui import QAction, QIcon
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import (
     QHBoxLayout, QFrame, QPushButton,
-    QMenuBar, QMenu, QApplication
+    QMenuBar, QMenu, QApplication, QToolBar
 )
 import qtawesome as qta
 
@@ -41,15 +41,28 @@ class Topbar(QFrame):
         self.icon = QIcon(os.path.join(get_root(), "renderer/public/kinect-sensor.ico"))
         self.pixmap = self.icon.pixmap(25, 25)
         self.label_icon.setPixmap(self.pixmap)
-        main_layout.addWidget(self.label_icon)
+        main_layout.addWidget(self.label_icon)    
 
         self.menubar = QMenuBar()
         self.menubar.setFixedWidth(100)
         self.menubar.setContentsMargins(0, 0, 0, 0)
-        self.menubar.setStyleSheet(" font-size: 15px; background-color: #323233; ")
+        self.menubar.setStyleSheet("""
+            QMenuBar {
+                font-size: 15px; 
+                background-color: #323233; 
+                border: none;                              
+            }
+            QMenuBar:item:selected {
+                border-color: white;
+                border-radius: 0px;                      
+            }
+        """)
 
         self.file_menu = QMenu("File")
         self.help_menu = QMenu("Help")
+        self.file_menu.setContentsMargins(0, 0, 0, 0)
+        self.help_menu.setContentsMargins(0, 0, 0, 0)
+        
         self.exit_action = QAction("Exit")
         self.info_action = QAction("Info")
 
@@ -90,7 +103,14 @@ class Topbar(QFrame):
         btn.setFixedSize(38, 38)
         btn.setIconSize(QSize(w, h))
         btn.setToolTip(f"<b>{tooltip}<b>")
-        btn.setStyleSheet("border: none; border-radius: 0px;")
+        btn.setStyleSheet("""
+            QPushButton {
+                border: none; border-radius: 0px;
+            }
+            QToolTip {
+                font:"Arial"; font-size: 15px; color: #ffffff; border: 1px solid #ffffff; 
+            }             
+        """)
         return btn
     
     def right_btn_clicked(self):
