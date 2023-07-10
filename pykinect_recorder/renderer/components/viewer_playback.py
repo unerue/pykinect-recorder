@@ -59,7 +59,7 @@ class PlaybackViewer(QFrame):
         #     }
         # """)
 
-        self.slider_time = Slider(Qt.Orientation.Horizontal, (333555, 1000000), 333555)
+        self.slider_time = Slider(Qt.Orientation.Horizontal, (0, 1000000), 0)
         self.slider_time.setFixedHeight(40)
         self.slider_time.setMinimumWidth(400)
         self.slider_time.setMaximumWidth(2000)

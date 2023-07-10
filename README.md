@@ -13,10 +13,19 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 <br>
 
 <div display="flex;">
-<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/d875ad2c-03e3-4762-a0a1-80df63ea49fc">
+<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/6d97602a-7438-4829-8ed2-d46e63919975">
 </div>
 
 <br>
+
+## Documentation
+
+
+You can find the API documentation on our website: https://pykinect-recorder.readthedocs.io/en/latest/index.html
+
+For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK website: https://microsoft.github.io/Azure-Kinect-Sensor-SDK/master/index.html
+
+
 
 ##  Features
 
