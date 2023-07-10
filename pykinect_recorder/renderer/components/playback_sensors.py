@@ -12,10 +12,10 @@ class PlaybackSensors(QThread):
         super().__init__()
         self.playback = playback
         dict_fps = {0: "5", 1: "15", 2: "30"}
-        self.device_fps = dict_fps[self.playback.get_record_configuration()._handle.camera_fps]
+        self.device_fps = int(dict_fps[self.playback.get_record_configuration()._handle.camera_fps])
 
         self.timer = QTimer()
-        self.timer.setInterval(1000 / int(self.device_fps))
+        self.timer.setInterval(1000 / self.device_fps)
         self.timer.timeout.connect(self.run)
         all_signals.playback_signals.time_control.connect(self.change_timestamp)
 
@@ -61,4 +61,4 @@ class PlaybackSensors(QThread):
             self.timer.stop()
 
     def run(self):
-        all_signals.playback_signals.time_value.emit(33333)
+        all_signals.playback_signals.time_value.emit(1e6//self.device_fps)

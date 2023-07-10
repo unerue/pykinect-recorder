@@ -14,7 +14,7 @@ from .viewer_imu_sensors import ImuSensors
 from .viewer_audio import AudioSensor
 from .sidebar_record_control import config_sidebar
 from ..signals import all_signals
-from ..common_widgets import Frame, VLine
+from ..common_widgets import Frame, VLine, CustomProgressBarDialog
 from ...pyk4a.k4a._k4a import k4a_device_set_color_control
 from ...pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL
 from ...pyk4a.k4a.configuration import Configuration
@@ -131,17 +131,19 @@ class SensorViewer(QFrame):
                 )
 
             self.viewer = RecordSensors(device=self.device)
-            self.viewer.start()
-            self.viewer.is_run = True
+            self.viewer.start_audio()
+            self.viewer.timer.start()
             self.is_play = False
         else:
-            self.viewer.is_run = False
+            self.viewer.timer.stop()
+            self.viewer.stop_audio()
             self.viewer.quit()
-            self.viewer = None
-            self.device.stop_imu()
             self.device.close()
             self.is_play = True
-            time.sleep(1)
+
+            if self.is_record:
+                wait_dialog = CustomProgressBarDialog(msec=500)
+                wait_dialog.show()
 
     def set_filename(self) -> None:
         if self.base_path is None:

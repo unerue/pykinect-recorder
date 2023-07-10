@@ -290,6 +290,7 @@ class SelectClipOptionDialog(QDialog):
         self.btn_layout = QHBoxLayout()
         self.btn_mkv = QPushButton("video as '.mkv'")
         self.btn_mkv.setObjectName("btn_mkv")
+        self.btn_mkv.setDisabled(True)
         self.btn_jpg = QPushButton("rgb/ir/depth frame as '.jpg'")
         self.btn_jpg.setObjectName("btn_jpg")
         self.btn_layout.addWidget(self.btn_mkv)

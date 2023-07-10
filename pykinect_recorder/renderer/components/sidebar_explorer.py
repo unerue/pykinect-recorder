@@ -19,6 +19,7 @@ from ...pyk4a.pykinect import start_playback, initialize_libraries
 class ExplorerSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
+        initialize_libraries()
         self.setStyleSheet(" background-color: #252526; border-radius: 0px; ")
 
         self.main_layout = QVBoxLayout()
@@ -39,8 +40,6 @@ class ExplorerSidebar(QFrame):
         self.layout_scroll.setWidgetResizable(True)
         self.layout_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.layout_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.layout_scroll.verticalScrollBar().setDisabled(True)
-        self.layout_scroll.horizontalScrollBar().setDisabled(True)
 
         self.main_layout.addLayout(self.title_layout)
         self.main_layout.addWidget(self.layout_scroll)
@@ -70,7 +69,6 @@ class ExplorerSidebar(QFrame):
             if _filename[-4:] == ".mkv":
                 try:
                     fileinfo = _FileInfo()
-                    initialize_libraries()
                     playback = start_playback(str(filedir))
                     handle = playback.get_record_configuration()._handle
                     start_time = handle.start_timestamp_offset_usec
@@ -86,6 +84,7 @@ class ExplorerSidebar(QFrame):
                     record_length = (playback.get_recording_length()-start_time) // 1e6
                     fsize = os.path.getsize(filedir) / (2**30)
                     record_time = str(datetime.timedelta(seconds=record_length))
+                    playback.close()
 
                     fileinfo.label_file_name.setText(_filename)
                     fileinfo.label_metadata.setText(f"{record_time} ({fsize:.2f}GB)")

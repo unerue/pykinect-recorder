@@ -1,9 +1,13 @@
 import os
 from typing import Tuple, Union, List
-from PySide6.QtCore import Qt, QPoint, QRect, QSize
-from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QColor
 
-from PySide6.QtWidgets import QLabel, QComboBox, QPushButton, QSlider, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy
+from PySide6.QtCore import Qt, QPoint, QRect, QSize, QTimer
+from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QColor
+from PySide6.QtWidgets import (
+    QLabel, QComboBox, QPushButton, QSlider, QFrame, QDialog,
+    QVBoxLayout, QHBoxLayout, QSizePolicy, QProgressBar
+)
+
 
 """
 In script file, There are many custom widgets to use frequently in this project.
@@ -244,3 +248,33 @@ class ToggleButton(QPushButton):
 
     def _toggle(self):
         self.toggle()
+
+
+class CustomProgressBarDialog(QDialog):
+    def __init__(self, msec: int = 1000):
+        super().__init__()
+        self.setFixedSize(QSize(500, 200))
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignCenter)
+        self.title_label = QLabel("Extract Frames...")
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setFixedSize(QSize(450, 100))
+        self.main_layout.addWidget(self.title_label)
+        self.main_layout.addWidget(self.progress_bar)
+        self.setLayout(self.main_layout)
+
+        self.cnt, self.boundary = 0, msec
+        self.timer = QTimer()
+        self.timer.setInterval(1)
+        self.timer.timeout.connect(self.set_value)
+        self.timer.start()
+
+    def set_value(self):
+        if self.cnt == self.boundary:
+            self.close()
+        self.cnt += 1
+        tmp = (self.cnt / self.boundary) * 100
+        self.progress_bar.setValue(tmp)
+        self.progress_bar.setFormat("%.02f %%" % tmp)

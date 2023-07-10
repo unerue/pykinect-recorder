@@ -197,5 +197,6 @@ class Device:
 
         if self.recording:
             self.record.write_capture(Device.capture.handle())
+            
 
         return Device.capture
