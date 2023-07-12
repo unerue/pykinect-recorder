@@ -13,10 +13,11 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 <br>
 
 <div display="flex;">
-<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/6d97602a-7438-4829-8ed2-d46e63919975">
+<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/381437ea-5806-45e4-b093-ac31f1f4dd13">
 </div>
 
 <br>
+
 
 ## Documentation
 
@@ -33,6 +34,7 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 - [x] Control recording option (FPS, brightness, ...).
 - [x] Change layout with drag and drop.
 - [x] Playback recorded video.
+- [ ] Run in Ubuntu 18.04.
 - [ ] Recording audio.
 - [ ] 3D Viewer with streaming/recorded video.
 - [ ] Deep learning inference (mediapipe and native) with streaming/recorded video.
@@ -43,7 +45,9 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 
 
 ## Prerequisites
-OS Windows 10 and Ubuntu 
+
+### Environment
+- Windows 10(Recommended), 11
 
 ### Install Azure Kinect SDK 
 - Make sure you download Azure Kinect SDK before using this repo. 
