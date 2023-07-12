@@ -15,7 +15,7 @@ from .viewer_audio import AudioSensor
 from .sidebar_record_control import config_sidebar
 from ..signals import all_signals
 from ..common_widgets import Frame, VLine, CustomProgressBarDialog
-from ...pyk4a.k4a._k4a import k4a_device_set_color_control
+from ...pyk4a.k4a._k4a import k4a_device_set_color_control, k4a_image_set_exposure_time_usec
 from ...pyk4a.k4a._k4atypes import color_command_dict, K4A_COLOR_CONTROL_MODE_MANUAL
 from ...pyk4a.k4a.configuration import Configuration
 from ...pyk4a.pykinect import start_device

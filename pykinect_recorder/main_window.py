@@ -24,8 +24,8 @@ class MainWindow(QMainWindow):
         self.initial_window()
 
     def initial_window(self) -> None:
-        self.setMinimumSize(QSize(1280, 740))
-        self.setMaximumSize(QSize(1550, 1080))
+        self.setMinimumSize(QSize(1310, 740))
+        self.setMaximumSize(QSize(1580, 1080))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.is_maximize = False

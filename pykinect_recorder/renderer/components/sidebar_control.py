@@ -10,7 +10,7 @@ from ..signals import all_signals
 class StackedSidebar(QFrame):
     def __init__(self) -> None:
         super().__init__()
-        self.setMaximumWidth(300)
+        self.setMaximumWidth(330)
         self.setContentsMargins(0, 0, 0, 0)
         self.main_layout = QStackedLayout()
         self.sidebar_viewer = ViewerSidebar()

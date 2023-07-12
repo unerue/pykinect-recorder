@@ -11,7 +11,8 @@ class OptionSignals(QObject):
     sidebar_toggle = Signal(bool)
     camera_option = Signal(dict)
     device_option = Signal(str)
-    
+    color_option = Signal(str)
+
     device_serial_number = Signal(str)
     save_filepath = Signal(str)
     clear_frame = Signal(bool)

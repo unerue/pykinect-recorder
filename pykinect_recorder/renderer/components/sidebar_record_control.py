@@ -11,13 +11,14 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QScrollArea,
     QDialog,
-    QFileDialog
+    QFileDialog,
+    QLineEdit
 )
 from PySide6.QtCore import Qt, QSize, Slot
 import qtawesome as qta
 
 from ..signals import all_signals
-from ..common_widgets import ComboBox, Slider, HLine, ToggleButton, Label
+from ..common_widgets import ComboBox, Slider, HLine, ToggleButton, Label, LineEdit
 from ...pyk4a.k4a.configuration import Configuration
 from ...pyk4a.pykinect import start_device, initialize_libraries
 
@@ -30,7 +31,7 @@ class ViewerSidebar(QFrame):
             border-radius: 0px;                   
         """)
         self.setMinimumSize(QSize(200, 670))
-        self.setMaximumSize(QSize(300, 1340))
+        self.setMaximumSize(QSize(330, 1340))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.is_run = False
@@ -250,6 +251,7 @@ class BtnPanel(QFrame):
             self.is_device = False
             self.btn_switch.toggle()
             all_signals.option_signals.sidebar_toggle.emit(True)
+            all_signals.option_signals.clear_frame.emit(True)
     
     @Slot(str)
     def set_device_serial_number(self, value: str):
@@ -341,56 +343,105 @@ class RgbCameraPanel(QFrame):
 
 class ColorControlPanel(QFrame):
     """
-    exposure_time (float): This blah blah ~~ 500 to 1000000
-    white_balance (float): 2500 ~ 12500
+    exposure_time (int):
+        - This option controls exposure time for color image.
+        - The valid range is 500 to 1000000 in microseconds. The default value is 33300.
+        - The exposure time cannot be larger than the equivelent FPS.
+    white_balance (int):
+        - This option controls white balance of the image in degrees Kelvin.
+        - The valid range is 2500 to 12500. The default value is 4500.
+        - The setting must be set to a value evenly divisible by 10 degrees.
+    brightness (int): 
+        - This option controls brightness in camera.
+        - The valid range is 0 to 255. The default value is 128.
+    contrast (int):
+        - This option controls contrast in camera.
+        - The valid range is 0 to 10. The default value is 5.
+    saturation (int):
+        - This option controls saturation in camera.
+        - The valid range is 0 to 63. The default value is 32.
+    sharpness (int):
+        - This option controls sharpness in camera.
+        - The valid range is 0 to 4. The default value is 2.
+    gain (int):
+        - This option needs for images correction.
+        - It amplifies input signals more high value like (x1.2), (x1.4).
+        - See more details in https://visionblog.vieworks.com/camera/faq/image-processing/what-is-gain/
+    backlight compensation
+        - This option controls backlight compensation in camera.
+        - Value of 0 means backlight compensation is disabled. 
+        - Value of 1 means backlight compensation is enabled.
+    power prequency
+        - This option controls power-line frequency setting in camera.
+        - Value of 0 means set power-line compensation to 50Hz. 
+        - Value of 1 means set power-line compensation to 60Hz.
     """
     def __init__(self) -> None:
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.grid_layout = QGridLayout()
+        self.grid_layout.setAlignment(Qt.AlignLeft)
+        self.grid_layout.setSpacing(4)
+        self.grid_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.grid_layout.addWidget(QLabel("Exposure Time"), 0, 0)
-        self.exposure_time = Slider(Qt.Orientation.Horizontal, (500, 1000000), 33300)
-        self.grid_layout.addWidget(self.exposure_time, 0, 1)
+        self.grid_layout.addWidget(QLabel("Exposure Time"), 0, 0, 1, 2)
+        self.exposure_time = Slider(Qt.Orientation.Horizontal, (500, 133330), 33300)  #TODO FPS에 맞게 조절
+        self.grid_layout.addWidget(self.exposure_time, 0, 2)
+        self.edit_exposure = LineEdit(width=60, name="exposure")
+        self.grid_layout.addWidget(self.edit_exposure, 0, 3)
         self.exposure_time.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("White Balance"), 1, 0)
+        self.grid_layout.addWidget(QLabel("White Balance"), 1, 0, 1, 2)
         self.white_balance = Slider(Qt.Orientation.Horizontal, (2500, 12500), 4500)
-        self.grid_layout.addWidget(self.white_balance, 1, 1)
+        self.grid_layout.addWidget(self.white_balance, 1, 2)
+        self.edit_white = LineEdit(width=60, name="whitebalance")
+        self.grid_layout.addWidget(self.edit_white, 1, 3)
         self.white_balance.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("Brightness"), 2, 0)
+        self.grid_layout.addWidget(QLabel("Brightness"), 2, 0, 1, 2)
         self.brightness = Slider(Qt.Orientation.Horizontal, (0, 255), 128)
-        self.grid_layout.addWidget(self.brightness, 2, 1)
+        self.grid_layout.addWidget(self.brightness, 2, 2)
+        self.edit_brightness = LineEdit(width=60, name="brightness")
+        self.grid_layout.addWidget(self.edit_brightness, 2, 3)
         self.brightness.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("Contrast"), 3, 0)
+        self.grid_layout.addWidget(QLabel("Contrast"), 3, 0, 1, 2)
         self.contrast = Slider(Qt.Orientation.Horizontal, (0, 10), 5)
-        self.grid_layout.addWidget(self.contrast, 3, 1)
+        self.grid_layout.addWidget(self.contrast, 3, 2)
+        self.edit_contrast = LineEdit(width=60, name="contrast")
+        self.grid_layout.addWidget(self.edit_contrast, 3, 3)
         self.contrast.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("Saturation"), 4, 0)
+        self.grid_layout.addWidget(QLabel("Saturation"), 4, 0, 1, 2)
         self.saturation = Slider(Qt.Orientation.Horizontal, (0, 63), 32)
-        self.grid_layout.addWidget(self.saturation, 4, 1)
+        self.grid_layout.addWidget(self.saturation, 4, 2)
+        self.edit_saturation = LineEdit(width=60, name="saturation")
+        self.grid_layout.addWidget(self.edit_saturation, 4, 3)
         self.saturation.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("Sharpness"), 5, 0)
+        self.grid_layout.addWidget(QLabel("Sharpness"), 5, 0, 1, 2)
         self.sharpness = Slider(Qt.Orientation.Horizontal, (0, 4), 2)
-        self.grid_layout.addWidget(self.sharpness, 5, 1)
+        self.grid_layout.addWidget(self.sharpness, 5, 2)
+        self.edit_sharpness = LineEdit(width=60, name="sharpness")
+        self.grid_layout.addWidget(self.edit_sharpness, 5, 3)
         self.sharpness.sliderReleased.connect(self.set_config)
 
-        self.grid_layout.addWidget(QLabel("Gain"), 6, 0)
+        self.grid_layout.addWidget(QLabel("Gain"), 6, 0, 1, 2)
         self.gain = Slider(Qt.Orientation.Horizontal, (0, 255), 128)
-        self.grid_layout.addWidget(self.gain, 6, 1)
+        self.grid_layout.addWidget(self.gain, 6, 2)
+        self.edit_gain = LineEdit(width=60, name="gain")
+        self.grid_layout.addWidget(self.edit_gain, 6, 3)
         self.gain.sliderReleased.connect(self.set_config)
 
-        self.backlight = QCheckBox("Backlight compensation")
-        self.backlight.setCheckable(True)
+        self.grid_layout.addWidget(QLabel("Backlight Compensation"), 7, 0, 1, 3)
+        self.backlight = QCheckBox("")
+        self.backlight.setLayoutDirection(Qt.RightToLeft)
         self.backlight.stateChanged.connect(self.set_config)
-        self.grid_layout.addWidget(self.backlight, 7, 0, 1, 2)
+        self.grid_layout.addWidget(self.backlight, 7, 3)
 
-        self.grid_layout.addWidget(QLabel("Power Freq."), 8, 0)
+        self.grid_layout.addWidget(QLabel("Power Freqency"), 8, 0, 1, 2)
         power_freq_layout = QHBoxLayout()
+        power_freq_layout.setAlignment(Qt.AlignRight)
         self.power_freq1 = QRadioButton("50hz")
         self.power_freq2 = QRadioButton("60hz")
         self.power_freq2.setChecked(True)
@@ -398,10 +449,11 @@ class ColorControlPanel(QFrame):
         self.power_freq2.clicked.connect(self.set_config)
         power_freq_layout.addWidget(self.power_freq1)
         power_freq_layout.addWidget(self.power_freq2)
-        self.grid_layout.addLayout(power_freq_layout, 8, 1)
+        self.grid_layout.addLayout(power_freq_layout, 8, 2, 1, 2)
 
         self.set_config()
         self.setLayout(self.grid_layout)
+        all_signals.option_signals.color_option.connect(self.set_color_option)
 
     def set_config(self) -> None:
         color_option = {
@@ -417,7 +469,31 @@ class ColorControlPanel(QFrame):
         }
         config_sidebar["color_option"] = color_option
         all_signals.option_signals.camera_option.emit(config_sidebar)
+        print(config_sidebar)
 
+    def set_color_option(self, name: str) -> None:
+        if name == "exposure": 
+            self.exposure_time.setValue(int(self.edit_exposure.text()))
+            self.edit_exposure.clear()
+        elif name == "whitebalance": 
+            self.white_balance.setValue(int(self.edit_white.text()))
+            self.edit_white.clear()
+        elif name == "contrast": 
+            self.contrast.setValue(int(self.edit_contrast.text()))
+            self.edit_contrast.clear()
+        elif name == "saturation": 
+            self.saturation.setValue(int(self.edit_saturation.text()))
+            self.edit_saturation.clear()
+        elif name == "sharpness": 
+            self.sharpness.setValue(int(self.edit_sharpness.text()))
+            self.edit_sharpness.clear()
+        elif name == "brightness": 
+            self.brightness.setValue(int(self.edit_brightness.text()))
+            self.edit_brightness.clear()
+        elif name == "gain": 
+            self.gain.setValue(int(self.edit_gain.text()))
+            self.edit_gain.clear()
+        self.set_config()
 
 class DepthCameraPanel(QFrame):
     def __init__(self) -> None:
@@ -534,6 +610,7 @@ class AudioPanel(QFrame):
 
         self.is_change = True
         self.btn_switch = ToggleButton()
+        self.btn_switch.setDisabled(True)
         title_layout.addWidget(QLabel("<b>Audio Option<b>"))
         title_layout.addStretch()
         title_layout.addWidget(self.btn_switch)

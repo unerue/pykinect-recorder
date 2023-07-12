@@ -5,9 +5,10 @@ from PySide6.QtCore import Qt, QPoint, QRect, QSize, QTimer
 from PySide6.QtGui import QFont, QPen, QPainter, QFontMetrics, QColor
 from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton, QSlider, QFrame, QDialog,
-    QVBoxLayout, QHBoxLayout, QSizePolicy, QProgressBar
+    QVBoxLayout, QHBoxLayout, QSizePolicy, QProgressBar, QLineEdit
 )
 
+from .signals import all_signals
 
 """
 In script file, There are many custom widgets to use frequently in this project.
@@ -96,7 +97,7 @@ class Slider(QSlider):
         rect = self.geometry()
         if self.orientation() == Qt.Horizontal:
             horizontal_x_pos = rect.width() // 2 - font_width // 2 - 5
-            horizontal_y_pos = rect.height() * 0.7
+            horizontal_y_pos = rect.height() * 0.67
             painter.drawText(QPoint(horizontal_x_pos, horizontal_y_pos), curr_value)
         else:
             pass
@@ -187,6 +188,21 @@ class Frame(QFrame):
             self.main_layout.addWidget(self.frame_image)
 
         self.setLayout(self.main_layout)
+
+
+class LineEdit(QLineEdit):
+    def __init__(self, width: int = None, height: int = None, name: str = None) -> QLineEdit:
+        super().__init__()
+        if width:
+            self.setFixedWidth(width)
+        if height:
+            self.setFixedHeight(height)
+        if name:
+            self.setObjectName(name)        
+        self.editingFinished.connect(self.emit_objname)
+    
+    def emit_objname(self):
+        all_signals.option_signals.color_option.emit(self.objectName())
 
 
 class HLine(QFrame):
