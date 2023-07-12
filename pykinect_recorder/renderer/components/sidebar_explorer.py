@@ -85,8 +85,10 @@ class ExplorerSidebar(QFrame):
                     fsize = os.path.getsize(filedir) / (2**30)
                     record_time = str(datetime.timedelta(seconds=record_length))
                     playback.close()
-
-                    fileinfo.label_file_name.setText(_filename)
+                    
+                    font_metrics = fileinfo.label_file_name.fontMetrics()
+                    elided_text = font_metrics.elidedText(_filename, Qt.ElideRight, fileinfo.label_file_name.width())
+                    fileinfo.label_file_name.setText(elided_text)
                     fileinfo.label_metadata.setText(f"{record_time} ({fsize:.2f}GB)")
                     layout_file.addWidget(fileinfo)
                     fileinfo.Filename.connect(self.emit_file_path)
@@ -145,6 +147,7 @@ class _FileInfo(QPushButton):
         self.thumbnail_layout = QHBoxLayout()
         # self.label_thumbnail = Label()
         self.label_file_name = Label("File name: ", "Arial", 10, Qt.AlignLeft)
+        self.label_file_name.setFixedWidth(240)
         self.label_file_name.setWordWrap(True)
         # self.thumbnail_layout.addWidget(self.label_thumbnail)
         self.thumbnail_layout.addWidget(self.label_file_name)
