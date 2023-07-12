@@ -30,20 +30,22 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 ##  Features
 
 - [x] See RGB, IR, Depth, IMU and Audio data when recoding.
-- [x] Control Recording option (FPS, brightness, ...).
+- [x] Control recording option (FPS, brightness, ...).
 - [x] Change layout with drag and drop.
-- [x] Playback Recorded video.
-- [ ] Recording Audio.
+- [x] Playback recorded video.
+- [ ] Recording audio.
 - [ ] 3D Viewer with streaming/recorded video.
-- [ ] Deep Learning Inference with streaming/recorded video.
+- [ ] Deep learning inference (mediapipe and native) with streaming/recorded video.
 - [ ] Sync multi camera.
+- [ ] Intel RealSense 
+- [ ] Zenmuse SDK for Python
 
-<br>
+
 
 ## Prerequisites
+OS Windows 10 and Ubuntu 
 
-### Azure kinect SDK 
-
+### Install Azure Kinect SDK 
 - Make sure you download Azure Kinect SDK before using this repo. 
 - SDK version '1.4.1' supported in release 1.0.0.
 - You can download Azure Kinect SDK [here](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md).
@@ -52,7 +54,6 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 - Make sure you download Anaconda before using this repo.
 - You can download Miniconda [here](https://docs.conda.io/en/latest/miniconda.html).
 
-<br>
 
 ## Installation
  
@@ -60,12 +61,13 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 ```bash
 conda create -n azure python=3.10 -y
 conda activate azure
+
 pip install pykinect-recorder
 
-pykinect
+pykinect-recorder
 ```
 
-<br>
+
 
 ## Features
 

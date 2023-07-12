@@ -340,6 +340,10 @@ class RgbCameraPanel(QFrame):
 
 
 class ColorControlPanel(QFrame):
+    """
+    exposure_time (float): This blah blah ~~ 500 to 1000000
+    white_balance (float): 2500 ~ 12500
+    """
     def __init__(self) -> None:
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
