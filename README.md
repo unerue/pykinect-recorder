@@ -6,10 +6,10 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </div>
 
-<br>
+<!-- <br>
 <div>
-The pykinect-recorder is an educational/industrial library that provides sensor recording (including audio), playback, and computer vision soultions through a python wrapper of the Azure Kinect Sensor SDK.
-</div>
+
+</div> -->
 
 <br>
 
@@ -18,6 +18,14 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 </div>
 
 <br>
+
+
+## Description
+The pykinect-recorder is an educational/industrial library that provides sensor recording (including audio), playback, and computer vision soultions through a python wrapper of the Azure Kinect Sensor SDK.
+
+Recording and playback example below.
+
+<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/e6afa357-52b6-4e52-83b0-b95dfe8a0d2e" width="50%" /><img src="https://github.com/unerue/pykinect-recorder/assets/78347296/c9695ccc-b991-4103-bced-34b49bb0f4fd" width="50%" />
 
 
 ## Documentation
