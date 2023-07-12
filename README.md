@@ -3,6 +3,7 @@
 <div align="center">
   <a href="https://pypi.python.org/pypi/pykinect-recorder"><img src="https://img.shields.io/pypi/v/pykinect-recorder.svg"></a>
   <a href="https://pypi.org/project/pykinect-recorder"><img src="https://img.shields.io/pypi/pyversions/pykinect-recorder.svg"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </div>
 
 <br>
@@ -13,7 +14,7 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 <br>
 
 <div display="flex;">
-<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/381437ea-5806-45e4-b093-ac31f1f4dd13">
+<img src="https://github.com/unerue/pykinect-recorder/assets/78347296/bb88a4a2-1ed6-490d-9e4e-83353c423401">
 </div>
 
 <br>
@@ -21,11 +22,9 @@ The pykinect-recorder is an educational/industrial library that provides sensor 
 
 ## Documentation
 
+You can find the API documentation on our website: https://pykinect-recorder.readthedocs.io/en/latest/index.html.
 
-You can find the API documentation on our website: https://pykinect-recorder.readthedocs.io/en/latest/index.html
-
-For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK website: https://microsoft.github.io/Azure-Kinect-Sensor-SDK/master/index.html
-
+For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK github: https://github.com/microsoft/Azure-Kinect-Sensor-SDK.
 
 
 ##  Features
@@ -43,36 +42,22 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK we
 - [ ] Zenmuse SDK for Python
 
 
-
 ## Prerequisites
 
 ### Environment
-- Windows 10(Recommended), 11
+- Windows 10 (Recommended).
+- Windows 11.
 
 ### Install Azure Kinect SDK 
 - Make sure you download Azure Kinect SDK before using this repo. 
 - SDK version '1.4.1' supported in release 1.0.0.
 - You can download Azure Kinect SDK [here](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md).
     
-### Anaconda
-- Make sure you download Anaconda before using this repo.
-- You can download Miniconda [here](https://docs.conda.io/en/latest/miniconda.html).
-
 
 ## Installation
  
-### Anaconda
+### Using pip
 ```bash
-conda create -n azure python=3.10 -y
-conda activate azure
-
 pip install pykinect-recorder
-
 pykinect-recorder
 ```
-
-
-
-## Features
-
-ML Solutions: native, mediapipe, torchvision
