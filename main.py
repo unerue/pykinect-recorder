@@ -13,8 +13,8 @@ if __name__ == "__main__":
     # tray_icon.setToolTip("Pykinect Recorder")
     # tray_icon.show()
 
-    screen_rect = app.primaryScreen().size()
-    width, height = screen_rect.width(), screen_rect.height()
+    screen_size = app.primaryScreen().size()
+    width, height = screen_size.width(), screen_size.height()
     main_window = MainWindow(width, height)
     main_window.show()
     app.exec()

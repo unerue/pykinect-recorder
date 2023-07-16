@@ -22,7 +22,9 @@ def cli():
 def main():
     app = QApplication()
     qdarktheme.setup_theme()
-    main_window = MainWindow()
+    screen_rect = app.primaryScreen().size()
+    width, height = screen_rect.width(), screen_rect.height()
+    main_window = MainWindow(width, height)
     main_window.show()
     app.exec()
 
