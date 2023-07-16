@@ -54,12 +54,12 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK gi
 ## Prerequisites
 
 ### Environment
-- Windows 10 (Recommended).
-- Windows 11.
+- Windows 10 (Recommended)
+- Windows 11
 
 ### Install Azure Kinect SDK 
 - Make sure you download Azure Kinect SDK before using this repo. 
-- SDK version '1.4.1' supported in release 1.0.0.
+- SDK version '1.4.1' supported in release 0.9.3.
 - You can download Azure Kinect SDK [here](https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/docs/usage.md).
     
 
@@ -67,6 +67,10 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK gi
  
 ### Using pip
 ```bash
+python -m venv .venv
+.venv/Scripts/activate.ps1
 pip install pykinect-recorder
-pykinect-recorder
+pykinect
 ```
+
+### Using .exe

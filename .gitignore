@@ -15,3 +15,5 @@ dataset_list.txt
 metadata.csv
 .vscode
 *.mkv
+examples
+pykinect_recorder/dev
