@@ -1,7 +1,7 @@
 import cv2
 
-import pykinect_azure as pykinect
-from pykinect_azure.utils import Open3dVisualizer
+from pykinect_recorder.pyk4a import pykinect
+from pykinect_recorder.pyk4a.utils import Open3dVisualizer
 
 if __name__ == "__main__":
     # Initialize the library, if the library is not found, add the library path as argument
@@ -9,9 +9,9 @@ if __name__ == "__main__":
 
     # Modify camera configuration
     device_config = pykinect.default_configuration
-    device_config.color_format = pykinect.K4A_IMAGE_FORMAT_COLOR_BGRA32
-    device_config.color_resolution = pykinect.K4A_COLOR_RESOLUTION_720P
-    device_config.depth_mode = pykinect.K4A_DEPTH_MODE_NFOV_2X2BINNED
+    device_config.color_format = pykinect._k4a.K4A_IMAGE_FORMAT_COLOR_BGRA32
+    device_config.color_resolution = pykinect._k4a.K4A_COLOR_RESOLUTION_720P
+    device_config.depth_mode = pykinect._k4a.K4A_DEPTH_MODE_NFOV_2X2BINNED
     # print(device_config)
 
     # Start device

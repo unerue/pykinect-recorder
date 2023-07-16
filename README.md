@@ -41,11 +41,12 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK gi
 - [x] Control recording option (FPS, brightness, ...).
 - [x] Change layout with drag and drop.
 - [x] Playback recorded video.
-- [ ] Run in Ubuntu 18.04.
+- [ ] 3D reconstruction viewer with streaming/recorded video.
+- [ ] Sync devices
+- [ ] screen zoom in-out
+- [ ] imu, microphone panel redesign
 - [ ] Recording audio.
-- [ ] 3D Viewer with streaming/recorded video.
 - [ ] Deep learning inference (mediapipe and native) with streaming/recorded video.
-- [ ] Sync multi camera.
 - [ ] Intel RealSense 
 - [ ] Zenmuse SDK for Python
 

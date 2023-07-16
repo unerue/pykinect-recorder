@@ -28,7 +28,7 @@ class PlaybackSensors(QThread):
             _, current_frame = self.playback.update()
             current_imu_data = self.playback.get_next_imu_sample()
             current_rgb_frame = current_frame.get_color_image()
-            current_depth_frame = current_frame.get_depth_image()
+            current_depth_frame = current_frame.get_colored_depth_image()
             current_ir_frame = current_frame.get_ir_image()
 
             if current_rgb_frame[0]:
