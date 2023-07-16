@@ -8,7 +8,11 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('pykinect_recorder/renderer/public/', 'pykinect_recorder/renderer/public/'),
+        ('pykinect_recorder/renderer/components/', 'pykinect_recorder/renderer/components/'),
+        ('pykinect_recorder/', 'pykinect_recorder/'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

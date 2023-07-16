@@ -6,8 +6,6 @@ build
 main.spec
 pykinect_recorder.exe
 main/synology_utils.py
-build
-dist
 pykinect_recorder.egg-info
 *.exe
 datas/*
@@ -15,3 +13,5 @@ pykinect_recorder/main/synology_utils.py
 dataset_list.txt
 .pytest_cache
 metadata.csv
+.vscode
+*.mkv

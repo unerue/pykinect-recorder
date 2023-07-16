@@ -1,6 +1,6 @@
 import cv2
 
-import pykinect_azure as pykinect
+import pykinect_recorder as pykinect
 
 if __name__ == "__main__":
     # Initialize the library, if the library is not found, add the library path as argument

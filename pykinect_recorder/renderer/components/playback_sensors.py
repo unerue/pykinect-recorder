@@ -1,80 +1,64 @@
 import cv2
-import time
 
-from numpy.typing import NDArray
-from typing import Optional, Tuple
-
-from PySide6.QtCore import Qt, Signal, QThread, QTimer
+from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtGui import QImage
-from pykinect_recorder.main.pyk4a.k4arecord.playback import Playback
-from pykinect_recorder.main.pyk4a.k4a._k4a import k4a_image_get_device_timestamp_usec
+from ...pyk4a.k4arecord.playback import Playback
+from ...pyk4a.utils import colorize
 from ..signals import all_signals
 
 
-class PlaybackSensors:
+class PlaybackSensors(QThread):
     def __init__(self, playback: Playback) -> None:
+        super().__init__()
         self.playback = playback
-        self.odd = True
-        self.time_tick = 33322
+        dict_fps = {0: "5", 1: "15", 2: "30"}
+        self.device_fps = int(dict_fps[self.playback.get_record_configuration()._handle.camera_fps])
+
         self.timer = QTimer()
-        self.timer.setInterval(30)
+        self.timer.setInterval(1000 / self.device_fps)
         self.timer.timeout.connect(self.run)
-        all_signals.time_control.connect(self.change_timestamp)
+        all_signals.playback_signals.time_control.connect(self.change_timestamp)
 
     def change_timestamp(self, time: int):
         self.playback.seek_timestamp(time)
         self.update_next_frame()
 
     def update_next_frame(self):
-        _, current_frame = self.playback.update()
-        current_rgb_frame = current_frame.get_color_image()
-        current_depth_frame = current_frame.get_depth_image()
-        current_ir_frame = current_frame.get_ir_image()
+        try:
+            _, current_frame = self.playback.update()
+            current_imu_data = self.playback.get_next_imu_sample()
+            current_rgb_frame = current_frame.get_color_image()
+            current_depth_frame = current_frame.get_colored_depth_image()
+            current_ir_frame = current_frame.get_ir_image()
 
-        if current_rgb_frame[0]:
-            rgb_frame = current_rgb_frame[1]
-            rgb_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
+            if current_rgb_frame[0]:
+                rgb_frame = cv2.cvtColor(current_rgb_frame[1], cv2.COLOR_BGR2RGB)
+                h, w, ch = rgb_frame.shape
+                rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
+                all_signals.playback_signals.rgb_image.emit(rgb_frame)
 
-            h, w, ch = rgb_frame.shape
-            rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
-            scaled_rgb_frame = rgb_frame.scaled(720, 440, Qt.KeepAspectRatio)
-            all_signals.captured_rgb.emit(scaled_rgb_frame)
+            if current_depth_frame[0]:
+                depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
+                h, w, ch = depth_frame.shape
+                depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
+                all_signals.playback_signals.depth_image.emit(depth_frame)
 
-        if current_depth_frame[0]:
-            depth_frame = self._colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
-            h, w, ch = depth_frame.shape
+            if current_ir_frame[0]:
+                ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
+                h, w, ch = ir_frame.shape
+                ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)     
+                all_signals.playback_signals.ir_image.emit(ir_frame)
+    
+            acc_time = current_imu_data.acc_time
+            acc_data = current_imu_data.acc
+            gyro_data = current_imu_data.gyro
 
-            depth_frame = QImage(depth_frame, w, h, w * ch, QImage.Format_RGB888)
-            scaled_depth_frame = depth_frame.scaled(440, 440, Qt.KeepAspectRatio)
-            all_signals.captured_depth.emit(scaled_depth_frame)
-
-        if current_ir_frame[0]:
-            ir_frame = self._colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
-            h, w, ch = ir_frame.shape
-
-            ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)
-            scaled_ir_frame = ir_frame.scaled(440, 440, Qt.KeepAspectRatio)
-            all_signals.captured_ir.emit(scaled_ir_frame)
+            all_signals.playback_signals.video_fps.emit(int(self.device_fps))
+            all_signals.playback_signals.record_time.emit(acc_time / 1e6)
+            all_signals.playback_signals.imu_acc_data.emit(acc_data)
+            all_signals.playback_signals.imu_gyro_data.emit(gyro_data)
+        except:
+            self.timer.stop()
 
     def run(self):
-        all_signals.time_value.emit(self.time_tick)
-        if self.odd:
-            self.odd = False
-            self.time_tick = 33345
-        else:
-            self.odd = True
-            self.time_tick = 33322
-
-    def _colorize(
-        self,
-        image: NDArray,
-        clipping_range: Tuple[Optional[int], Optional[int]] = (None, None),
-        colormap: int = cv2.COLORMAP_HSV,
-    ) -> NDArray:
-        if clipping_range[0] or clipping_range[1]:
-            img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
-        else:
-            img = image.copy()
-        img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        img = cv2.applyColorMap(img, colormap)
-        return img
+        all_signals.playback_signals.time_value.emit(1e6//self.device_fps)

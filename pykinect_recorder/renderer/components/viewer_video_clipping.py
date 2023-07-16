@@ -1,16 +1,18 @@
 import os
 import cv2
+
+from superqt import QLabeledRangeSlider
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Slot, Qt, QSize, QTimer
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QMainWindow,
-    QPushButton, QFrame, QWidget, QFileDialog, QProgressBar
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
+    QFrame, QWidget, QFileDialog, QProgressBar
 )
 
 from ..signals import all_signals
-from superqt import QLabeledRangeSlider
-from pykinect_recorder.main.pyk4a.pykinect import start_playback, start_device, initialize_libraries
-from pykinect_recorder.main.pyk4a.k4a.configuration import Configuration
+from ...pyk4a.utils import colorize
+from ...pyk4a.pykinect import start_playback, start_device, initialize_libraries
+from ...pyk4a.k4a.configuration import Configuration
 
 
 class VideoClippingDialog(QDialog):
@@ -25,6 +27,7 @@ class VideoClippingDialog(QDialog):
         self.save_file_name = self.file_name.split('/')[-1][:-4]
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
+        self.fps_dict = {0: "5", 1: "15", 2: "30"}
 
         self.main_widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -38,9 +41,9 @@ class VideoClippingDialog(QDialog):
         
         self.btn_layout = QHBoxLayout()
         self.btn_layout.setAlignment(Qt.AlignRight)
-        self.save_btn = QPushButton("추출")
+        self.save_btn = QPushButton("extract")
         self.save_btn.setFixedHeight(40)
-        self.exit_btn = QPushButton("종료")
+        self.exit_btn = QPushButton("exit")
         self.exit_btn.setFixedHeight(40)
         self.btn_layout.addWidget(self.save_btn)
         self.btn_layout.addWidget(self.exit_btn)
@@ -100,32 +103,39 @@ class VideoClippingDialog(QDialog):
         self.setLayout(self.main_layout)
 
         self.initialize_playback()
-        self.update_next_frame()
         self.save_btn.clicked.connect(self.select_root_path)
         self.exit_btn.clicked.connect(self.close_dialog)
         self.time_slider.valueChanged.connect(self.control_timestamp)
-        all_signals.clip_option.connect(self.set_clip_option)
+        all_signals.playback_signals.clip_option.connect(self.set_clip_option)
+
+        self.playback.seek_timestamp(self.start_time+self.ticks)
+        self.update_next_frame()
 
     def close_dialog(self):
         self.close()
 
     def initialize_playback(self):
         self.playback = start_playback(self.file_name)
-        self.left, self.right = 0, self.playback.get_recording_length()//33333
+        self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec
+        self.device_fps = self.playback.get_record_configuration()._handle.camera_fps
+        self.ticks = int(1e6 // int(self.fps_dict[self.device_fps]))
+
+        self.left = 0
+        self.right = (self.playback.get_recording_length()-self.start_time) // self.ticks - 1
         self.total_frame = self.right - self.left
 
         self.time_slider.setTickInterval(1)
-        self.time_slider.setRange(self.left, self.right)  ## 마이크로세컨 -> 프레임단위
+        self.time_slider.setRange(self.left, self.right)
         self.time_slider.setValue([self.left, self.right])
 
     def control_timestamp(self):
         cur_left, cur_right = self.time_slider.value()
         if cur_left != self.left:
             self.left = cur_left
-            self.playback.seek_timestamp(self.left*33333)
+            self.playback.seek_timestamp(self.start_time + self.left*self.ticks)
         elif cur_right != self.right:
             self.right = cur_right
-            self.playback.seek_timestamp(self.right*33333)
+            self.playback.seek_timestamp(self.start_time + self.right*self.ticks)
         self.update_next_frame()
 
     def update_next_frame(self):
@@ -138,15 +148,6 @@ class VideoClippingDialog(QDialog):
         rgb_frame = QImage(rgb_frame, w, h, ch * w, QImage.Format_RGB888)
         scaled_rgb_frame = rgb_frame.scaled(1080, 720, Qt.KeepAspectRatio)
         self.media_label.setPixmap(QPixmap.fromImage(scaled_rgb_frame))
-
-    def colorize(self, image, clipping_range, colormap):
-        if clipping_range[0] or clipping_range[1]:
-            img = image.clip(clipping_range[0], clipping_range[1])  # type: ignore
-        else:
-            img = image.copy()
-        img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        img = cv2.applyColorMap(img, colormap)
-        return img
     
     @Slot(str)
     def set_clip_option(self, value):
@@ -163,7 +164,7 @@ class VideoClippingDialog(QDialog):
 
     def extract_mkv(self):
         self.total_frame = self.right - self.left
-        all_signals.video_total_frame.emit(int(self.total_frame))
+        all_signals.playback_signals.video_total_frame.emit(int(self.total_frame))
         config = self.record_config_to_config()
         
         initialize_libraries()
@@ -195,14 +196,13 @@ class VideoClippingDialog(QDialog):
         if self.cnt == self.total_frame:
             self.timer.stop()
 
-        self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
-        # self.playback.update()
         self.cnt += 1
-        all_signals.current_frame_cnt.emit(self.cnt)
+        self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
+        all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
 
     def extract_frame(self):
         self.total_frame = self.right - self.left
-        all_signals.video_total_frame.emit(int(self.total_frame))
+        all_signals.playback_signals.video_total_frame.emit(int(self.total_frame))
         self.playback.seek_timestamp(self.left)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "rgb"), exist_ok=True)
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=True)
@@ -224,13 +224,13 @@ class VideoClippingDialog(QDialog):
         current_ir_frame = current_frame.get_ir_image()
 
         if current_ir_frame[0]:
-            ir_frame = self.colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
+            ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
             cv2.imwrite(os.path.join(
                 self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"), ir_frame,
             )
 
         if current_depth_frame[0]:
-            current_depth_frame = self.colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
+            current_depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
             cv2.imwrite(os.path.join(
                 self.root_path, self.save_file_name, "depth", f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png"), current_depth_frame,
             )
@@ -242,7 +242,7 @@ class VideoClippingDialog(QDialog):
                 [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
         self.cnt += 1
-        all_signals.current_frame_cnt.emit(self.cnt)
+        all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
 
 
 class ProgressBarDialog(QDialog):
@@ -260,8 +260,8 @@ class ProgressBarDialog(QDialog):
         self.main_layout.addWidget(self.title_label)
         self.main_layout.addWidget(self.progress_bar)
 
-        all_signals.current_frame_cnt.connect(self.set_value)
-        all_signals.video_total_frame.connect(self.set_total_frame)
+        all_signals.playback_signals.current_frame_cnt.connect(self.set_value)
+        all_signals.playback_signals.video_total_frame.connect(self.set_total_frame)
         self.setLayout(self.main_layout)
 
     @Slot(int)
@@ -290,6 +290,7 @@ class SelectClipOptionDialog(QDialog):
         self.btn_layout = QHBoxLayout()
         self.btn_mkv = QPushButton("video as '.mkv'")
         self.btn_mkv.setObjectName("btn_mkv")
+        self.btn_mkv.setDisabled(True)
         self.btn_jpg = QPushButton("rgb/ir/depth frame as '.jpg'")
         self.btn_jpg.setObjectName("btn_jpg")
         self.btn_layout.addWidget(self.btn_mkv)
@@ -303,7 +304,7 @@ class SelectClipOptionDialog(QDialog):
 
     def emit_status(self):
         if self.sender().objectName() == "btn_mkv":
-            all_signals.clip_option.emit("mkv")
+            all_signals.playback_signals.clip_option.emit("mkv")
         else:
-            all_signals.clip_option.emit("jpg")
+            all_signals.playback_signals.clip_option.emit("jpg")
         self.close()
