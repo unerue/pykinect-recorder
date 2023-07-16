@@ -1,5 +1,5 @@
 import click
-from pykinect_recorder.renderer import MainWindow
+from pykinect_recorder.main_window import MainWindow
 import qdarktheme
 from PySide6.QtWidgets import QApplication
 
