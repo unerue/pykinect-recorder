@@ -129,11 +129,15 @@ class Frame(QFrame):
     def __init__(
         self,
         text: str,
+        option: str,
         min_size: Tuple[int, int],
         max_size: Tuple[int, int],
         layout: Union[QVBoxLayout, QHBoxLayout] = None,
     ) -> None:
         super().__init__()
+        self.is_zoom = False
+        self.text = text
+        self.option = option
         self.setMinimumSize(QSize(min_size[0], min_size[1]))
         self.setMaximumSize(QSize(max_size[0], max_size[1]))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -170,7 +174,22 @@ class Frame(QFrame):
             background-color: #2c2e37;
         """
         )
+        self.title_btn = QPushButton("+")
+        self.title_btn.setObjectName("title_btn")
+        self.title_btn.setStyleSheet("""
+            QPushButton#title_btn {
+                background: #2c2e37;
+                color: white;
+                border-radius: 0px;
+                border: 0px;
+            }
+            QPushButton#title_btn:hover {
+                border: 1px solid grey;
+            }
+        """)
+        self.title_btn.setFixedSize(QSize(30, 30))
         self.title_layout.addWidget(self.title_name)
+        self.title_layout.addWidget(self.title_btn)
 
         if layout is None:
             self.label_image = QLabel()
@@ -188,6 +207,29 @@ class Frame(QFrame):
             self.main_layout.addWidget(self.frame_image)
 
         self.setLayout(self.main_layout)
+        self.title_btn.clicked.connect(self.emit_frame)
+    
+    def emit_frame(self):
+        if self.is_zoom is False:
+            self.title_btn.setText("-")
+            min_size = [self.minimumSize().width(), self.minimumSize().height()]
+            max_size = [self.maximumSize().width(), self.maximumSize().height()]
+            self.setMinimumSize(min_size[0]*2, min_size[1]*2)
+            self.setMaximumSize(max_size[0]*2, max_size[1]*2)
+            all_signals.option_signals.zoomin_component.emit([self.option, self])
+            self.is_zoom = True
+        else:
+            self.title_btn.setText("+")
+            min_size = [self.minimumSize().width(), self.minimumSize().height()]
+            max_size = [self.maximumSize().width(), self.maximumSize().height()]
+            self.setMinimumSize(min_size[0]//2, min_size[1]//2)
+            self.setMaximumSize(max_size[0]//2, max_size[1]//2)
+            if self.option == "viewer":
+                all_signals.record_signals.zoomout_component.emit([self.text, self])
+            else:
+                all_signals.playback_signals.zoomout_component.emit([self.text, self])
+            all_signals.option_signals.zoomin_component.emit([self.option, self])
+            self.is_zoom = False
 
 
 class LineEdit(QLineEdit):

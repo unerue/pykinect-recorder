@@ -1,4 +1,5 @@
 import time
+import copy
 
 from PySide6.QtCore import Qt, Slot, QEvent, QMimeData, QSize, QPointF
 from PySide6.QtGui import QImage, QPixmap, QDrag
@@ -151,13 +152,19 @@ class CapturedImageViewer(QFrame):
         super().__init__()
         self.target = None
         self.setContentsMargins(0, 0, 0, 0)
+        self.pos_dict = {
+            "IR Sensor": [0, 0],
+            "Depth Sensor": [0, 1],
+            "RGB Sensor": [1, 0],
+            "IMU Sensor": [1, 1]
+        }
 
         self.main_layout = QGridLayout()
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 300), max_size=(595, 510))
-        self.frame_depth = Frame("Depth Sensor", min_size=(460, 300), max_size=(595, 510))
-        self.frame_ir = Frame("IR Sensor", min_size=(460, 300), max_size=(595, 510))
+        self.frame_rgb = Frame("RGB Sensor", "explorer", min_size=(460, 300), max_size=(595, 510))
+        self.frame_depth = Frame("Depth Sensor", "explorer", min_size=(460, 300), max_size=(595, 510))
+        self.frame_ir = Frame("IR Sensor", "explorer", min_size=(460, 300), max_size=(595, 510))
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
@@ -166,7 +173,8 @@ class CapturedImageViewer(QFrame):
 
         self.sensor_data_layout.addWidget(self.imu_senser)
         self.frame_subdata = Frame(
-            "IMU Sensor", 
+            "IMU Sensor",
+            "explorer", 
             layout=self.sensor_data_layout, 
             min_size=(460, 300), 
             max_size=(595, 510)
@@ -183,6 +191,7 @@ class CapturedImageViewer(QFrame):
         all_signals.playback_signals.video_fps.connect(self.set_fps)
         all_signals.playback_signals.imu_acc_data.connect(self.set_acc_data)
         all_signals.playback_signals.imu_gyro_data.connect(self.set_gyro_data)
+        all_signals.playback_signals.zoomout_component.connect(self.zoomout_component)
 
         self.main_layout.addWidget(self.frame_ir, 0, 0)
         self.main_layout.addWidget(self.frame_depth, 0, 1)
@@ -244,6 +253,15 @@ class CapturedImageViewer(QFrame):
             p1, p2 = self.main_layout.getItemPosition(i), self.main_layout.getItemPosition(j)
             self.main_layout.addItem(self.main_layout.takeAt(i), *p2)
             self.main_layout.addItem(self.main_layout.takeAt(j), *p1)
+
+            pt1, pt2 = list(p1[:2]), list(p2[:2])
+            copy_dict = copy.deepcopy(self.pos_dict)
+            for k, v in self.pos_dict.items():
+                if v == pt1:
+                    copy_dict[k] = pt2
+                elif v == pt2:
+                    copy_dict[k] = pt1
+            self.pos_dict = copy_dict
             event.accept()
 
     @Slot(QImage)
@@ -283,6 +301,10 @@ class CapturedImageViewer(QFrame):
         self.imu_senser.label_gyro_x.setText("X : %.5f" % values[0])
         self.imu_senser.label_gyro_y.setText("Y : %.5f" % values[1])
         self.imu_senser.label_gyro_z.setText("Z : %.5f" % values[2])
+
+    @Slot(list)
+    def zoomout_component(self, values) -> None:
+        self.main_layout.addWidget(values[1], *self.pos_dict[values[0]])
 
     def clear_frame(self):
         self.frame_rgb.label_image.clear()

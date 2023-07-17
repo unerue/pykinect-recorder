@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QFrame
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtGui import QImage
 
@@ -6,6 +7,7 @@ class OptionSignals(QObject):
     # Sidebar stacked widget signals
     stacked_sidebar_status = Signal(str)
     camera_connect_status = Signal(bool)
+    zoomin_component = Signal(list)
 
     # Sidebar button signals
     sidebar_toggle = Signal(bool)
@@ -28,6 +30,7 @@ class RecorderSignals(QObject):
     imu_gyro_data = Signal(list)
     audio_data = Signal(list)
     is_sidebar_enable = Signal(bool)
+    zoomout_component = Signal(list)
 
 
 class PlaybackSignals(QObject):
@@ -42,7 +45,8 @@ class PlaybackSignals(QObject):
     playback_filepath = Signal(str)
     time_control = Signal(int)
     time_value = Signal(int)
-    
+    zoomout_component = Signal(list)
+
     # Video clipping signals
     clip_option = Signal(str)
     video_total_frame = Signal(int)

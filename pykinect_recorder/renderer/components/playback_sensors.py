@@ -26,7 +26,6 @@ class PlaybackSensors(QThread):
     def update_next_frame(self):
         try:
             _, current_frame = self.playback.update()
-            current_imu_data = self.playback.get_next_imu_sample()
             current_rgb_frame = current_frame.get_color_image()
             current_depth_frame = current_frame.get_colored_depth_image()
             current_ir_frame = current_frame.get_ir_image()
@@ -49,14 +48,18 @@ class PlaybackSensors(QThread):
                 ir_frame = QImage(ir_frame, w, h, w * ch, QImage.Format_RGB888)     
                 all_signals.playback_signals.ir_image.emit(ir_frame)
     
-            acc_time = current_imu_data.acc_time
-            acc_data = current_imu_data.acc
-            gyro_data = current_imu_data.gyro
-
             all_signals.playback_signals.video_fps.emit(int(self.device_fps))
-            all_signals.playback_signals.record_time.emit(acc_time / 1e6)
-            all_signals.playback_signals.imu_acc_data.emit(acc_data)
-            all_signals.playback_signals.imu_gyro_data.emit(gyro_data)
+            try:
+                current_imu_data = self.playback.get_next_imu_sample()
+                acc_time = current_imu_data.acc_time
+                acc_data = current_imu_data.acc
+                gyro_data = current_imu_data.gyro
+
+                all_signals.playback_signals.record_time.emit(acc_time / 1e6)
+                all_signals.playback_signals.imu_acc_data.emit(acc_data)
+                all_signals.playback_signals.imu_gyro_data.emit(gyro_data)
+            except:
+                pass
         except:
             self.timer.stop()
 

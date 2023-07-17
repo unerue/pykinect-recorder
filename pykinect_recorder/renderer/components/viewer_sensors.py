@@ -1,6 +1,6 @@
 import os
 import sys
-import time
+import copy
 import ctypes
 import datetime
 from pathlib import Path
@@ -39,14 +39,25 @@ class SensorViewer(QFrame):
         self.color_control = None
         self.base_path = None
         self.emit_configs = config_sidebar
+        self.pos_dict = {
+            "IR Sensor": [0, 0],
+            "Depth Sensor": [0, 1],
+            "RGB Sensor": [1, 0],
+            "IMU & Audio Sensor": [1, 1]
+        }
 
         self.main_layout = QGridLayout()
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setAlignment(Qt.AlignCenter)
-        self.frame_rgb = Frame("RGB Sensor", min_size=(460, 330), max_size=(595, 510))
-        self.frame_depth = Frame("Depth Sensor", min_size=(460, 330), max_size=(595, 510))
-        self.frame_ir = Frame("IR Sensor", min_size=(460, 330), max_size=(595, 510))
+
+        self.common_layout = QHBoxLayout()
+        self.common_layout.setSpacing(0)
+        self.common_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.frame_rgb = Frame("RGB Sensor", "viewer", min_size=(460, 330), max_size=(595, 510))
+        self.frame_depth = Frame("Depth Sensor", "viewer", min_size=(460, 330), max_size=(595, 510))
+        self.frame_ir = Frame("IR Sensor", "viewer", min_size=(460, 330), max_size=(595, 510))
 
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
@@ -63,7 +74,8 @@ class SensorViewer(QFrame):
         self.sensor_data_layout.addLayout(self.v_line)
         self.sensor_data_layout.addWidget(self.audio_sensor)
         self.frame_subdata = Frame(
-            "IMU & Audio Sensor", 
+            "IMU & Audio Sensor",
+            "viewer",  
             layout=self.sensor_data_layout, 
             min_size=(460, 330), 
             max_size=(595, 510)
@@ -75,11 +87,9 @@ class SensorViewer(QFrame):
         self.main_layout.addWidget(self.frame_rgb, 1, 0)
         self.main_layout.addWidget(self.frame_subdata, 1, 1)
 
-        self.setAcceptDrops(True)
-        self.setLayout(self.main_layout)
-
         self.is_play = True
         self.is_record = True
+        self.setAcceptDrops(True)
         self.setLayout(self.main_layout)
 
         # UI option signals 
@@ -98,6 +108,7 @@ class SensorViewer(QFrame):
         all_signals.record_signals.imu_acc_data.connect(self.set_acc_data)
         all_signals.record_signals.imu_gyro_data.connect(self.set_gyro_data)
         all_signals.record_signals.audio_data.connect(self.set_audio_data)
+        all_signals.record_signals.zoomout_component.connect(self.zoomout_component)
 
     def select_option(self, value):
         if value == "viewer":
@@ -214,9 +225,17 @@ class SensorViewer(QFrame):
 
             i, j = max(self.target, source), min(self.target, source)
             p1, p2 = self.main_layout.getItemPosition(i), self.main_layout.getItemPosition(j)
-
             self.main_layout.addItem(self.main_layout.takeAt(i), *p2)
             self.main_layout.addItem(self.main_layout.takeAt(j), *p1)
+
+            pt1, pt2 = list(p1[:2]), list(p2[:2])
+            copy_dict = copy.deepcopy(self.pos_dict)
+            for k, v in self.pos_dict.items():
+                if v == pt1:
+                    copy_dict[k] = pt2
+                elif v == pt2:
+                    copy_dict[k] = pt1
+            self.pos_dict = copy_dict
             event.accept()
 
     @Slot(QImage)
@@ -273,6 +292,10 @@ class SensorViewer(QFrame):
             data_index = data_index + RESOLUTION
 
         self.audio_sensor.series.replace(self.buffer)
+
+    @Slot(list)
+    def zoomout_component(self, values) -> None:
+        self.main_layout.addWidget(values[1], *self.pos_dict[values[0]])
 
     def clear_frame(self):
         self.frame_rgb.label_image.clear()

@@ -32,5 +32,7 @@ class StackedSidebar(QFrame):
             self.main_layout.setCurrentWidget(self.sidebar_explorer)
         elif value == "solution":
             self.main_layout.setCurrentWidget(self.sidebar_solution)
-        else:
+        elif value == "recorder":
             self.main_layout.setCurrentWidget(self.sidebar_viewer)
+        else:
+            pass

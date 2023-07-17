@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QStackedLayout, QFrame, QHBoxLayout, QWidget
 from .viewer_sensors import SensorViewer
 from .viewer_playback import PlaybackViewer
 from .viewer_solution import ViewerSolution
+from .viewer_zoom_sensor import ViewerZoom
 from ..signals import all_signals
 
 
@@ -19,10 +20,12 @@ class StackedViewer(QFrame):
         self.main_viewer = SensorViewer()
         self.main_explorer = PlaybackViewer()
         self.main_solution = ViewerSolution()
+        self.zoom_viewer = ViewerZoom()
 
         self.main_layout.addWidget(self.main_viewer)
         self.main_layout.addWidget(self.main_explorer)
         self.main_layout.addWidget(self.main_solution)
+        self.main_layout.addWidget(self.zoom_viewer)
 
         self.main_layout.setCurrentIndex(0)
         self.setLayout(self.main_layout)   
@@ -35,6 +38,8 @@ class StackedViewer(QFrame):
             self.main_layout.setCurrentWidget(self.main_explorer)
         elif value == "solution":
             self.main_layout.setCurrentWidget(self.main_solution)
+        elif value == "zoom":
+            self.main_layout.setCurrentWidget(self.zoom_viewer)
         else:
             self.main_layout.setCurrentWidget(self.main_viewer)
         all_signals.option_signals.clear_frame.emit(True)
