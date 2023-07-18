@@ -41,9 +41,9 @@ For details about API for Azure Kinect SDK please see Azure Kinect Sensor SDK gi
 - [x] Control recording option (FPS, brightness, ...).
 - [x] Change layout with drag and drop.
 - [x] Playback recorded video.
+- [x] screen zoom in-out
 - [ ] 3D reconstruction viewer with streaming/recorded video.
 - [ ] Sync devices
-- [ ] screen zoom in-out
 - [ ] imu, microphone panel redesign
 - [ ] Recording audio.
 - [ ] Deep learning inference (mediapipe and native) with streaming/recorded video.

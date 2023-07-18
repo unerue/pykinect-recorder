@@ -62,8 +62,8 @@ class SensorViewer(QFrame):
         self.sensor_data_layout = QHBoxLayout()
         self.sensor_data_layout.setSpacing(0)
         self.sensor_data_layout.setContentsMargins(0, 0, 0, 0)
-        self.imu_senser = ImuSensors(min_size=(225, 300), max_size=(440, 480))
-        self.audio_sensor = AudioSensor(min_size=(225, 300), max_size=(440, 480))
+        self.imu_senser = ImuSensors(min_size=(225, 300), max_size=(295, 480))
+        self.audio_sensor = AudioSensor(min_size=(225, 300), max_size=(295, 480))
 
         self.v_line = QVBoxLayout()
         self.v_line.setSpacing(0)

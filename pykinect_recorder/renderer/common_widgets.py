@@ -260,7 +260,7 @@ class VLine(QFrame):
         super().__init__()
         self.setStyleSheet(" border-color: #808080; ")
         self.setFixedWidth(1)
-        self.setMaximumHeight(1000)
+        self.setMaximumHeight(2000)
         self.setContentsMargins(0, 0, 0, 0)
 
 
