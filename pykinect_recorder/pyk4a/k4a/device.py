@@ -10,7 +10,7 @@ from .imu_sample import ImuSample
 from .calibration import Calibration
 from .configuration import Configuration
 from ..k4arecord.record import Record
-from ..k4a._k4atypes import K4A_WAIT_INFINITE
+from ..k4a._k4atypes import K4A_WAIT_INFINITE, K4A_DEVICE_DEFAULT
 from ..k4arecord._k4arecord import k4a_playback_get_next_capture, K4A_STREAM_RESULT_EOF
 
 
@@ -197,6 +197,17 @@ class Device:
 
         if self.recording:
             self.record.write_capture(Device.capture.handle())
-            
 
+        imu_sample = self.get_imu_sample(K4A_WAIT_INFINITE)
+
+        if self.is_imu_sample_initialized():
+            Device.imu_sample._struct = imu_sample
+            Device.imu_sample.parse_data()
+        else:
+            Device.imu_sample = ImuSample(imu_sample)
+
+        if self.recording:
+            self.record.write_imu(imu_sample)
+        print(Device.imu_sample.acc, Device.imu_sample.gyro)
+            
         return Device.capture

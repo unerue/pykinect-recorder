@@ -24,7 +24,8 @@ class VideoClippingDialog(QDialog):
         self.root_path = None
         self.file_name = file_name
         self.clip_option = None
-        self.save_file_name = self.file_name.split('/')[-1][:-4]
+        self.save_file_name = self.file_name.split('\\')[-1][:-4]
+        print(self.save_file_name)
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
         self.fps_dict = {0: "5", 1: "15", 2: "30"}
@@ -157,6 +158,7 @@ class VideoClippingDialog(QDialog):
         option_dialog = SelectClipOptionDialog()
         option_dialog.exec()
         self.root_path = QFileDialog.getExistingDirectory(self, "Open Data Files", ".", QFileDialog.ShowDirsOnly)
+        print(self.root_path)
         if self.clip_option == "mkv":
             self.extract_mkv()
         elif self.clip_option == "jpg":
@@ -176,7 +178,7 @@ class VideoClippingDialog(QDialog):
         self.playback.seek_timestamp(self.left)
 
         self.timer = QTimer()
-        self.timer.setInterval(0.001)
+        self.timer.setInterval(0.033)
         self.timer.timeout.connect(self.save_to_mkv)
         self.timer.start()
         self.progress_dialog.exec()
@@ -204,9 +206,9 @@ class VideoClippingDialog(QDialog):
         self.total_frame = self.right - self.left
         all_signals.playback_signals.video_total_frame.emit(int(self.total_frame))
         self.playback.seek_timestamp(self.left)
-        os.makedirs(os.path.join(self.root_path, self.save_file_name, "rgb"), exist_ok=True)
-        os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=True)
-        os.makedirs(os.path.join(self.root_path, self.save_file_name, "depth"), exist_ok=True)
+        os.makedirs(os.path.join(self.root_path, self.save_file_name, "rgb"), exist_ok=False)
+        os.makedirs(os.path.join(self.root_path, self.save_file_name, "ir"), exist_ok=False)
+        os.makedirs(os.path.join(self.root_path, self.save_file_name, "depth"), exist_ok=False)
         
         self.timer = QTimer()
         self.timer.setInterval(0.033)
@@ -220,26 +222,26 @@ class VideoClippingDialog(QDialog):
         
         _, current_frame = self.playback.update()
         current_rgb_frame = current_frame.get_color_image()
-        current_depth_frame = current_frame.get_depth_image()
+        current_depth_frame = current_frame.get_colored_depth_image()
         current_ir_frame = current_frame.get_ir_image()
 
         if current_ir_frame[0]:
             ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
             cv2.imwrite(os.path.join(
-                self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"), ir_frame,
+                self.root_path, self.save_file_name, "ir", f"{self.save_file_name}_ir_{str(self.cnt).zfill(6)}.png"), 
+                ir_frame, [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
 
         if current_depth_frame[0]:
-            current_depth_frame = colorize(current_depth_frame[1], (None, 5000), cv2.COLORMAP_HSV)
             cv2.imwrite(os.path.join(
-                self.root_path, self.save_file_name, "depth", f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png"), current_depth_frame,
+                self.root_path, self.save_file_name, "depth", f"{self.save_file_name}_depth_{str(self.cnt).zfill(6)}.png"), 
+                current_depth_frame[1], [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
 
         if current_rgb_frame[0]:
-            rgb_frame = current_rgb_frame[1]
             cv2.imwrite(os.path.join(
-                self.root_path, self.save_file_name, "rgb", f"{self.save_file_name}_rgb_{str(self.cnt).zfill(6)}.jpg"), rgb_frame,
-                [cv2.IMWRITE_JPEG_QUALITY, 100]
+                self.root_path, self.save_file_name, "rgb", f"{self.save_file_name}_rgb_{str(self.cnt).zfill(6)}.jpg"), 
+                current_rgb_frame[1], [cv2.IMWRITE_JPEG_QUALITY, 100]
             )
         self.cnt += 1
         all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
@@ -290,7 +292,6 @@ class SelectClipOptionDialog(QDialog):
         self.btn_layout = QHBoxLayout()
         self.btn_mkv = QPushButton("video as '.mkv'")
         self.btn_mkv.setObjectName("btn_mkv")
-        self.btn_mkv.setDisabled(True)
         self.btn_jpg = QPushButton("rgb/ir/depth frame as '.jpg'")
         self.btn_jpg.setObjectName("btn_jpg")
         self.btn_layout.addWidget(self.btn_mkv)

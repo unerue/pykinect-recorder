@@ -56,12 +56,14 @@ class ViewerSidebar(QFrame):
         self.depth_camera_panel = DepthCameraPanel()
         self.ir_camera_panel = IRCameraPanel()
         self.audio_panel = AudioPanel()
+        self.dimension_panel = ViewerDimensionOptionPanel()
 
         option_layout.addWidget(self.btn_panel)
         option_layout.addWidget(self.rgb_camera_panel)
         option_layout.addWidget(self.depth_camera_panel)
         option_layout.addWidget(self.ir_camera_panel)
         option_layout.addWidget(self.audio_panel)
+        option_layout.addWidget(self.dimension_panel)
 
         widget_scroll.setWidget(widget_option)
         main_layout.addWidget(widget_scroll)
@@ -663,6 +665,65 @@ class AudioPanel(QFrame):
         }
         config_sidebar["audio"] = audio
         all_signals.option_signals.camera_option.emit(config_sidebar)
+
+
+class ViewerDimensionOptionPanel(QFrame):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setObjectName("ViewerDimensionOptionPanel")
+        self.setMinimumHeight(100)
+        self.setMaximumHeight(100)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setStyleSheet("""
+            QFrame#ViewerDimensionOptionPanel {
+                border-color: gray; border-width: 2px; border-radius: 0px;
+            }
+        """)
+        
+        main_layout = QVBoxLayout()
+        top_layout = QVBoxLayout()
+        title_layout = QHBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+
+        self.is_change = True
+        self.btn_switch = ToggleButton()
+        self.btn_switch.setDisabled(True)
+        title_layout.addWidget(QLabel("<b>Dimension Option<b>"))
+        title_layout.addStretch()
+        title_layout.addWidget(self.btn_switch)
+        top_layout.addLayout(title_layout)
+        top_layout.addWidget(HLine())
+
+        self.option_layout = QHBoxLayout()
+        self.radio_2d = QRadioButton("2D")
+        self.radio_2d.setObjectName("2D")
+        self.radio_3d = QRadioButton("3D")
+        self.radio_3d.setObjectName("3D")
+        self.radio_2d.setChecked(True)
+
+        self.option_layout.addWidget(self.radio_2d)
+        self.option_layout.addWidget(self.radio_3d)
+
+        main_layout.addLayout(top_layout)
+        main_layout.addLayout(self.option_layout)
+        self.setLayout(main_layout)
+
+        self.btn_switch.clicked.connect(self._toggle)
+        self.radio_2d.clicked.connect(self.radio_toggle)
+        self.radio_3d.clicked.connect(self.radio_toggle)
+
+    def _toggle(self) -> None:
+        self.btn_switch.toggle()
+        if self.is_change:
+            self.is_change = False
+        else:
+            self.is_change = True
+
+    def radio_toggle(self) -> None:
+        if self.sender().objectName() == "2D":
+            all_signals.option_signals.viewer_dimension_status.emit(["recorder", "2D"])
+        else:
+            all_signals.option_signals.viewer_dimension_status.emit(["recorder", "3D"])
 
 
 config_sidebar = {

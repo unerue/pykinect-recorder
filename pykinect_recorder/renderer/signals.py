@@ -8,6 +8,7 @@ class OptionSignals(QObject):
     stacked_sidebar_status = Signal(str)
     camera_connect_status = Signal(bool)
     zoomin_component = Signal(list)
+    viewer_dimension_status = Signal(list)
 
     # Sidebar button signals
     sidebar_toggle = Signal(bool)
