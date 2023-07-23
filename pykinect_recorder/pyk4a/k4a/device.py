@@ -177,15 +177,28 @@ class Device:
     def device_get_installed_count():
         return int(_k4a.k4a_device_get_installed_count())
 
+    # def get_playback_capture(self, playback_handle):
+        
+
+    #     if self.is_capture_initialized():
+    #         self._capture.release_handle()
+    #         self._capture._handle = capture_handle
+    #     else:
+    #         self._capture = Capture(capture_handle, self.calibration)
+        
+    #     if ret:
+    #         return capture_handle
+
     def save_frame_for_clip(self, playback_handle, playback_calibration) -> Capture:
         capture_handle = _k4a.k4a_capture_t()
-        if self.is_capture_initialized():
-            Device.capture.release_handle()
-            Device.capture._handle = capture_handle
-        else:
-            Device.capture = Capture(capture_handle, playback_calibration)
-        
-        if k4a_playback_get_next_capture(playback_handle, capture_handle) != K4A_STREAM_RESULT_EOF:
+        ret = k4a_playback_get_next_capture(playback_handle, capture_handle) != K4A_STREAM_RESULT_EOF
+
+        if ret:
+            if self.is_capture_initialized():
+                Device.capture.release_handle()
+                Device.capture._handle = capture_handle
+            else:
+                Device.capture = Capture(capture_handle, playback_calibration)
             self.record.write_capture(Device.capture.handle())
 
         try:
