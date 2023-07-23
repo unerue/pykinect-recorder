@@ -4,9 +4,9 @@ import sys
 import pandas as pd
 from glob import glob
 from pathlib import Path
-from pyk4a import initialize_libraries
-from pyk4a import Playback
-from pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
+from pykinect_recorder.pyk4a.pykinect import initialize_libraries
+from pykinect_recorder.pyk4a.k4arecord import Playback
+from pykinect_recorder.pyk4a.k4arecord._k4arecord import K4A_PLAYBACK_SEEK_BEGIN
 
 
 def colorize(
@@ -23,53 +23,54 @@ def colorize(
     return img
 
 
-initialize_libraries()
-file_paths = glob(os.path.join(Path.home(), "Desktop/", "*.mkv"))
-root_path = "datas"
-if not os.path.exists(root_path):
-    os.mkdir(root_path)
-print(len(file_paths))
+if __name__ == "__main__":
+    initialize_libraries()
+    # with open("dataset_list.txt", "r", encoding="utf-8") as f:
+    #     file_paths = f.readlines()
+    file_paths = glob(os.path.join(Path.home(), "Desktop/baby", "*.mkv"))
+    root_path = "datas"
+    if not os.path.exists(root_path):
+        os.makedirs(root_path)
 
-for i, file_path in enumerate(file_paths):
-    print(i, file_path)
-    file_name = file_path.split("\\")[-1][:-4]
-    os.makedirs(os.path.join(root_path, file_name, "rgb"), exist_ok=True)
-    os.makedirs(os.path.join(root_path, file_name, "ir"), exist_ok=True)
-    playback = Playback(file_path)
-    playback.seek_timestamp(offset=333555, origin=K4A_PLAYBACK_SEEK_BEGIN)
-    start_time = playback.get_record_configuration()._handle.start_timestamp_offset_usec
-    cnt = 0
-    # frame = 100
-    color_h, color_w = None, None
-    depth_h, depth_w = None, None
+    for i, file_path in enumerate(file_paths):
+        file_name = file_path.split("\\")[-1][:-4]
+        os.makedirs(os.path.join(root_path, file_name, "rgb"), exist_ok=True)
+        os.makedirs(os.path.join(root_path, file_name, "ir"), exist_ok=True)
+        playback = Playback(file_path)
+        start_time = playback.get_record_configuration()._handle.start_timestamp_offset_usec
+        playback.seek_timestamp(offset=start_time, origin=K4A_PLAYBACK_SEEK_BEGIN)
+        cnt = 0
+        # frame = 100
+        color_h, color_w = None, None
+        depth_h, depth_w = None, None
 
-    while True:
-        ret, current_frame = playback.update()
-        if ret:
-            current_rgb_frame = current_frame.get_color_image()
-            current_ir_frame = current_frame.get_ir_image()
-            if current_ir_frame[0]:
-                ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
-                depth_h, depth_w, _ = ir_frame.shape
-                cv2.imwrite(
-                    os.path.join(root_path, file_name, "ir", f"{file_name}_ir_{str(cnt).zfill(6)}.png"),
-                    ir_frame, [cv2.IMWRITE_JPEG_QUALITY, 100],
-                )
+        while True:
+            ret, current_frame = playback.update()
+            if ret:
+                current_rgb_frame = current_frame.get_color_image()
+                current_ir_frame = current_frame.get_ir_image()
+                if current_ir_frame[0]:
+                    ir_frame = colorize(current_ir_frame[1], (None, 5000), cv2.COLORMAP_BONE)
+                    depth_h, depth_w, _ = ir_frame.shape
+                    cv2.imwrite(
+                        os.path.join(root_path, file_name, "ir", f"{file_name}_ir_{str(cnt).zfill(6)}.png"),
+                        ir_frame,
+                    )
 
-            if current_rgb_frame[0]:
-                rgb_frame = current_rgb_frame[1]
-                color_h, color_w, _ = rgb_frame.shape
-                cv2.imwrite(
-                    os.path.join(root_path, file_name, "rgb", f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"),
-                    rgb_frame,
-                    [cv2.IMWRITE_JPEG_QUALITY, 100],
-                )
-            cnt += 1
-        else:
-            break
+                if current_rgb_frame[0]:
+                    rgb_frame = current_rgb_frame[1]
+                    color_h, color_w, _ = rgb_frame.shape
+                    cv2.imwrite(
+                        os.path.join(root_path, file_name, "rgb", f"{file_name}_rgb_{str(cnt).zfill(6)}.jpg"),
+                        rgb_frame,
+                        [cv2.IMWRITE_JPEG_QUALITY, 100],
+                    )
+                cnt += 1
+            else:
+                break
 
-    df = pd.read_csv("metadata.csv")
-    length = df.shape[0]
-    df.loc[length] = [file_name, start_time, cnt, f"'({color_h}, {color_w})'", f"'({depth_h}, {depth_w})'"]
-    df.to_csv("metadata.csv", index=False)
-    print(file_name)
+        # df = pd.read_csv("metadata.csv")
+        # length = df.shape[0]
+        # df.loc[length] = [file_name, 333555, cnt, f"'({color_h}, {color_w})'", f"'({depth_h}, {depth_w})'"]
+        # df.to_csv("metadata.csv", index=False)
+        print(file_name)

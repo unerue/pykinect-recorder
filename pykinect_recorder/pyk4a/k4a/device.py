@@ -10,8 +10,8 @@ from .imu_sample import ImuSample
 from .calibration import Calibration
 from .configuration import Configuration
 from ..k4arecord.record import Record
-from ..k4a._k4atypes import K4A_WAIT_INFINITE, K4A_DEVICE_DEFAULT
-from ..k4arecord._k4arecord import k4a_playback_get_next_capture, K4A_STREAM_RESULT_EOF
+from ..k4a._k4atypes import K4A_WAIT_INFINITE
+from ..k4arecord._k4arecord import k4a_playback_get_next_capture, K4A_STREAM_RESULT_EOF, k4a_playback_get_next_imu_sample
 
 
 class Device:
@@ -49,7 +49,6 @@ class Device:
 
         if record:
             self.record = Record(self._handle, self.configuration.handle(), record_filepath)
-            self.record.add_imu_track()
             self.recording = True
 
     def close(self) -> None:
@@ -178,36 +177,27 @@ class Device:
     def device_get_installed_count():
         return int(_k4a.k4a_device_get_installed_count())
 
-    def get_playback_capture(self, playback_handle):
+    def save_frame_for_clip(self, playback_handle, playback_calibration) -> Capture:
         capture_handle = _k4a.k4a_capture_t()
-        ret = k4a_playback_get_next_capture(playback_handle, capture_handle) != K4A_STREAM_RESULT_EOF
-        if ret:
-            return capture_handle
-        else:
-            return None
-
-    def save_frame_for_clip(self, playback_handle, playback_calibration):
-        capture_handle = self.get_playback_capture(playback_handle)
-
         if self.is_capture_initialized():
             Device.capture.release_handle()
             Device.capture._handle = capture_handle
         else:
             Device.capture = Capture(capture_handle, playback_calibration)
-
-        if self.recording:
+        
+        if k4a_playback_get_next_capture(playback_handle, capture_handle) != K4A_STREAM_RESULT_EOF:
             self.record.write_capture(Device.capture.handle())
 
-        imu_sample = self.get_imu_sample(K4A_WAIT_INFINITE)
-
-        if self.is_imu_sample_initialized():
-            Device.imu_sample._struct = imu_sample
-            Device.imu_sample.parse_data()
-        else:
-            Device.imu_sample = ImuSample(imu_sample)
-
-        if self.recording:
-            self.record.write_imu(imu_sample)
-        print(Device.imu_sample.acc, Device.imu_sample.gyro)
+        try:
+            imu_sample_struct = _k4a.k4a_imu_sample_t()
+            k4a_playback_get_next_imu_sample(playback_handle, imu_sample_struct)
+            if self.is_imu_sample_initialized():    
+                Device.imu_sample._struct = imu_sample_struct
+                Device.imu_sample.parse_data()
+            else:
+                Device.imu_sample = ImuSample(imu_sample_struct)
+            self.record.write_imu(imu_sample_struct)
+        except:
+            pass
             
         return Device.capture

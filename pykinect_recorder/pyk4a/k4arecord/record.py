@@ -5,8 +5,10 @@ class Record:
     def __init__(self, device_handle, device_configuration, filepath):
         self.record_handle = _k4arecord.k4a_record_t()
         self.header_written = False
-
         self.create_recording(device_handle, device_configuration, filepath)
+        
+        self.add_imu_track()
+        self.write_header()
 
     def __del__(self):
         self.flush()
@@ -52,9 +54,6 @@ class Record:
     def write_capture(self, capture_handle):
         if not self.is_valid():
             raise NameError("Recording not found")
-        if not self.header_written:
-            self.write_header()
-            self.header_written = True
         _k4arecord.VERIFY(
             _k4arecord.k4a_record_write_capture(self.record_handle, capture_handle),
             "Failed to write capture!",

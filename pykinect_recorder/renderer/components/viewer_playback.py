@@ -106,7 +106,6 @@ class PlaybackViewer(QFrame):
             self.file_path = filepath
             initialize_libraries()
             self.playback = start_playback(filepath)
-            
             self.is_run = True
             self.viewer = PlaybackSensors(playback=self.playback)
             self.start_time = self.playback.get_record_configuration()._handle.start_timestamp_offset_usec

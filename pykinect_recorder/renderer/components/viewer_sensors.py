@@ -34,6 +34,7 @@ class SensorViewer(QFrame):
         self.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("background-color: #1e1e1e; border-radius: 0px;")
 
+        self.target = None
         self.device = None
         self.config = Configuration()
         self.color_control = None

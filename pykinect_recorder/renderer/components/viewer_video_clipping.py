@@ -25,7 +25,6 @@ class VideoClippingDialog(QDialog):
         self.file_name = file_name
         self.clip_option = None
         self.save_file_name = self.file_name.split('\\')[-1][:-4]
-        print(self.save_file_name)
         self.left, self.right = None, None
         self.progress_dialog = ProgressBarDialog()
         self.fps_dict = {0: "5", 1: "15", 2: "30"}
@@ -158,7 +157,7 @@ class VideoClippingDialog(QDialog):
         option_dialog = SelectClipOptionDialog()
         option_dialog.exec()
         self.root_path = QFileDialog.getExistingDirectory(self, "Open Data Files", ".", QFileDialog.ShowDirsOnly)
-        print(self.root_path)
+
         if self.clip_option == "mkv":
             self.extract_mkv()
         elif self.clip_option == "jpg":
@@ -175,14 +174,15 @@ class VideoClippingDialog(QDialog):
             record=True,
             record_filepath=os.path.join(self.root_path, self.save_file_name+"_extract.mkv")
         )
-        self.playback.seek_timestamp(self.left)
+        self.playback.seek_timestamp(self.start_time + self.left*self.ticks)
 
         self.timer = QTimer()
-        self.timer.setInterval(0.033)
+        self.timer.setInterval(50)
         self.timer.timeout.connect(self.save_to_mkv)
         self.timer.start()
         self.progress_dialog.exec()
         self.device.close()
+        self.close()
 
     def record_config_to_config(self):
         record_config = self.playback.get_record_configuration()
@@ -198,9 +198,9 @@ class VideoClippingDialog(QDialog):
         if self.cnt == self.total_frame:
             self.timer.stop()
 
-        self.cnt += 1
         self.device.save_frame_for_clip(self.playback._handle, self.playback.calibration)
         all_signals.playback_signals.current_frame_cnt.emit(self.cnt)
+        self.cnt += 1
 
     def extract_frame(self):
         self.total_frame = self.right - self.left
@@ -211,10 +211,11 @@ class VideoClippingDialog(QDialog):
         os.makedirs(os.path.join(self.root_path, self.save_file_name, "depth"), exist_ok=False)
         
         self.timer = QTimer()
-        self.timer.setInterval(0.033)
+        self.timer.setInterval(50)
         self.timer.timeout.connect(self.save_frame)
         self.timer.start()
         self.progress_dialog.exec()
+        self.close()
 
     def save_frame(self):
         if self.cnt == self.total_frame:

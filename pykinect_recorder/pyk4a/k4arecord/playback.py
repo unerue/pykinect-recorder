@@ -14,7 +14,6 @@ class Playback:
         self._handle = _k4arecord.k4a_playback_t()
         self._capture = None
         self._datablock = None
-        self.clipping = None
 
         self.open(filepath)
         self.calibration = self.get_calibration()
@@ -29,7 +28,7 @@ class Playback:
         )
 
     def update(self):
-        return self.get_next_capture() if self.clipping is None else self.get_next_capture_with_record()
+        return self.get_next_capture()
 
     def is_valid(self):
         return self._handle != None
