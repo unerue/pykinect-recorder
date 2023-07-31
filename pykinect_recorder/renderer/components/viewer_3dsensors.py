@@ -17,16 +17,8 @@ class Viewer3DSensors(QFrame):
 
         self.label = QLabel("Sibal")
 
-        # self.frame_sensor = QFrame()
-        # self.frame_sensor.setFixedHeight()
         self.main_layout.addWidget(self.label)
-        
-
-
-
-        # self.btn_frame = QFrame()
-        # self.btn_rgb = QRadioButton("RGB")
-        # self.btn_depth = QRadioButton("Depth")
+    
 
         self.setLayout(self.main_layout)
 
