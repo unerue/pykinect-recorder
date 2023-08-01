@@ -54,6 +54,11 @@ class PlaybackSignals(QObject):
     current_frame_cnt = Signal(int)
 
 
+class MediaPipeSignals(QObject):
+    model_config = Signal(list)
+    model_result = Signal(QImage)
+
+
 class AllSignals(QObject):
     """
     This class manages all signals used throughout this project
@@ -62,6 +67,7 @@ class AllSignals(QObject):
     option_signals = OptionSignals()
     record_signals = RecorderSignals()
     playback_signals = PlaybackSignals()
+    mediapipe_signals = MediaPipeSignals()
 
 
 all_signals = AllSignals()
