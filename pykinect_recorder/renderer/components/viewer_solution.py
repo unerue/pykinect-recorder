@@ -34,4 +34,4 @@ class ViewerSolution(QFrame):
     def set_rgb_image(self, image: QImage) -> None:
         w, h = self.label.width(), self.label.height()
         image = image.scaled(w-5, h-5, Qt.KeepAspectRatio)
-        self.label.setPixmap(QPixmap.fromImage(image))
+        self.label.setPixmap(QPixmap.fromImage(image))                                                           

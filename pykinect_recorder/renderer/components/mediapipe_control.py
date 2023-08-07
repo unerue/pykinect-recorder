@@ -60,7 +60,7 @@ class MediaPipeModel:
 
         self.model = {
             "object_detection": vision.ObjectDetector.create_from_options(options),
-            "semantic_segmentation": vision.ImageSegmenter.create_from_options(options),
+            # "semantic_segmentation": vision.ImageSegmenter.create_from_options(options),
             # "face_detection": vision.FaceDetector.create_from_options(options),
             # "pose_landmark_detection": vision.PoseLandmarker.create_from_options(options),
         }.get(self.model_config.model_option, lambda: "Invalid model option")
